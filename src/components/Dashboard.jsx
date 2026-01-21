@@ -61,6 +61,7 @@ import RoomTypeCharges from './RoomTypeCharge';
 import Warden from './Warden';
 import { FaRegIdCard } from 'react-icons/fa';
 import TransportAllocation from './TransportAllocation';
+import ExamManagement from './ExamManagement';
 
 
 const Dashboard = ({ setIsLoggedIn }) => {
@@ -72,6 +73,7 @@ const Dashboard = ({ setIsLoggedIn }) => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [hostelDropdownOpen, setHostelDropdownOpen] = useState(false);
   const [transportDropdownOpen, setTransportDropdownOpen] = useState(false);
+  const [examDropdownOpen, setExamDropdownOpen] = useState(false);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -119,16 +121,16 @@ const Dashboard = ({ setIsLoggedIn }) => {
     { id: 'route-master', name: 'Route Master', icon: MdOutlineAltRoute },
     { id: 'route-stop', name: 'Route Stops', icon: GiStopSign },
     { id: 'route-charge', name: 'Route Charge', icon: MdOutlineCurrencyRupee },
-    { id: 'transport-allocation', name: 'Transport Allocation', icon: MdAssignmentInd },
-    // { id: 'transport-report', name: 'Transport Report', icon: MdBarChart }
+    { id: 'transport-allocation', name: 'Transport Allocation', icon: MdAssignmentInd }
+  ];
+
+  const examItems = [
+    { id: 'exam-management', name: 'Exam Management', icon: MdSchedule }
   ];
 
   const stats = [
     { title: 'New Admissions', count: '156', icon: MdAppRegistration, color: 'bg-blue-500' },
-    // { title: 'Pending Applications', count: '89', icon: MdDescription, color: 'bg-yellow-500' },
-    // { title: 'Verified Students', count: '234', icon: MdVerifiedUser, color: 'bg-green-500' },
     { title: 'Total Admissions', count: '1,234', icon: MdPersonAdd, color: 'bg-purple-500' },
-    // { title: 'Enrolled Students', count: '1,189', icon: MdPeople, color: 'bg-indigo-500' },
     { title: 'Fee Collections', count: '₹8.5L', icon: MdPayment, color: 'bg-emerald-500' }
   ];
 
@@ -234,6 +236,44 @@ const Dashboard = ({ setIsLoggedIn }) => {
               </div>
             )}
           </div>
+
+          {/* Exam Management Dropdown */}
+          <div>
+            <button
+              onClick={() => setExamDropdownOpen(!examDropdownOpen)}
+              className={`w-full flex items-center justify-between px-6 py-3 text-left hover:bg-slate-700/50 transition duration-200 cursor-pointer ${
+                examItems.some(item => item.id === activeMenu) ? 'bg-gradient-to-r from-blue-600/20 to-purple-600/20 border-r-4 border-blue-400 text-blue-400' : 'text-slate-300 hover:text-white'
+              }`}
+              title={!sidebarOpen ? 'Exam Management' : ''}
+            >
+              <div className="flex items-center">
+                <span className="text-xl mr-3"><MdSchedule /></span>
+                {sidebarOpen && <span className="font-medium">Exam Management</span>}
+              </div>
+              {sidebarOpen && (
+                <span className="text-lg">
+                  {examDropdownOpen ? <MdExpandLess /> : <MdExpandMore />}
+                </span>
+              )}
+            </button>
+
+            {examDropdownOpen && sidebarOpen && (
+              <div className="bg-slate-800/50">
+                {examItems.map((item) => (
+                  <button
+                    key={item.id}
+                    onClick={() => setActiveMenu(item.id)}
+                    className={`w-full flex items-center px-12 py-2 text-left hover:bg-slate-700/50 transition duration-200 cursor-pointer ${
+                      activeMenu === item.id ? 'bg-gradient-to-r from-blue-600/20 to-purple-600/20 text-blue-400' : 'text-slate-400 hover:text-white'
+                    }`}
+                  >
+                    <span className="text-lg mr-3"><item.icon /></span>
+                    <span className="font-medium text-sm">{item.name}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
         </nav>
         {/* Logout Button */}
         <div className="p-6 border-t border-slate-700">
@@ -284,8 +324,6 @@ const Dashboard = ({ setIsLoggedIn }) => {
                 </div>
                 <div>
                   <p className="text-sm font-medium text-gray-900">Staff_Name</p>
-                  {/* <p className="text-xs text-gray-500">Mathematics Teacher</p>   */}
-
                 </div>
               </div>
             </div>
@@ -294,7 +332,7 @@ const Dashboard = ({ setIsLoggedIn }) => {
 
         {/* Dashboard Content with top margin for fixed navbar */}
         <main className="flex-1 pt-24 overflow-y-auto">
-          <div className="max-w-7xl  p-6 mx-auto">
+          <div className="p-4 sm:p-6" style={{ width: sidebarOpen ? 'calc(100vw - 256px)' : 'calc(100vw - 64px)' }}>
             {activeMenu === 'dashboard' && (
               <div className="space-y-6">
                 {/* Stats Cards */}
@@ -415,14 +453,8 @@ const Dashboard = ({ setIsLoggedIn }) => {
             {activeMenu === 'route-charge' && <RouteCharge />}
             {activeMenu === 'transport-allocation' && <TransportAllocation />}
 
-            {/* Other Menu Content */}
-            {!['dashboard', 'registration', 'applications', 'verification', 'admissions', 'enrollment', 'classes', 'fees', 'documents', 'reports', 'notices', 'profile', 'hostel-dashboard', 'create-hostel', 'room-type-charge', 'room-management', 'hostel-allocation', 'warden-management', 'hostel-report', 'transport-dashboard', 'vehical-master', 'driver-master', 'route-master', 'route-stop', 'route-charge', 'transport-allocation', 'transport-report', 'id-card'].includes(activeMenu) && (
-              <div>
-
-
-
-              </div>
-            )}
+            {/* Exam Management Content */}
+            {activeMenu === 'exam-management' && <ExamManagement />}
           </div>
         </main>
       </div>

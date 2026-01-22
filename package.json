@@ -10,8 +10,14 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@chakra-ui/react": "^3.31.0",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
     "@tailwindcss/vite": "^4.1.18",
     "dom-to-image": "^2.6.0",
+    "framer-motion": "^12.28.1",
+    "highcharts": "^12.5.0",
+    "highcharts-react-official": "^3.2.3",
     "html2canvas": "^1.4.1",
     "jspdf": "^4.0.0",
     "react": "^19.2.0",

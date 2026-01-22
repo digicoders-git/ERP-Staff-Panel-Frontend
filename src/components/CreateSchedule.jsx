@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { MdAdd, MdEdit, MdDelete, MdCalendarToday, MdAccessTime, MdClass, MdSubject } from 'react-icons/md';
+import Swal from 'sweetalert2';
 
 const CreateSchedule = () => {
   const [schedules, setSchedules] = useState([
@@ -153,11 +154,27 @@ const CreateSchedule = () => {
     setFormData(schedule);
     setEditingSchedule(schedule);
     setShowForm(true);
+    // Scroll to form after state update
+    setTimeout(() => {
+      document.querySelector('.edit-form')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
   };
 
   const handleDelete = (id) => {
-    setSchedules(schedules.filter(schedule => schedule.id !== id));
-    showToast('Exam schedule deleted successfully!');
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, delete it!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        setSchedules(schedules.filter(schedule => schedule.id !== id));
+        Swal.fire('Deleted!', 'Exam schedule has been deleted.', 'success');
+      }
+    });
   };
 
   return (
@@ -169,7 +186,12 @@ const CreateSchedule = () => {
           <p className="text-gray-600">Create and manage detailed exam schedules</p>
         </div>
         <button
-          onClick={() => setShowForm(true)}
+          onClick={() => {
+            setShowForm(true);
+            setTimeout(() => {
+              document.querySelector('.edit-form')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
+          }}
           className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors duration-200"
         >
           <MdAdd />
@@ -179,7 +201,7 @@ const CreateSchedule = () => {
 
       {/* Add/Edit Form */}
       {showForm && (
-        <div className="bg-gray-50 rounded-lg p-6 border">
+        <div className="bg-gray-50 rounded-lg p-6 border edit-form">
           <h4 className="text-lg font-semibold text-gray-900 mb-4">
             {editingSchedule ? 'Edit Exam Schedule' : 'Create New Exam Schedule'}
           </h4>

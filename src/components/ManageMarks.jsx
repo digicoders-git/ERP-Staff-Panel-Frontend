@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { MdSearch, MdSave, MdEdit, MdVisibility } from 'react-icons/md';
+import Swal from 'sweetalert2';
 
 const ManageMarks = () => {
   const [selectedClass, setSelectedClass] = useState('');
@@ -73,7 +74,7 @@ const ManageMarks = () => {
         }
       }
     })));
-    alert('Marks saved successfully!');
+    Swal.fire('Success!', 'Marks saved successfully!', 'success');
   };
 
   const getGrade = (marks) => {

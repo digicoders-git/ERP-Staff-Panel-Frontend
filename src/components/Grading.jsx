@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { MdAdd, MdEdit, MdDelete, MdSave, MdCancel } from 'react-icons/md';
+import Swal from 'sweetalert2';
 
 const Grading = () => {
   const [gradingSchemes, setGradingSchemes] = useState([
@@ -54,10 +55,23 @@ const Grading = () => {
   };
 
   const handleDeleteGrade = (index) => {
-    const updatedGrades = selectedScheme.grades.filter((_, i) => i !== index);
-    setSelectedScheme({
-      ...selectedScheme,
-      grades: updatedGrades
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, delete it!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const updatedGrades = selectedScheme.grades.filter((_, i) => i !== index);
+        setSelectedScheme({
+          ...selectedScheme,
+          grades: updatedGrades
+        });
+        Swal.fire('Deleted!', 'Grade has been deleted.', 'success');
+      }
     });
   };
 
@@ -65,7 +79,7 @@ const Grading = () => {
     setGradingSchemes(gradingSchemes.map(scheme => 
       scheme.id === selectedScheme.id ? selectedScheme : scheme
     ));
-    alert('Grading scheme saved successfully!');
+    Swal.fire('Success!', 'Grading scheme saved successfully!', 'success');
   };
 
   const GradeRow = ({ grade, index, isEditing }) => {
@@ -266,7 +280,7 @@ const Grading = () => {
       </div>
 
       {/* Grade Distribution Chart */}
-      <div className="bg-white rounded-lg shadow p-6">
+      {/* <div className="bg-white rounded-lg shadow p-6">
         <h4 className="text-lg font-semibold text-gray-900 mb-4">Grade Distribution Preview</h4>
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
           {selectedScheme.grades.map((grade, index) => (
@@ -277,10 +291,10 @@ const Grading = () => {
             </div>
           ))}
         </div>
-      </div>
+      </div> */}
 
       {/* Grading Guidelines */}
-      <div className="bg-white rounded-lg shadow p-6">
+      {/* <div className="bg-white rounded-lg shadow p-6">
         <h4 className="text-lg font-semibold text-gray-900 mb-4">Grading Guidelines</h4>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
@@ -302,7 +316,7 @@ const Grading = () => {
             </ul>
           </div>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };

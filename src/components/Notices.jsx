@@ -268,7 +268,7 @@ const Notices = () => {
 
       {/* View Notice Modal */}
       {showViewModal && selectedNotice && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 backdrop-blur-md bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center p-6 border-b border-blue-100">
               <h3 className="text-xl font-bold text-blue-900">Notice Details</h3>
@@ -338,7 +338,7 @@ const Notices = () => {
 
       {/* Edit Notice Modal */}
       {showEditModal && editingNotice && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 backdrop-blur-md bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center p-6 border-b border-blue-100">
               <h3 className="text-xl font-bold text-blue-900">Edit Notice</h3>

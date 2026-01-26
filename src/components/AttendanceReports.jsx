@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { MdBarChart, MdDateRange, MdDownload, MdPerson, MdTrendingUp, MdTrendingDown, MdFilterList } from 'react-icons/md';
+import Highcharts from 'highcharts';
+import HighchartsReact from 'highcharts-react-official';
 
 const AttendanceReports = () => {
   const [selectedPeriod, setSelectedPeriod] = useState('monthly');
@@ -8,9 +10,10 @@ const AttendanceReports = () => {
     startDate: '2024-01-01',
     endDate: '2024-01-31'
   });
+  const [searchTerm, setSearchTerm] = useState('');
 
   const departments = ['All Departments', 'Mathematics', 'English', 'Science', 'History', 'Physical Education'];
-  
+
   const attendanceData = [
     { id: 1, name: 'John Doe', department: 'Mathematics', present: 22, absent: 3, late: 2, percentage: 88 },
     { id: 2, name: 'Jane Smith', department: 'English', present: 25, absent: 0, late: 2, percentage: 100 },
@@ -34,6 +37,63 @@ const AttendanceReports = () => {
     { month: 'May', attendance: 92.4 },
     { month: 'Jun', attendance: 88.9 }
   ];
+
+  const chartOptions = {
+    chart: {
+      type: 'areaspline',
+      height: 300,
+      backgroundColor: 'transparent',
+      style: { fontFamily: 'Inter, sans-serif' }
+    },
+    title: { text: null },
+    xAxis: {
+      categories: chartData.map(d => d.month),
+      labels: { style: { color: '#64748b', fontWeight: '500' } },
+      gridLineWidth: 0,
+      lineColor: '#e2e8f0'
+    },
+    yAxis: {
+      title: { text: 'Attendance %', style: { color: '#64748b' } },
+      labels: { format: '{value}%', style: { color: '#64748b' } },
+      max: 100,
+      min: 0,
+      gridLineColor: '#f1f5f9'
+    },
+    tooltip: {
+      shared: true,
+      backgroundColor: '#1e293b',
+      style: { color: '#fff' },
+      borderRadius: 12,
+      borderWidth: 0,
+      valueSuffix: '%'
+    },
+    plotOptions: {
+      areaspline: {
+        fillColor: {
+          linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+          stops: [
+            [0, 'rgba(59, 130, 246, 0.2)'],
+            [1, 'rgba(59, 130, 246, 0)']
+          ]
+        },
+        color: '#3b82f6',
+        lineWidth: 3,
+        marker: {
+          enabled: true,
+          radius: 6,
+          fillColor: '#fff',
+          lineColor: '#3b82f6',
+          lineWidth: 2
+        }
+      }
+    },
+    series: [{
+      name: 'Average Attendance',
+      data: chartData.map(d => d.attendance)
+    }],
+    credits: { enabled: false },
+    legend: { enabled: false }
+  };
 
   const handleExportReport = () => {
     // Create CSV content
@@ -66,9 +126,11 @@ const AttendanceReports = () => {
     return 'text-red-600 bg-red-100';
   };
 
-  const filteredData = selectedDepartment === 'all' 
-    ? attendanceData 
-    : attendanceData.filter(staff => staff.department.toLowerCase() === selectedDepartment.toLowerCase());
+  const filteredData = attendanceData.filter(staff => {
+    const matchesDept = selectedDepartment === 'all' || staff.department.toLowerCase() === selectedDepartment.toLowerCase();
+    const matchesSearch = staff.name.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesDept && matchesSearch;
+  });
 
   return (
     <div className="space-y-6">
@@ -90,7 +152,7 @@ const AttendanceReports = () => {
                 <option value="custom">Custom Range</option>
               </select>
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Department</label>
               <select
@@ -112,7 +174,7 @@ const AttendanceReports = () => {
                   <input
                     type="date"
                     value={dateRange.startDate}
-                    onChange={(e) => setDateRange({...dateRange, startDate: e.target.value})}
+                    onChange={(e) => setDateRange({ ...dateRange, startDate: e.target.value })}
                     className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
@@ -121,12 +183,26 @@ const AttendanceReports = () => {
                   <input
                     type="date"
                     value={dateRange.endDate}
-                    onChange={(e) => setDateRange({...dateRange, endDate: e.target.value})}
+                    onChange={(e) => setDateRange({ ...dateRange, endDate: e.target.value })}
                     className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
               </div>
             )}
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Search Staff</label>
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="Search name..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                <MdPerson className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+              </div>
+            </div>
           </div>
 
           <button
@@ -150,7 +226,7 @@ const AttendanceReports = () => {
             <MdDateRange className="text-3xl text-blue-600" />
           </div>
         </div>
-        
+
         <div className="bg-green-50 rounded-lg p-6 border border-green-200">
           <div className="flex items-center justify-between">
             <div>
@@ -160,7 +236,7 @@ const AttendanceReports = () => {
             <MdTrendingUp className="text-3xl text-green-600" />
           </div>
         </div>
-        
+
         <div className="bg-purple-50 rounded-lg p-6 border border-purple-200">
           <div className="flex items-center justify-between">
             <div>
@@ -170,7 +246,7 @@ const AttendanceReports = () => {
             <MdPerson className="text-3xl text-purple-600" />
           </div>
         </div>
-        
+
         <div className="bg-yellow-50 rounded-lg p-6 border border-yellow-200">
           <div className="flex items-center justify-between">
             <div>
@@ -181,30 +257,9 @@ const AttendanceReports = () => {
           </div>
         </div>
       </div>
-
-      {/* Attendance Trend Chart */}
-      <div className="bg-white rounded-lg p-6 border border-gray-200">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Attendance Trend</h3>
-        <div className="h-64 flex items-end justify-between space-x-2">
-          {chartData.map((data, index) => (
-            <div key={index} className="flex flex-col items-center flex-1">
-              <div className="w-full bg-gray-200 rounded-t-lg relative" style={{ height: '200px' }}>
-                <div 
-                  className="bg-blue-500 rounded-t-lg absolute bottom-0 w-full transition-all duration-500"
-                  style={{ height: `${(data.attendance / 100) * 200}px` }}
-                ></div>
-                <div className="absolute top-2 left-1/2 transform -translate-x-1/2 text-xs font-medium text-white">
-                  {data.attendance}%
-                </div>
-              </div>
-              <div className="mt-2 text-sm font-medium text-gray-600">{data.month}</div>
-            </div>
-          ))}
-        </div>
-      </div>
-
       {/* Detailed Attendance Report */}
-      <div className="bg-white rounded-lg border border-gray-200">
+
+        <div className="bg-white rounded-lg border border-gray-200">
         <div className="p-6 border-b border-gray-200">
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-semibold text-gray-900">Detailed Attendance Report</h3>
@@ -214,7 +269,7 @@ const AttendanceReports = () => {
             </div>
           </div>
         </div>
-        
+
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="bg-gray-50">
@@ -284,6 +339,14 @@ const AttendanceReports = () => {
           </table>
         </div>
       </div>
+
+      {/* Attendance Trend Chart with Highcharts */}
+      <div className="bg-white rounded-lg p-6 border border-gray-200">
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">Attendance Trend</h3>
+        <HighchartsReact highcharts={Highcharts} options={chartOptions} />
+      </div>
+
+    
     </div>
   );
 };

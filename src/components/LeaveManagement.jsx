@@ -4,6 +4,8 @@ import { MdAdd, MdEventNote, MdCheckCircle, MdCancel, MdPending, MdCalendarToday
 const LeaveManagement = () => {
   const [activeTab, setActiveTab] = useState('apply');
   const [showLeaveForm, setShowLeaveForm] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterStatus, setFilterStatus] = useState('all');
   const [leaveRequests, setLeaveRequests] = useState([
     {
       id: 1,
@@ -39,6 +41,14 @@ const LeaveManagement = () => {
       appliedDate: '2024-01-11'
     }
   ]);
+
+  const filteredRequests = leaveRequests.filter(request => {
+    const matchesSearch = request.staffName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      request.leaveType.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = filterStatus === 'all' || request.status === filterStatus;
+
+    return matchesSearch && matchesStatus;
+  });
 
   const [newLeave, setNewLeave] = useState({
     leaveType: '',
@@ -77,7 +87,7 @@ const LeaveManagement = () => {
   };
 
   const handleStatusChange = (id, newStatus) => {
-    setLeaveRequests(leaveRequests.map(request => 
+    setLeaveRequests(leaveRequests.map(request =>
       request.id === id ? { ...request, status: newStatus } : request
     ));
   };
@@ -154,17 +164,15 @@ const LeaveManagement = () => {
         <div className="flex space-x-4">
           <button
             onClick={() => setActiveTab('apply')}
-            className={`px-4 py-2 rounded-lg font-medium transition-colors duration-200 ${
-              activeTab === 'apply' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-            }`}
+            className={`px-4 py-2 rounded-lg font-medium transition-colors duration-200 ${activeTab === 'apply' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+              }`}
           >
             Apply Leave
           </button>
           <button
             onClick={() => setActiveTab('manage')}
-            className={`px-4 py-2 rounded-lg font-medium transition-colors duration-200 ${
-              activeTab === 'manage' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-            }`}
+            className={`px-4 py-2 rounded-lg font-medium transition-colors duration-200 ${activeTab === 'manage' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+              }`}
           >
             Manage Requests
           </button>
@@ -190,7 +198,7 @@ const LeaveManagement = () => {
                 <label className="block text-sm font-medium text-gray-700 mb-1">Leave Type</label>
                 <select
                   value={newLeave.leaveType}
-                  onChange={(e) => setNewLeave({...newLeave, leaveType: e.target.value})}
+                  onChange={(e) => setNewLeave({ ...newLeave, leaveType: e.target.value })}
                   className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   required
                 >
@@ -206,7 +214,7 @@ const LeaveManagement = () => {
                   <input
                     type="date"
                     value={newLeave.startDate}
-                    onChange={(e) => setNewLeave({...newLeave, startDate: e.target.value})}
+                    onChange={(e) => setNewLeave({ ...newLeave, startDate: e.target.value })}
                     className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     required
                   />
@@ -216,7 +224,7 @@ const LeaveManagement = () => {
                   <input
                     type="date"
                     value={newLeave.endDate}
-                    onChange={(e) => setNewLeave({...newLeave, endDate: e.target.value})}
+                    onChange={(e) => setNewLeave({ ...newLeave, endDate: e.target.value })}
                     className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     required
                   />
@@ -226,7 +234,7 @@ const LeaveManagement = () => {
                 <label className="block text-sm font-medium text-gray-700 mb-1">Reason</label>
                 <textarea
                   value={newLeave.reason}
-                  onChange={(e) => setNewLeave({...newLeave, reason: e.target.value})}
+                  onChange={(e) => setNewLeave({ ...newLeave, reason: e.target.value })}
                   className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   rows="3"
                   placeholder="Please provide reason for leave"
@@ -254,13 +262,41 @@ const LeaveManagement = () => {
       )}
 
       {/* Leave Requests Table */}
-      <div className="bg-white rounded-lg border border-gray-200">
+      <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
         <div className="p-6 border-b border-gray-200">
-          <h3 className="text-lg font-semibold text-gray-900">
-            {activeTab === 'apply' ? 'My Leave Requests' : 'All Leave Requests'}
-          </h3>
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+            <h3 className="text-lg font-semibold text-gray-900">
+              {activeTab === 'apply' ? 'My Leave Requests' : 'All Leave Requests'}
+            </h3>
+            <div className="flex items-center space-x-2 text-sm text-gray-500">
+              <span>Found: {filteredRequests.length} requests</span>
+            </div>
+          </div>
+
+          <div className="flex flex-col md:flex-row gap-4">
+            <div className="flex-1 relative">
+              <input
+                type="text"
+                placeholder="Search staff or leave type..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+              />
+              <MdPerson className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xl" />
+            </div>
+            <select
+              value={filterStatus}
+              onChange={(e) => setFilterStatus(e.target.value)}
+              className="px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-sm font-medium text-gray-700"
+            >
+              <option value="all">All Status</option>
+              <option value="pending">Pending</option>
+              <option value="approved">Approved</option>
+              <option value="rejected">Rejected</option>
+            </select>
+          </div>
         </div>
-        
+
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="bg-gray-50">
@@ -276,7 +312,7 @@ const LeaveManagement = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {leaveRequests.map((request) => (
+              {filteredRequests.map((request) => (
                 <tr key={request.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">

@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import CreateSchedule from './CreateSchedule';
 import ManageMarks from './ManageMarks';
 import Grading from './Grading';
-import { MdSchedule, MdGrade, MdAssignment } from 'react-icons/md';
+import OnlineExam from './OnlineExam';
+import { MdSchedule, MdGrade, MdAssignment, MdComputer } from 'react-icons/md';
 
 const ExamManagement = () => {
   const [activeTab, setActiveTab] = useState('schedule');
@@ -10,7 +11,8 @@ const ExamManagement = () => {
   const tabs = [
     { id: 'schedule', name: 'Create Schedule', icon: MdSchedule, component: CreateSchedule },
     { id: 'marks', name: 'Manage Marks', icon: MdAssignment, component: ManageMarks },
-    { id: 'grading', name: 'Grading System', icon: MdGrade, component: Grading }
+    { id: 'grading', name: 'Grading System', icon: MdGrade, component: Grading },
+    { id: 'online-exam', name: 'Online Exam', icon: MdComputer, component: OnlineExam }
   ];
 
   const ActiveComponent = tabs.find(tab => tab.id === activeTab)?.component;
@@ -31,11 +33,10 @@ const ExamManagement = () => {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center space-x-2 transition-colors duration-200 ${
-                  activeTab === tab.id
+                className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center space-x-2 transition-colors duration-200 ${activeTab === tab.id
                     ? 'border-blue-500 text-blue-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                }`}
+                  }`}
               >
                 <tab.icon className="text-lg" />
                 <span>{tab.name}</span>

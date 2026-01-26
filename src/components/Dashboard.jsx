@@ -14,6 +14,10 @@ import Notices from './Notices';
 import Profile from './Profile';
 import ChangePassword from './ChangePassword';
 import StaffAttendance from './StaffAttendance';
+import AttendanceTracker from './AttendanceTracker';
+import AttendanceReports from './AttendanceReports';
+import LeaveManagement from './LeaveManagement';
+import FeeReports from './FeeReports';
 import DriverMaster from './DriverMaster';
 import VehicleMaster from './VehicalMaster';
 import RouteMaster from './RouteMaster';
@@ -29,6 +33,16 @@ import RoomTypeCharges from './RoomTypeCharge';
 import Warden from './Warden';
 import TransportAllocation from './TransportAllocation';
 import ExamManagement from './ExamManagement';
+import CreateSchedule from './CreateSchedule';
+import ManageMarks from './ManageMarks';
+import Grading from './Grading';
+import OnlineExam from './OnlineExam';
+import AlumniManagement from './AlumniManagement';
+import ELearning from './ELearning';
+import QuizManager from './QuizManager';
+import EventCalendar from './EventCalendar';
+import AddEvent from './AddEvent';
+import CompletedEvents from './CompletedEvents';
 
 import {
   MdDashboard,
@@ -62,7 +76,14 @@ import {
   MdOutlineCurrencyRupee,
   MdAccessTime,
   MdLock,
-  MdAccessAlarm
+  MdAccessAlarm,
+  MdConnectWithoutContact,
+  MdPlayCircle,
+  MdQuiz,
+  MdEvent,
+  MdGrade,
+  MdComputer,
+  MdAdd
 } from 'react-icons/md';
 
 import { GiStopSign } from "react-icons/gi";
@@ -81,6 +102,9 @@ const Dashboard = ({ setIsLoggedIn }) => {
   const [transportDropdownOpen, setTransportDropdownOpen] = useState(false);
   const [examDropdownOpen, setExamDropdownOpen] = useState(false);
   const [staffAttendanceDropdownOpen, setStaffAttendanceDropdownOpen] = useState(false);
+  const [feeReportsDropdownOpen, setFeeReportsDropdownOpen] = useState(false);
+  const [eLearningDropdownOpen, setELearningDropdownOpen] = useState(false);
+  const [eventDropdownOpen, setEventDropdownOpen] = useState(false);
 
 
   useEffect(() => {
@@ -126,6 +150,7 @@ const Dashboard = ({ setIsLoggedIn }) => {
     { id: 'fees', name: 'Fee Collection', icon: MdPayment, path: '/fees' },
     { id: 'documents', name: 'Documents', icon: MdDescription, path: '/documents' },
     { id: 'notices', name: 'Notices', icon: MdCampaign, path: '/notices' },
+    { id: 'alumni-management', name: 'Alumni Management', icon: MdConnectWithoutContact, path: '/alumni-management' },
     { id: 'profile', name: 'Profile', icon: MdPerson, path: '/profile' }
   ];
 
@@ -150,11 +175,31 @@ const Dashboard = ({ setIsLoggedIn }) => {
   ];
 
   const examItems = [
-    { id: 'exam-management', name: 'Exam Management', icon: MdSchedule, path: '/exam-management' }
+    { id: 'exam-schedule', name: 'Create Schedule', icon: MdSchedule, path: '/exam-schedule' },
+    { id: 'manage-marks', name: 'Manage Marks', icon: MdAssignment, path: '/manage-marks' },
+    { id: 'grading-system', name: 'Grading System', icon: MdGrade, path: '/grading-system' },
+    { id: 'online-exam', name: 'Online Exam', icon: MdComputer, path: '/online-exam' }
   ];
 
   const staffAttendanceItems = [
-    { id: 'staff-attendance', name: 'Staff Attendance', icon: MdAccessAlarm, path: '/staff-attendance' }
+    { id: 'attendance-process', name: 'Attendance Process', icon: MdAccessTime, path: '/attendance-process' },
+    { id: 'attendance-report', name: 'Attendance Report', icon: MdBarChart, path: '/attendance-report' },
+    { id: 'leave-management', name: 'Leave Management', icon: MdAssignment, path: '/leave-management' }
+  ];
+
+  const feeReportsItems = [
+    { id: 'fee-reports', name: 'Fee Reports', icon: MdBarChart, path: '/fee-reports' }
+  ];
+
+  const eLearningItems = [
+    { id: 'e-learning', name: 'E-Learning Dashboard', icon: MdPlayCircle, path: '/e-learning' },
+    { id: 'quiz-manager', name: 'Quiz Manager', icon: MdQuiz, path: '/quiz-manager' }
+  ];
+
+  const eventItems = [
+    { id: 'upcoming-events', name: 'Upcoming Events', icon: MdEvent, path: '/upcoming-events' },
+    { id: 'add-event', name: 'Schedule New', icon: MdAdd, path: '/add-event' },
+    { id: 'event-history', name: 'Event History', icon: MdCheckCircle, path: '/event-history' }
   ];
 
 
@@ -277,9 +322,8 @@ const Dashboard = ({ setIsLoggedIn }) => {
           <div>
             <button
               onClick={() => handleDropdownClick('exam', setExamDropdownOpen, examDropdownOpen)}
-              className={`w-full flex items-center justify-between px-6 py-3 text-left hover:bg-slate-700/50 transition duration-200 cursor-pointer ${
-                examItems.some(item => item.id === activeMenu) ? 'bg-gradient-to-r from-blue-600/20 to-purple-600/20 border-r-4 border-blue-400 text-blue-400' : 'text-slate-300 hover:text-white'
-              }`}
+              className={`w-full flex items-center justify-between px-6 py-3 text-left hover:bg-slate-700/50 transition duration-200 cursor-pointer ${examItems.some(item => item.id === activeMenu) ? 'bg-gradient-to-r from-blue-600/20 to-purple-600/20 border-r-4 border-blue-400 text-blue-400' : 'text-slate-300 hover:text-white'
+                }`}
               title={!sidebarOpen ? 'Exam Management' : ''}
             >
               <div className="flex items-center">
@@ -301,9 +345,8 @@ const Dashboard = ({ setIsLoggedIn }) => {
                     setActiveMenu(item.id);
                     navigate(item.path);
                   }}
-                  className={`w-full flex items-center px-12 py-2 text-left hover:bg-slate-700/50 transition duration-200 cursor-pointer ${
-                    activeMenu === item.id ? 'bg-gradient-to-r from-blue-600/20 to-purple-600/20 text-blue-400' : 'text-slate-400 hover:text-white'
-                  }`}
+                  className={`w-full flex items-center px-12 py-2 text-left hover:bg-slate-700/50 transition duration-200 cursor-pointer ${activeMenu === item.id ? 'bg-gradient-to-r from-blue-600/20 to-purple-600/20 text-blue-400' : 'text-slate-400 hover:text-white'
+                    }`}
                 >
                   <span className="text-lg mr-3"><item.icon /></span>
                   <span className="font-medium text-sm">{item.name}</span>
@@ -316,9 +359,8 @@ const Dashboard = ({ setIsLoggedIn }) => {
           <div>
             <button
               onClick={() => handleDropdownClick('staff-attendance', setStaffAttendanceDropdownOpen, staffAttendanceDropdownOpen)}
-              className={`w-full flex items-center justify-between px-6 py-3 text-left hover:bg-slate-700/50 transition duration-200 cursor-pointer ${
-                staffAttendanceItems.some(item => item.id === activeMenu) ? 'bg-gradient-to-r from-blue-600/20 to-purple-600/20 border-r-4 border-blue-400 text-blue-400' : 'text-slate-300 hover:text-white'
-              }`}
+              className={`w-full flex items-center justify-between px-6 py-3 text-left hover:bg-slate-700/50 transition duration-200 cursor-pointer ${staffAttendanceItems.some(item => item.id === activeMenu) ? 'bg-gradient-to-r from-blue-600/20 to-purple-600/20 border-r-4 border-blue-400 text-blue-400' : 'text-slate-300 hover:text-white'
+                }`}
               title={!sidebarOpen ? 'Staff Attendance' : ''}
             >
               <div className="flex items-center">
@@ -340,9 +382,119 @@ const Dashboard = ({ setIsLoggedIn }) => {
                     setActiveMenu(item.id);
                     navigate(item.path);
                   }}
-                  className={`w-full flex items-center px-12 py-2 text-left hover:bg-slate-700/50 transition duration-200 cursor-pointer ${
-                    activeMenu === item.id ? 'bg-gradient-to-r from-blue-600/20 to-purple-600/20 text-blue-400' : 'text-slate-400 hover:text-white'
-                  }`}
+                  className={`w-full flex items-center px-12 py-2 text-left hover:bg-slate-700/50 transition duration-200 cursor-pointer ${activeMenu === item.id ? 'bg-gradient-to-r from-blue-600/20 to-purple-600/20 text-blue-400' : 'text-slate-400 hover:text-white'
+                    }`}
+                >
+                  <span className="text-lg mr-3"><item.icon /></span>
+                  <span className="font-medium text-sm">{item.name}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Fee Reports Dropdown */}
+          <div>
+            <button
+              onClick={() => handleDropdownClick('fee-reports', setFeeReportsDropdownOpen, feeReportsDropdownOpen)}
+              className={`w-full flex items-center justify-between px-6 py-3 text-left hover:bg-slate-700/50 transition duration-200 cursor-pointer ${feeReportsItems.some(item => item.id === activeMenu) ? 'bg-gradient-to-r from-blue-600/20 to-purple-600/20 border-r-4 border-blue-400 text-blue-400' : 'text-slate-300 hover:text-white'
+                }`}
+              title={!sidebarOpen ? 'Fee Reports' : ''}
+            >
+              <div className="flex items-center">
+                <span className="text-xl mr-3"><MdBarChart /></span>
+                {sidebarOpen && <span className="font-medium">Fee Reports</span>}
+              </div>
+              {sidebarOpen && (
+                <span className="text-lg">
+                  {feeReportsDropdownOpen ? <MdExpandLess /> : <MdExpandMore />}
+                </span>
+              )}
+            </button>
+
+            <div className={`bg-slate-800/50 transition-all duration-300 ease-in-out ${feeReportsDropdownOpen && sidebarOpen ? 'h-auto opacity-100' : 'h-0 opacity-0 overflow-hidden'}`} data-dropdown="fee-reports">
+              {feeReportsItems.map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => {
+                    setActiveMenu(item.id);
+                    navigate(item.path);
+                  }}
+                  className={`w-full flex items-center px-12 py-2 text-left hover:bg-slate-700/50 transition duration-200 cursor-pointer ${activeMenu === item.id ? 'bg-gradient-to-r from-blue-600/20 to-purple-600/20 text-blue-400' : 'text-slate-400 hover:text-white'
+                    }`}
+                >
+                  <span className="text-lg mr-3"><item.icon /></span>
+                  <span className="font-medium text-sm">{item.name}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* E-Learning Dropdown */}
+          <div>
+            <button
+              onClick={() => handleDropdownClick('e-learning', setELearningDropdownOpen, eLearningDropdownOpen)}
+              className={`w-full flex items-center justify-between px-6 py-3 text-left hover:bg-slate-700/50 transition duration-200 cursor-pointer ${eLearningItems.some(item => item.id === activeMenu) ? 'bg-gradient-to-r from-blue-600/20 to-purple-600/20 border-r-4 border-blue-400 text-blue-400' : 'text-slate-300 hover:text-white'
+                }`}
+              title={!sidebarOpen ? 'E-Learning' : ''}
+            >
+              <div className="flex items-center">
+                <span className="text-xl mr-3"><MdPlayCircle /></span>
+                {sidebarOpen && <span className="font-medium">E-Learning</span>}
+              </div>
+              {sidebarOpen && (
+                <span className="text-lg">
+                  {eLearningDropdownOpen ? <MdExpandLess /> : <MdExpandMore />}
+                </span>
+              )}
+            </button>
+
+            <div className={`bg-slate-800/50 transition-all duration-300 ease-in-out ${eLearningDropdownOpen && sidebarOpen ? 'h-auto opacity-100' : 'h-0 opacity-0 overflow-hidden'}`} data-dropdown="e-learning">
+              {eLearningItems.map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => {
+                    setActiveMenu(item.id);
+                    navigate(item.path);
+                  }}
+                  className={`w-full flex items-center px-12 py-2 text-left hover:bg-slate-700/50 transition duration-200 cursor-pointer ${activeMenu === item.id ? 'bg-gradient-to-r from-blue-600/20 to-purple-600/20 text-blue-400' : 'text-slate-400 hover:text-white'
+                    }`}
+                >
+                  <span className="text-lg mr-3"><item.icon /></span>
+                  <span className="font-medium text-sm">{item.name}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Event Calendar Dropdown */}
+          <div>
+            <button
+              onClick={() => handleDropdownClick('event', setEventDropdownOpen, eventDropdownOpen)}
+              className={`w-full flex items-center justify-between px-6 py-3 text-left hover:bg-slate-700/50 transition duration-200 cursor-pointer ${eventItems.some(item => item.id === activeMenu) ? 'bg-gradient-to-r from-blue-600/20 to-purple-600/20 border-r-4 border-blue-400 text-blue-400' : 'text-slate-300 hover:text-white'
+                }`}
+              title={!sidebarOpen ? 'Events' : ''}
+            >
+              <div className="flex items-center">
+                <span className="text-xl mr-3"><MdEvent /></span>
+                {sidebarOpen && <span className="font-medium">Event Calendar</span>}
+              </div>
+              {sidebarOpen && (
+                <span className="text-lg">
+                  {eventDropdownOpen ? <MdExpandLess /> : <MdExpandMore />}
+                </span>
+              )}
+            </button>
+
+            <div className={`bg-slate-800/50 transition-all duration-300 ease-in-out ${eventDropdownOpen && sidebarOpen ? 'h-auto opacity-100' : 'h-0 opacity-0 overflow-hidden'}`} data-dropdown="event">
+              {eventItems.map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => {
+                    setActiveMenu(item.id);
+                    navigate(item.path);
+                  }}
+                  className={`w-full flex items-center px-12 py-2 text-left hover:bg-slate-700/50 transition duration-200 cursor-pointer ${activeMenu === item.id ? 'bg-gradient-to-r from-blue-600/20 to-purple-600/20 text-blue-400' : 'text-slate-400 hover:text-white'
+                    }`}
                 >
                   <span className="text-lg mr-3"><item.icon /></span>
                   <span className="font-medium text-sm">{item.name}</span>
@@ -358,9 +510,8 @@ const Dashboard = ({ setIsLoggedIn }) => {
               setActiveMenu('change-password');
               navigate('/change-password');
             }}
-            className={`w-full flex items-center px-4 py-3 mb-3 rounded-lg transition duration-200 cursor-pointer ${
-              activeMenu === 'change-password' ? 'bg-gradient-to-r from-blue-600/20 to-purple-600/20 text-blue-400' : 'text-slate-300 hover:bg-slate-700/50 hover:text-white'
-            }`}
+            className={`w-full flex items-center px-4 py-3 mb-3 rounded-lg transition duration-200 cursor-pointer ${activeMenu === 'change-password' ? 'bg-gradient-to-r from-blue-600/20 to-purple-600/20 text-blue-400' : 'text-slate-300 hover:bg-slate-700/50 hover:text-white'
+              }`}
             title={!sidebarOpen ? 'Change Password' : ''}
           >
             <span className="text-xl mr-3"><MdLock /></span>
@@ -495,9 +646,13 @@ const Dashboard = ({ setIsLoggedIn }) => {
               <Route path="/fees" element={<Fees />} />
               <Route path="/documents" element={<Documents />} />
               <Route path="/notices" element={<Notices />} />
+              <Route path="/upcoming-events" element={<EventCalendar />} />
+              <Route path="/add-event" element={<AddEvent />} />
+              <Route path="/event-history" element={<CompletedEvents />} />
+              <Route path="/alumni-management" element={<AlumniManagement />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/change-password" element={<ChangePassword />} />
-              
+
               {/* Hostel Routes */}
               <Route path="/hostel-dashboard" element={<HostelDashboard />} />
               <Route path="/create-hostel" element={<CreateHostel />} />
@@ -506,7 +661,7 @@ const Dashboard = ({ setIsLoggedIn }) => {
               <Route path="/hostel-allocation" element={<HostelAllocation />} />
               <Route path="/warden-management" element={<Warden />} />
               <Route path="/hostel-report" element={<HostelReport />} />
-              
+
               {/* Transport Routes */}
               <Route path="/transport-dashboard" element={<TransportDashboard />} />
               <Route path="/vehical-master" element={<VehicleMaster />} />
@@ -515,12 +670,24 @@ const Dashboard = ({ setIsLoggedIn }) => {
               <Route path="/route-stop" element={<RouteStop />} />
               <Route path="/route-charge" element={<RouteCharge />} />
               <Route path="/transport-allocation" element={<TransportAllocation />} />
-              
+
               {/* Exam Routes */}
-              <Route path="/exam-management" element={<ExamManagement />} />
-              
+              <Route path="/exam-schedule" element={<CreateSchedule />} />
+              <Route path="/manage-marks" element={<ManageMarks />} />
+              <Route path="/grading-system" element={<Grading />} />
+              <Route path="/online-exam" element={<OnlineExam />} />
+
               {/* Staff Attendance Routes */}
-              <Route path="/staff-attendance" element={<StaffAttendance />} />
+              <Route path="/attendance-process" element={<AttendanceTracker />} />
+              <Route path="/attendance-report" element={<AttendanceReports />} />
+              <Route path="/leave-management" element={<LeaveManagement />} />
+
+              {/* Fee Reports Routes */}
+              <Route path="/fee-reports" element={<FeeReports />} />
+
+              {/* E-Learning Routes */}
+              <Route path="/e-learning" element={<ELearning />} />
+              <Route path="/quiz-manager" element={<QuizManager />} />
             </Routes>
           </div>
         </main>

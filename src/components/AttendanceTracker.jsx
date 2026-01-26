@@ -13,6 +13,11 @@ const AttendanceTracker = () => {
     { id: 4, name: 'Sarah Wilson', department: 'History', status: 'late', checkIn: '09:45 AM', checkOut: null },
     { id: 5, name: 'David Brown', department: 'Physical Education', status: 'present', checkIn: '08:55 AM', checkOut: '05:30 PM' }
   ]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterStatus, setFilterStatus] = useState('all');
+  const [filterDept, setFilterDept] = useState('all');
+
+  const departments = ['all', ...new Set(staffList.map(s => s.department))];
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -51,6 +56,15 @@ const AttendanceTracker = () => {
     }
   };
 
+  const filteredStaff = staffList.filter(staff => {
+    const matchesSearch = staff.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      staff.department.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = filterStatus === 'all' || staff.status === filterStatus;
+    const matchesDept = filterDept === 'all' || staff.department === filterDept;
+
+    return matchesSearch && matchesStatus && matchesDept;
+  });
+
   return (
     <div className="space-y-6">
       {/* Current Time & Quick Actions */}
@@ -64,11 +78,11 @@ const AttendanceTracker = () => {
             {currentTime.toLocaleTimeString()}
           </div>
           <div className="text-sm text-gray-600">
-            {currentTime.toLocaleDateString('en-US', { 
-              weekday: 'long', 
-              year: 'numeric', 
-              month: 'long', 
-              day: 'numeric' 
+            {currentTime.toLocaleDateString('en-US', {
+              weekday: 'long',
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric'
             })}
           </div>
         </div>
@@ -115,9 +129,9 @@ const AttendanceTracker = () => {
       {/* Staff Attendance Overview */}
       <div className="bg-white rounded-lg border border-gray-200">
         <div className="p-6 border-b border-gray-200">
-          <div className="flex items-center justify-between">
-            <h3 className="text-lg font-semibold text-gray-900">Today's Staff Attendance</h3>
-            <div className="flex space-x-4 text-sm">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+            <h3 className="text-lg font-semibold text-gray-900 whitespace-nowrap">Today's Staff Attendance</h3>
+            <div className="flex flex-wrap gap-4 text-sm">
               <div className="flex items-center space-x-2">
                 <div className="w-3 h-3 bg-green-500 rounded-full"></div>
                 <span className="text-gray-600">Present: {staffList.filter(s => s.status === 'present').length}</span>
@@ -132,8 +146,40 @@ const AttendanceTracker = () => {
               </div>
             </div>
           </div>
+
+          <div className="flex flex-col md:flex-row gap-4 mb-2">
+            <div className="flex-1 relative">
+              <input
+                type="text"
+                placeholder="Search staff..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+              />
+              <MdPerson className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xl" />
+            </div>
+            <select
+              value={filterStatus}
+              onChange={(e) => setFilterStatus(e.target.value)}
+              className="px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none bg-white text-sm"
+            >
+              <option value="all">All Status</option>
+              <option value="present">Present</option>
+              <option value="absent">Absent</option>
+              <option value="late">Late</option>
+            </select>
+            <select
+              value={filterDept}
+              onChange={(e) => setFilterDept(e.target.value)}
+              className="px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none bg-white text-sm capitalize"
+            >
+              {departments.map(dept => (
+                <option key={dept} value={dept}>{dept === 'all' ? 'All Departments' : dept}</option>
+              ))}
+            </select>
+          </div>
         </div>
-        
+
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="bg-gray-50">
@@ -146,7 +192,7 @@ const AttendanceTracker = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {staffList.map((staff) => (
+              {filteredStaff.map((staff) => (
                 <tr key={staff.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">

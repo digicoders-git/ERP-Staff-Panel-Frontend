@@ -28,11 +28,12 @@ const Registration = () => {
     fatherName: '',
     motherName: '',
     guardianPhone: '',
-    emergencyContact: ''
+    emergencyContact: '',
+    medicalCertificate: null
   });
 
   const handleInputChange = (e) => {
-    const { name, value, type, checked } = e.target;
+    const { name, value, type, checked, files } = e.target;
     
     if (name === 'sameAsPermament' && checked) {
       setFormData({
@@ -42,6 +43,11 @@ const Registration = () => {
         currentCity: formData.permanentCity,
         currentState: formData.permanentState,
         currentPincode: formData.permanentPincode
+      });
+    } else if (type === 'file') {
+      setFormData({
+        ...formData,
+        [name]: files[0]
       });
     } else {
       setFormData({
@@ -81,7 +87,8 @@ const Registration = () => {
       fatherName: '',
       motherName: '',
       guardianPhone: '',
-      emergencyContact: ''
+      emergencyContact: '',
+      medicalCertificate: null
     });
   };
 
@@ -545,8 +552,29 @@ const Registration = () => {
           </div>
         </div>
 
-        {/* Document Upload */}
-       
+        {/* Medical Certificate Upload - Required for all students */}
+        <div className="bg-white rounded-xl shadow-lg p-6">
+          <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
+            <MdUpload className="mr-2 text-blue-600" />
+            Medical Certificate
+          </h3>
+          <div className="grid grid-cols-1 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Medical Certificate <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="file"
+                name="medicalCertificate"
+                accept=".pdf,.jpg,.jpeg,.png"
+                onChange={handleInputChange}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                required
+              />
+              <p className="text-xs text-gray-500 mt-1">Upload medical certificate from a registered medical practitioner (PDF, JPG, PNG formats accepted)</p>
+            </div>
+          </div>
+        </div>
 
         {/* Submit Button */}
         <div className="flex justify-center">

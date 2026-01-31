@@ -1,31 +1,34 @@
 import React, { useState, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { MdPersonAdd, MdCheckCircle, MdPending, MdSearch, MdFilterList, MdVisibility, MdEdit, MdDelete, MdAdd, MdClose, MdSave } from 'react-icons/md';
+
 import Swal from 'sweetalert2';
 
 const Admissions = () => {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [classFilter, setClassFilter] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
-  const [showViewModal, setShowViewModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
   const [selectedAdmission, setSelectedAdmission] = useState(null);
+
   const [editFormData, setEditFormData] = useState({});
   const [admissions, setAdmissions] = useState([
-    { id: 'ADM001', name: 'Rahul Sharma', class: '11th', stream: 'Science', status: 'confirmed', date: '2024-01-15', mobile: '9876543210', email: 'rahul@email.com', fatherName: 'Suresh Sharma', address: '123 Main St', dob: '2007-05-15' },
-    { id: 'ADM002', name: 'Priya Singh', class: '10th', stream: '', status: 'pending', date: '2024-01-14', mobile: '9876543211', email: 'priya@email.com', fatherName: 'Rajesh Singh', address: '456 Park Ave', dob: '2008-03-20' },
-    { id: 'ADM003', name: 'Sneha Patel', class: '11th', stream: 'Arts', status: 'confirmed', date: '2024-01-13', mobile: '9876543212', email: 'sneha@email.com', fatherName: 'Amit Patel', address: '789 Oak St', dob: '2007-08-10' },
-    { id: 'ADM004', name: 'Amit Kumar', class: '9th', stream: '', status: 'rejected', date: '2024-01-12', mobile: '9876543213', email: 'amit@email.com', fatherName: 'Vinod Kumar', address: '321 Elm St', dob: '2009-01-25' },
-    { id: 'ADM005', name: 'Kavya Reddy', class: '12th', stream: 'Commerce', status: 'confirmed', date: '2024-01-11', mobile: '9876543214', email: 'kavya@email.com', fatherName: 'Ravi Reddy', address: '654 Pine St', dob: '2006-11-30' }
+    { id: 'ADM001', name: 'Rahul Sharma', class: '11th', stream: 'Science', status: 'confirmed', date: '2024-01-15', mobile: '9876543210', email: 'rahul@email.com', fatherName: 'Suresh Sharma', address: '123 Main St', dob: '2007-05-15', medicalCertificate: 'uploaded' },
+    { id: 'ADM002', name: 'Priya Singh', class: '10th', stream: '', status: 'pending', date: '2024-01-14', mobile: '9876543211', email: 'priya@email.com', fatherName: 'Rajesh Singh', address: '456 Park Ave', dob: '2008-03-20', medicalCertificate: 'pending' },
+    { id: 'ADM003', name: 'Sneha Patel', class: '11th', stream: 'Arts', status: 'confirmed', date: '2024-01-13', mobile: '9876543212', email: 'sneha@email.com', fatherName: 'Amit Patel', address: '789 Oak St', dob: '2007-08-10', medicalCertificate: 'uploaded' },
+    { id: 'ADM004', name: 'Amit Kumar', class: '9th', stream: '', status: 'rejected', date: '2024-01-12', mobile: '9876543213', email: 'amit@email.com', fatherName: 'Vinod Kumar', address: '321 Elm St', dob: '2009-01-25', medicalCertificate: 'pending' },
+    { id: 'ADM005', name: 'Kavya Reddy', class: '12th', stream: 'Commerce', status: 'confirmed', date: '2024-01-11', mobile: '9876543214', email: 'kavya@email.com', fatherName: 'Ravi Reddy', address: '654 Pine St', dob: '2006-11-30', medicalCertificate: 'uploaded' }
   ]);
 
   const itemsPerPage = 10;
 
   const handleView = (admission) => {
-    setSelectedAdmission(admission);
-    setShowViewModal(true);
+    navigate(`/student-profile/${admission.id}`);
   };
+
 
   const handleEdit = (admission) => {
     setSelectedAdmission(admission);
@@ -51,7 +54,7 @@ const Admissions = () => {
   };
 
   const handleSaveEdit = () => {
-    setAdmissions(admissions.map(admission => 
+    setAdmissions(admissions.map(admission =>
       admission.id === selectedAdmission.id ? editFormData : admission
     ));
     setShowEditModal(false);
@@ -74,8 +77,8 @@ const Admissions = () => {
   const filteredData = useMemo(() => {
     return admissions.filter(item => {
       const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           item.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           item.mobile.includes(searchTerm);
+        item.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.mobile.includes(searchTerm);
       const matchesStatus = statusFilter === 'all' || item.status === statusFilter;
       const matchesClass = classFilter === 'all' || item.class === classFilter;
       return matchesSearch && matchesStatus && matchesClass;
@@ -87,41 +90,76 @@ const Admissions = () => {
   const paginatedData = filteredData.slice(startIndex, startIndex + itemsPerPage);
 
   const getStatusColor = (status) => {
-    switch(status) {
-      case 'confirmed': return 'bg-green-100 text-green-800';
-      case 'pending': return 'bg-yellow-100 text-yellow-800';
-      case 'rejected': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
+    switch (status) {
+      case 'confirmed': return 'bg-green-100 text-green-700 border border-green-200';
+      case 'pending': return 'bg-yellow-100 text-yellow-700 border border-yellow-200';
+      case 'rejected': return 'bg-red-100 text-red-700 border border-red-200';
+      default: return 'bg-gray-100 text-gray-700 border border-gray-200';
     }
   };
+
 
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl p-6 text-white">
-        <h2 className="text-3xl font-bold mb-2">Admission Management</h2>
-        <p className="text-blue-100">Complete admission records with advanced filtering</p>
+      <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-blue-900 rounded-2xl p-8 text-white shadow-xl relative overflow-hidden">
+        <div className="absolute top-0 right-0 p-4 opacity-10">
+          <MdPersonAdd size={120} />
+        </div>
+        <div className="relative z-10">
+          <h2 className="text-4xl font-black mb-2 tracking-tight">Admission Management</h2>
+          <p className="text-blue-200 text-lg font-medium">Complete admission records with advanced filtering and student insights</p>
+        </div>
       </div>
+
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-blue-500">
-          <h3 className="text-lg font-semibold text-gray-700 mb-2">Total Applications</h3>
-          <p className="text-3xl font-bold text-blue-600">{admissions.length}</p>
+        <div className="bg-white rounded-2xl shadow-sm p-6 border border-gray-100 hover:shadow-md transition-shadow">
+          <div className="flex items-center justify-between mb-4">
+            <div className="p-3 bg-blue-50 rounded-xl text-blue-600">
+              <MdPersonAdd size={24} />
+            </div>
+            <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded-lg">TOTAL</span>
+          </div>
+          <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider">Applications</h3>
+          <p className="text-3xl font-black text-slate-800 mt-1">{admissions.length}</p>
         </div>
-        <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-green-500">
-          <h3 className="text-lg font-semibold text-gray-700 mb-2">Confirmed</h3>
-          <p className="text-3xl font-bold text-green-600">{admissions.filter(item => item.status === 'confirmed').length}</p>
+
+        <div className="bg-white rounded-2xl shadow-sm p-6 border border-gray-100 hover:shadow-md transition-shadow">
+          <div className="flex items-center justify-between mb-4">
+            <div className="p-3 bg-green-50 rounded-xl text-green-600">
+              <MdCheckCircle size={24} />
+            </div>
+            <span className="text-xs font-bold text-green-600 bg-green-50 px-2 py-1 rounded-lg">SUCCESS</span>
+          </div>
+          <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider">Confirmed</h3>
+          <p className="text-3xl font-black text-slate-800 mt-1">{admissions.filter(item => item.status === 'confirmed').length}</p>
         </div>
-        <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-yellow-500">
-          <h3 className="text-lg font-semibold text-gray-700 mb-2">Pending</h3>
-          <p className="text-3xl font-bold text-yellow-600">{admissions.filter(item => item.status === 'pending').length}</p>
+
+        <div className="bg-white rounded-2xl shadow-sm p-6 border border-gray-100 hover:shadow-md transition-shadow">
+          <div className="flex items-center justify-between mb-4">
+            <div className="p-3 bg-yellow-50 rounded-xl text-yellow-600">
+              <MdPending size={24} />
+            </div>
+            <span className="text-xs font-bold text-yellow-600 bg-yellow-50 px-2 py-1 rounded-lg">WAITING</span>
+          </div>
+          <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider">Pending</h3>
+          <p className="text-3xl font-black text-slate-800 mt-1">{admissions.filter(item => item.status === 'pending').length}</p>
         </div>
-        <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-red-500">
-          <h3 className="text-lg font-semibold text-gray-700 mb-2">Rejected</h3>
-          <p className="text-3xl font-bold text-red-600">{admissions.filter(item => item.status === 'rejected').length}</p>
+
+        <div className="bg-white rounded-2xl shadow-sm p-6 border border-gray-100 hover:shadow-md transition-shadow">
+          <div className="flex items-center justify-between mb-4">
+            <div className="p-3 bg-red-50 rounded-xl text-red-600">
+              <MdDelete size={24} />
+            </div>
+            <span className="text-xs font-bold text-red-600 bg-red-50 px-2 py-1 rounded-lg">DECLINED</span>
+          </div>
+          <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider">Rejected</h3>
+          <p className="text-3xl font-black text-slate-800 mt-1">{admissions.filter(item => item.status === 'rejected').length}</p>
         </div>
       </div>
+
 
       {/* Filters */}
       <div className="bg-white rounded-xl shadow-lg p-6">
@@ -134,15 +172,15 @@ const Admissions = () => {
                 placeholder="Search by name, ID, or mobile..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50 transition-all"
               />
             </div>
           </div>
-          <div className="flex gap-4">
+          <div className="flex flex-wrap gap-4">
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              className="px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 bg-gray-50 font-medium text-gray-600"
             >
               <option value="all">All Status</option>
               <option value="confirmed">Confirmed</option>
@@ -152,7 +190,7 @@ const Admissions = () => {
             <select
               value={classFilter}
               onChange={(e) => setClassFilter(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              className="px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 bg-gray-50 font-medium text-gray-600"
             >
               <option value="all">All Classes</option>
               <option value="8th">8th</option>
@@ -163,15 +201,16 @@ const Admissions = () => {
             </select>
             <button
               onClick={() => {
-                setEditFormData({ name: '', class: '', stream: '', status: 'pending', mobile: '', email: '', fatherName: '', address: '', dob: '' });
+                setEditFormData({ name: '', class: '', stream: '', status: 'pending', mobile: '', email: '', fatherName: '', address: '', dob: '', medicalCertificate: 'pending' });
                 setShowAddModal(true);
               }}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors duration-200"
+              className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-6 py-3 rounded-xl flex items-center space-x-2 transition-all duration-300 shadow-lg shadow-blue-200 active:scale-95"
             >
-              <MdAdd />
-              <span>Add New</span>
+              <MdAdd size={20} />
+              <span className="font-bold">Add Admission</span>
             </button>
           </div>
+
         </div>
       </div>
 
@@ -215,23 +254,23 @@ const Admissions = () => {
                   </td>
                   <td className="px-3 py-4 whitespace-nowrap text-sm font-medium">
                     <div className="flex space-x-1">
-                      <button 
+                      <button
                         onClick={() => handleView(item)}
-                        className="p-1 text-blue-600 hover:bg-blue-100 rounded" 
+                        className="p-1 text-blue-600 hover:bg-blue-100 rounded"
                         title="View"
                       >
                         <MdVisibility size={16} />
                       </button>
-                      <button 
+                      <button
                         onClick={() => handleEdit(item)}
-                        className="p-1 text-green-600 hover:bg-green-100 rounded" 
+                        className="p-1 text-green-600 hover:bg-green-100 rounded"
                         title="Edit"
                       >
                         <MdEdit size={16} />
                       </button>
-                      <button 
+                      <button
                         onClick={() => handleDelete(item.id)}
-                        className="p-1 text-red-600 hover:bg-red-100 rounded" 
+                        className="p-1 text-red-600 hover:bg-red-100 rounded"
                         title="Delete"
                       >
                         <MdDelete size={16} />
@@ -243,7 +282,7 @@ const Admissions = () => {
             </tbody>
           </table>
         </div>
-        
+
         {/* Pagination */}
         <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
           <div className="text-sm text-gray-700">
@@ -261,11 +300,10 @@ const Admissions = () => {
               <button
                 key={index + 1}
                 onClick={() => setCurrentPage(index + 1)}
-                className={`px-3 py-1 border rounded-lg ${
-                  currentPage === index + 1
-                    ? 'bg-blue-600 text-white border-blue-600'
-                    : 'border-gray-300 hover:bg-gray-50'
-                }`}
+                className={`px-3 py-1 border rounded-lg ${currentPage === index + 1
+                  ? 'bg-blue-600 text-white border-blue-600 shadow-md shadow-blue-100'
+                  : 'border-gray-300 hover:bg-gray-50'
+                  }`}
               >
                 {index + 1}
               </button>
@@ -273,7 +311,7 @@ const Admissions = () => {
             <button
               onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
               disabled={currentPage === totalPages}
-              className="px-3 py-1 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+              className="px-4 py-2 border border-gray-200 rounded-xl font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition-all"
             >
               Next
             </button>
@@ -281,38 +319,8 @@ const Admissions = () => {
         </div>
       </div>
 
-      {/* View Modal */}
-      {showViewModal && selectedAdmission && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-bold text-gray-900">Admission Details</h3>
-              <button onClick={() => setShowViewModal(false)} className="text-gray-500 hover:text-gray-700">
-                <MdClose size={24} />
-              </button>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div><strong>ID:</strong> {selectedAdmission.id}</div>
-              <div><strong>Name:</strong> {selectedAdmission.name}</div>
-              <div><strong>Father's Name:</strong> {selectedAdmission.fatherName}</div>
-              <div><strong>Date of Birth:</strong> {selectedAdmission.dob}</div>
-              <div><strong>Class:</strong> {selectedAdmission.class}</div>
-              <div><strong>Stream:</strong> {selectedAdmission.stream || 'N/A'}</div>
-              <div><strong>Mobile:</strong> {selectedAdmission.mobile}</div>
-              <div><strong>Email:</strong> {selectedAdmission.email}</div>
-              <div className="md:col-span-2"><strong>Address:</strong> {selectedAdmission.address}</div>
-              <div><strong>Application Date:</strong> {selectedAdmission.date}</div>
-              <div><strong>Status:</strong> 
-                <span className={`ml-2 px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(selectedAdmission.status)}`}>
-                  {selectedAdmission.status.charAt(0).toUpperCase() + selectedAdmission.status.slice(1)}
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Edit Modal */}
+
       {showEditModal && (
         <div className="fixed inset-0 backdrop-blur-md bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
@@ -328,7 +336,7 @@ const Admissions = () => {
                 <input
                   type="text"
                   value={editFormData.name || ''}
-                  onChange={(e) => setEditFormData({...editFormData, name: e.target.value})}
+                  onChange={(e) => setEditFormData({ ...editFormData, name: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
@@ -337,7 +345,7 @@ const Admissions = () => {
                 <input
                   type="text"
                   value={editFormData.fatherName || ''}
-                  onChange={(e) => setEditFormData({...editFormData, fatherName: e.target.value})}
+                  onChange={(e) => setEditFormData({ ...editFormData, fatherName: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
@@ -346,7 +354,7 @@ const Admissions = () => {
                 <input
                   type="date"
                   value={editFormData.dob || ''}
-                  onChange={(e) => setEditFormData({...editFormData, dob: e.target.value})}
+                  onChange={(e) => setEditFormData({ ...editFormData, dob: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
@@ -354,7 +362,7 @@ const Admissions = () => {
                 <label className="block text-sm font-medium text-gray-700 mb-1">Class</label>
                 <select
                   value={editFormData.class || ''}
-                  onChange={(e) => setEditFormData({...editFormData, class: e.target.value})}
+                  onChange={(e) => setEditFormData({ ...editFormData, class: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="">Select Class</option>
@@ -369,7 +377,7 @@ const Admissions = () => {
                 <label className="block text-sm font-medium text-gray-700 mb-1">Stream</label>
                 <select
                   value={editFormData.stream || ''}
-                  onChange={(e) => setEditFormData({...editFormData, stream: e.target.value})}
+                  onChange={(e) => setEditFormData({ ...editFormData, stream: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="">Select Stream</option>
@@ -383,7 +391,7 @@ const Admissions = () => {
                 <input
                   type="tel"
                   value={editFormData.mobile || ''}
-                  onChange={(e) => setEditFormData({...editFormData, mobile: e.target.value})}
+                  onChange={(e) => setEditFormData({ ...editFormData, mobile: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
@@ -392,7 +400,7 @@ const Admissions = () => {
                 <input
                   type="email"
                   value={editFormData.email || ''}
-                  onChange={(e) => setEditFormData({...editFormData, email: e.target.value})}
+                  onChange={(e) => setEditFormData({ ...editFormData, email: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
@@ -400,7 +408,7 @@ const Admissions = () => {
                 <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
                 <select
                   value={editFormData.status || ''}
-                  onChange={(e) => setEditFormData({...editFormData, status: e.target.value})}
+                  onChange={(e) => setEditFormData({ ...editFormData, status: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="pending">Pending</option>
@@ -408,11 +416,22 @@ const Admissions = () => {
                   <option value="rejected">Rejected</option>
                 </select>
               </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Medical Certificate</label>
+                <select
+                  value={editFormData.medicalCertificate || ''}
+                  onChange={(e) => setEditFormData({ ...editFormData, medicalCertificate: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="pending">Pending</option>
+                  <option value="uploaded">Uploaded</option>
+                </select>
+              </div>
               <div className="md:col-span-2">
                 <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
                 <textarea
                   value={editFormData.address || ''}
-                  onChange={(e) => setEditFormData({...editFormData, address: e.target.value})}
+                  onChange={(e) => setEditFormData({ ...editFormData, address: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   rows="3"
                 />
@@ -453,7 +472,7 @@ const Admissions = () => {
                 <input
                   type="text"
                   value={editFormData.name || ''}
-                  onChange={(e) => setEditFormData({...editFormData, name: e.target.value})}
+                  onChange={(e) => setEditFormData({ ...editFormData, name: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
@@ -462,7 +481,7 @@ const Admissions = () => {
                 <input
                   type="text"
                   value={editFormData.fatherName || ''}
-                  onChange={(e) => setEditFormData({...editFormData, fatherName: e.target.value})}
+                  onChange={(e) => setEditFormData({ ...editFormData, fatherName: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
@@ -471,7 +490,7 @@ const Admissions = () => {
                 <input
                   type="date"
                   value={editFormData.dob || ''}
-                  onChange={(e) => setEditFormData({...editFormData, dob: e.target.value})}
+                  onChange={(e) => setEditFormData({ ...editFormData, dob: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
@@ -479,7 +498,7 @@ const Admissions = () => {
                 <label className="block text-sm font-medium text-gray-700 mb-1">Class</label>
                 <select
                   value={editFormData.class || ''}
-                  onChange={(e) => setEditFormData({...editFormData, class: e.target.value})}
+                  onChange={(e) => setEditFormData({ ...editFormData, class: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="">Select Class</option>
@@ -494,7 +513,7 @@ const Admissions = () => {
                 <label className="block text-sm font-medium text-gray-700 mb-1">Stream</label>
                 <select
                   value={editFormData.stream || ''}
-                  onChange={(e) => setEditFormData({...editFormData, stream: e.target.value})}
+                  onChange={(e) => setEditFormData({ ...editFormData, stream: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="">Select Stream</option>
@@ -508,7 +527,7 @@ const Admissions = () => {
                 <input
                   type="tel"
                   value={editFormData.mobile || ''}
-                  onChange={(e) => setEditFormData({...editFormData, mobile: e.target.value})}
+                  onChange={(e) => setEditFormData({ ...editFormData, mobile: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
@@ -517,7 +536,7 @@ const Admissions = () => {
                 <input
                   type="email"
                   value={editFormData.email || ''}
-                  onChange={(e) => setEditFormData({...editFormData, email: e.target.value})}
+                  onChange={(e) => setEditFormData({ ...editFormData, email: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
@@ -525,7 +544,7 @@ const Admissions = () => {
                 <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
                 <select
                   value={editFormData.status || 'pending'}
-                  onChange={(e) => setEditFormData({...editFormData, status: e.target.value})}
+                  onChange={(e) => setEditFormData({ ...editFormData, status: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="pending">Pending</option>
@@ -533,11 +552,22 @@ const Admissions = () => {
                   <option value="rejected">Rejected</option>
                 </select>
               </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Medical Certificate</label>
+                <select
+                  value={editFormData.medicalCertificate || 'pending'}
+                  onChange={(e) => setEditFormData({ ...editFormData, medicalCertificate: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="pending">Pending</option>
+                  <option value="uploaded">Uploaded</option>
+                </select>
+              </div>
               <div className="md:col-span-2">
                 <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
                 <textarea
                   value={editFormData.address || ''}
-                  onChange={(e) => setEditFormData({...editFormData, address: e.target.value})}
+                  onChange={(e) => setEditFormData({ ...editFormData, address: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   rows="3"
                 />

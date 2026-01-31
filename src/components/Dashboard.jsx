@@ -43,6 +43,8 @@ import QuizManager from './QuizManager';
 import EventCalendar from './EventCalendar';
 import AddEvent from './AddEvent';
 import CompletedEvents from './CompletedEvents';
+import StudentProfile from './StudentProfile';
+
 
 import {
   MdDashboard,
@@ -688,7 +690,9 @@ const Dashboard = ({ setIsLoggedIn }) => {
               {/* E-Learning Routes */}
               <Route path="/e-learning" element={<ELearning />} />
               <Route path="/quiz-manager" element={<QuizManager />} />
+              <Route path="/student-profile/:id" element={<StudentProfile />} />
             </Routes>
+
           </div>
         </main>
       </div>

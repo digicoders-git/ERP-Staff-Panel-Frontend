@@ -60,11 +60,10 @@ const Fees = () => {
                   <td className="px-6 py-4 text-sm text-blue-700">₹{fee.paid.toLocaleString()}</td>
                   <td className="px-6 py-4 text-sm text-blue-700">₹{(fee.amount - fee.paid).toLocaleString()}</td>
                   <td className="px-6 py-4">
-                    <span className={`px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1 w-fit ${
-                      fee.status === 'paid' ? 'bg-blue-100 text-blue-800' : 
+                    <span className={`px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1 w-fit ${fee.status === 'paid' ? 'bg-blue-100 text-blue-800' :
                       fee.status === 'partial' ? 'bg-white text-blue-600 border border-blue-200' :
-                      'bg-blue-50 text-blue-700'
-                    }`}>
+                        'bg-blue-50 text-blue-700'
+                      }`}>
                       {fee.status === 'paid' ? <MdCheckCircle size={14} /> : <MdPending size={14} />}
                       {fee.status.charAt(0).toUpperCase() + fee.status.slice(1)}
                     </span>

@@ -213,426 +213,265 @@ const Dashboard = ({ setIsLoggedIn }) => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
-      {/* Fixed Sidebar */}
-      <div className={`${sidebarOpen ? 'w-64' : 'w-16'} bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 shadow-2xl flex flex-col fixed h-full z-10 transition-all duration-300`}>
-        <div className="p-6 border-b border-slate-700 flex items-center justify-between">
+    <div className="h-screen flex overflow-hidden bg-slate-50 font-sans">
+      {/* Sidebar - Fixed Height, Scrollable Internal */}
+      <aside
+        className={`${sidebarOpen ? 'w-64' : 'w-20'} bg-slate-900 flex flex-col transition-all duration-300 ease-in-out shrink-0 z-30 shadow-2xl shadow-slate-900/50`}
+      >
+        {/* Sidebar Header */}
+        <div className="h-20 flex items-center justify-between px-6 border-b border-slate-800 shrink-0">
           {sidebarOpen && (
-            <h1 className="text-xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-              Staff Portal
-            </h1>
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center shadow-lg shadow-blue-500/20">
+                <MdSchool className="text-white text-xl" />
+              </div>
+              <h1 className="text-lg font-black bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent truncate tracking-tight">
+                Staff Portal
+              </h1>
+            </div>
           )}
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="text-slate-300 hover:text-white transition-colors duration-200 cursor-pointer"
+            className="text-slate-400 hover:text-white p-2 hover:bg-slate-800 rounded-xl transition-all cursor-pointer shadow-sm active:scale-95"
           >
-            {sidebarOpen ? <MdClose size={24} /> : <MdMenu size={24} />}
+            {sidebarOpen ? <MdClose size={22} /> : <MdMenu size={22} />}
           </button>
         </div>
-        <nav className="mt-6 flex-1 overflow-y-auto scrollbar-hide">
-          {sidebarItems.map((item) => (
-            <button
-              key={item.id}
-              onClick={() => {
-                setActiveMenu(item.id);
-                navigate(item.path);
-              }}
-              className={`w-full flex items-center px-6 py-3 text-left hover:bg-slate-700/50 transition duration-200 cursor-pointer ${activeMenu === item.id ? 'bg-gradient-to-r from-blue-600/20 to-purple-600/20 border-r-4 border-blue-400 text-blue-400' : 'text-slate-300 hover:text-white'
-                }`}
-              title={!sidebarOpen ? item.name : ''}
-            >
-              <span className="text-xl mr-3"><item.icon /></span>
-              {sidebarOpen && <span className="font-medium">{item.name}</span>}
-            </button>
-          ))}
 
-          {/* Hostel Dropdown */}
+        {/* Sidebar Navigation */}
+        <nav className="flex-1 overflow-y-auto overflow-x-hidden scrollbar-hide py-6 space-y-8">
+          {/* Section: General */}
           <div>
-            <button
-              onClick={() => handleDropdownClick('hostel', setHostelDropdownOpen, hostelDropdownOpen)}
-              className={`w-full flex items-center justify-between px-6 py-3 text-left hover:bg-slate-700/50 transition duration-200 cursor-pointer ${hostelItems.some(item => item.id === activeMenu) ? 'bg-gradient-to-r from-blue-600/20 to-purple-600/20 border-r-4 border-blue-400 text-blue-400' : 'text-slate-300 hover:text-white'
-                }`}
-              title={!sidebarOpen ? 'Hostel' : ''}
-            >
-              <div className="flex items-center">
-                <span className="text-xl mr-3"><MdBed /></span>
-                {sidebarOpen && <span className="font-medium">Hostel</span>}
-              </div>
-              {sidebarOpen && (
-                <span className="text-lg">
-                  {hostelDropdownOpen ? <MdExpandLess /> : <MdExpandMore />}
-                </span>
-              )}
-            </button>
-
-            <div className={`bg-slate-800/50 transition-all duration-300 ease-in-out ${hostelDropdownOpen && sidebarOpen ? 'h-auto opacity-100' : 'h-0 opacity-0 overflow-hidden'}`} data-dropdown="hostel">
-              {hostelItems.map((item) => (
+            {sidebarOpen && <p className="px-7 text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-4 opacity-70">Main Menu</p>}
+            <div className="space-y-1 px-3">
+              {sidebarItems.map((item) => (
                 <button
                   key={item.id}
                   onClick={() => {
                     setActiveMenu(item.id);
                     navigate(item.path);
                   }}
-                  className={`w-full flex items-center px-12 py-2 text-left hover:bg-slate-700/50 transition duration-200 cursor-pointer ${activeMenu === item.id ? 'bg-gradient-to-r from-blue-600/20 to-purple-600/20 text-blue-400' : 'text-slate-400 hover:text-white'
+                  className={`w-full flex items-center px-4 py-3 rounded-xl transition-all duration-200 cursor-pointer relative group ${activeMenu === item.id
+                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20'
+                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
                     }`}
+                  title={!sidebarOpen ? item.name : ''}
                 >
-                  <span className="text-lg mr-3"><item.icon /></span>
-                  <span className="font-medium text-sm">{item.name}</span>
+                  <span className={`text-xl ${activeMenu === item.id ? 'text-white' : 'group-hover:text-blue-400 transition-colors'}`}>
+                    <item.icon />
+                  </span>
+                  {sidebarOpen && <span className="ml-4 text-sm font-bold tracking-tight">{item.name}</span>}
+                  {!sidebarOpen && activeMenu === item.id && (
+                    <div className="absolute left-[-12px] top-1/2 -translate-y-1/2 w-1.5 h-6 bg-blue-500 rounded-full shadow-[0_0_15px_rgba(59,130,246,0.8)]" />
+                  )}
                 </button>
               ))}
             </div>
           </div>
 
-          {/* Transport Dropdown */}
+          {/* Section: Academic Modules */}
           <div>
-            <button
-              onClick={() => handleDropdownClick('transport', setTransportDropdownOpen, transportDropdownOpen)}
-              className={`w-full flex items-center justify-between px-6 py-3 text-left hover:bg-slate-700/50 transition duration-200 cursor-pointer ${transportItems.some(item => item.id === activeMenu) ? 'bg-gradient-to-r from-blue-600/20 to-purple-600/20 border-r-4 border-blue-400 text-blue-400' : 'text-slate-300 hover:text-white'
-                }`}
-              title={!sidebarOpen ? 'Transport' : ''}
-            >
-              <div className="flex items-center">
-                <span className="text-xl mr-3"><MdDirectionsBus /></span>
-                {sidebarOpen && <span className="font-medium">Transport</span>}
-              </div>
-              {sidebarOpen && (
-                <span className="text-lg">
-                  {transportDropdownOpen ? <MdExpandLess /> : <MdExpandMore />}
-                </span>
-              )}
-            </button>
+            {sidebarOpen && <p className="px-7 text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-4 opacity-70">Academic Modules</p>}
+            <div className="space-y-1 px-3">
+              {/* Dropdown Groups */}
+              {[
+                { id: 'hostel', name: 'Hostel', icon: MdBed, items: hostelItems, state: hostelDropdownOpen, setState: setHostelDropdownOpen, type: 'hostel' },
+                { id: 'transport', name: 'Transport', icon: MdDirectionsBus, items: transportItems, state: transportDropdownOpen, setState: setTransportDropdownOpen, type: 'transport' },
+                { id: 'exam', name: 'Exams', icon: MdSchedule, items: examItems, state: examDropdownOpen, setState: setExamDropdownOpen, type: 'exam' },
+                { id: 'attendance', name: 'Attendance', icon: MdAccessAlarm, items: staffAttendanceItems, state: staffAttendanceDropdownOpen, setState: setStaffAttendanceDropdownOpen, type: 'staff-attendance' },
+                { id: 'fees-reports', name: 'Fee Reports', icon: MdBarChart, items: feeReportsItems, state: feeReportsDropdownOpen, setState: setFeeReportsDropdownOpen, type: 'fee-reports' },
+                { id: 'learning', name: 'E-Learning', icon: MdPlayCircle, items: eLearningItems, state: eLearningDropdownOpen, setState: setELearningDropdownOpen, type: 'e-learning' },
+                { id: 'events', name: 'Events', icon: MdEvent, items: eventItems, state: eventDropdownOpen, setState: setEventDropdownOpen, type: 'event' }
+              ].map((group) => (
+                <div key={group.id} className="space-y-1">
+                  <button
+                    onClick={() => handleDropdownClick(group.type, group.setState, group.state)}
+                    className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-200 cursor-pointer relative group ${group.items.some(it => it.id === activeMenu)
+                      ? 'text-blue-400 bg-blue-500/10'
+                      : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
+                      }`}
+                  >
+                    <div className="flex items-center">
+                      <span className="text-xl group-hover:text-blue-400 transition-colors"><group.icon /></span>
+                      {sidebarOpen && <span className="ml-4 text-sm font-bold tracking-tight">{group.name}</span>}
+                    </div>
+                    {sidebarOpen && (
+                      <MdExpandMore
+                        size={18}
+                        className={`transition-transform duration-300 ${group.state ? 'rotate-180' : ''} opacity-50`}
+                      />
+                    )}
+                  </button>
 
-            <div className={`bg-slate-800/50 transition-all duration-300 ease-in-out ${transportDropdownOpen && sidebarOpen ? 'h-auto opacity-100' : 'h-0 opacity-0 overflow-hidden'}`} data-dropdown="transport">
-              {transportItems.map((item) => (
-                <button
-                  key={item.id}
-                  onClick={() => {
-                    setActiveMenu(item.id);
-                    navigate(item.path);
-                  }}
-                  className={`w-full flex items-center px-12 py-2 text-left hover:bg-slate-700/50 transition duration-200 cursor-pointer ${activeMenu === item.id ? 'bg-gradient-to-r from-blue-600/20 to-purple-600/20 text-blue-400' : 'text-slate-400 hover:text-white'
-                    }`}
-                >
-                  <span className="text-lg mr-3"><item.icon /></span>
-                  <span className="font-medium text-sm">{item.name}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Exam Management Dropdown */}
-          <div>
-            <button
-              onClick={() => handleDropdownClick('exam', setExamDropdownOpen, examDropdownOpen)}
-              className={`w-full flex items-center justify-between px-6 py-3 text-left hover:bg-slate-700/50 transition duration-200 cursor-pointer ${examItems.some(item => item.id === activeMenu) ? 'bg-gradient-to-r from-blue-600/20 to-purple-600/20 border-r-4 border-blue-400 text-blue-400' : 'text-slate-300 hover:text-white'
-                }`}
-              title={!sidebarOpen ? 'Exam Management' : ''}
-            >
-              <div className="flex items-center">
-                <span className="text-xl mr-3"><MdSchedule /></span>
-                {sidebarOpen && <span className="font-medium">Exam Management</span>}
-              </div>
-              {sidebarOpen && (
-                <span className="text-lg">
-                  {examDropdownOpen ? <MdExpandLess /> : <MdExpandMore />}
-                </span>
-              )}
-            </button>
-
-            <div className={`bg-slate-800/50 transition-all duration-300 ease-in-out ${examDropdownOpen && sidebarOpen ? 'h-auto opacity-100' : 'h-0 opacity-0 overflow-hidden'}`} data-dropdown="exam">
-              {examItems.map((item) => (
-                <button
-                  key={item.id}
-                  onClick={() => {
-                    setActiveMenu(item.id);
-                    navigate(item.path);
-                  }}
-                  className={`w-full flex items-center px-12 py-2 text-left hover:bg-slate-700/50 transition duration-200 cursor-pointer ${activeMenu === item.id ? 'bg-gradient-to-r from-blue-600/20 to-purple-600/20 text-blue-400' : 'text-slate-400 hover:text-white'
-                    }`}
-                >
-                  <span className="text-lg mr-3"><item.icon /></span>
-                  <span className="font-medium text-sm">{item.name}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Staff Attendance Dropdown */}
-          <div>
-            <button
-              onClick={() => handleDropdownClick('staff-attendance', setStaffAttendanceDropdownOpen, staffAttendanceDropdownOpen)}
-              className={`w-full flex items-center justify-between px-6 py-3 text-left hover:bg-slate-700/50 transition duration-200 cursor-pointer ${staffAttendanceItems.some(item => item.id === activeMenu) ? 'bg-gradient-to-r from-blue-600/20 to-purple-600/20 border-r-4 border-blue-400 text-blue-400' : 'text-slate-300 hover:text-white'
-                }`}
-              title={!sidebarOpen ? 'Staff Attendance' : ''}
-            >
-              <div className="flex items-center">
-                <span className="text-xl mr-3"><MdAccessAlarm /></span>
-                {sidebarOpen && <span className="font-medium">Staff Attendance</span>}
-              </div>
-              {sidebarOpen && (
-                <span className="text-lg">
-                  {staffAttendanceDropdownOpen ? <MdExpandLess /> : <MdExpandMore />}
-                </span>
-              )}
-            </button>
-
-            <div className={`bg-slate-800/50 transition-all duration-300 ease-in-out ${staffAttendanceDropdownOpen && sidebarOpen ? 'h-auto opacity-100' : 'h-0 opacity-0 overflow-hidden'}`} data-dropdown="staff-attendance">
-              {staffAttendanceItems.map((item) => (
-                <button
-                  key={item.id}
-                  onClick={() => {
-                    setActiveMenu(item.id);
-                    navigate(item.path);
-                  }}
-                  className={`w-full flex items-center px-12 py-2 text-left hover:bg-slate-700/50 transition duration-200 cursor-pointer ${activeMenu === item.id ? 'bg-gradient-to-r from-blue-600/20 to-purple-600/20 text-blue-400' : 'text-slate-400 hover:text-white'
-                    }`}
-                >
-                  <span className="text-lg mr-3"><item.icon /></span>
-                  <span className="font-medium text-sm">{item.name}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Fee Reports Dropdown */}
-          <div>
-            <button
-              onClick={() => handleDropdownClick('fee-reports', setFeeReportsDropdownOpen, feeReportsDropdownOpen)}
-              className={`w-full flex items-center justify-between px-6 py-3 text-left hover:bg-slate-700/50 transition duration-200 cursor-pointer ${feeReportsItems.some(item => item.id === activeMenu) ? 'bg-gradient-to-r from-blue-600/20 to-purple-600/20 border-r-4 border-blue-400 text-blue-400' : 'text-slate-300 hover:text-white'
-                }`}
-              title={!sidebarOpen ? 'Fee Reports' : ''}
-            >
-              <div className="flex items-center">
-                <span className="text-xl mr-3"><MdBarChart /></span>
-                {sidebarOpen && <span className="font-medium">Fee Reports</span>}
-              </div>
-              {sidebarOpen && (
-                <span className="text-lg">
-                  {feeReportsDropdownOpen ? <MdExpandLess /> : <MdExpandMore />}
-                </span>
-              )}
-            </button>
-
-            <div className={`bg-slate-800/50 transition-all duration-300 ease-in-out ${feeReportsDropdownOpen && sidebarOpen ? 'h-auto opacity-100' : 'h-0 opacity-0 overflow-hidden'}`} data-dropdown="fee-reports">
-              {feeReportsItems.map((item) => (
-                <button
-                  key={item.id}
-                  onClick={() => {
-                    setActiveMenu(item.id);
-                    navigate(item.path);
-                  }}
-                  className={`w-full flex items-center px-12 py-2 text-left hover:bg-slate-700/50 transition duration-200 cursor-pointer ${activeMenu === item.id ? 'bg-gradient-to-r from-blue-600/20 to-purple-600/20 text-blue-400' : 'text-slate-400 hover:text-white'
-                    }`}
-                >
-                  <span className="text-lg mr-3"><item.icon /></span>
-                  <span className="font-medium text-sm">{item.name}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* E-Learning Dropdown */}
-          <div>
-            <button
-              onClick={() => handleDropdownClick('e-learning', setELearningDropdownOpen, eLearningDropdownOpen)}
-              className={`w-full flex items-center justify-between px-6 py-3 text-left hover:bg-slate-700/50 transition duration-200 cursor-pointer ${eLearningItems.some(item => item.id === activeMenu) ? 'bg-gradient-to-r from-blue-600/20 to-purple-600/20 border-r-4 border-blue-400 text-blue-400' : 'text-slate-300 hover:text-white'
-                }`}
-              title={!sidebarOpen ? 'E-Learning' : ''}
-            >
-              <div className="flex items-center">
-                <span className="text-xl mr-3"><MdPlayCircle /></span>
-                {sidebarOpen && <span className="font-medium">E-Learning</span>}
-              </div>
-              {sidebarOpen && (
-                <span className="text-lg">
-                  {eLearningDropdownOpen ? <MdExpandLess /> : <MdExpandMore />}
-                </span>
-              )}
-            </button>
-
-            <div className={`bg-slate-800/50 transition-all duration-300 ease-in-out ${eLearningDropdownOpen && sidebarOpen ? 'h-auto opacity-100' : 'h-0 opacity-0 overflow-hidden'}`} data-dropdown="e-learning">
-              {eLearningItems.map((item) => (
-                <button
-                  key={item.id}
-                  onClick={() => {
-                    setActiveMenu(item.id);
-                    navigate(item.path);
-                  }}
-                  className={`w-full flex items-center px-12 py-2 text-left hover:bg-slate-700/50 transition duration-200 cursor-pointer ${activeMenu === item.id ? 'bg-gradient-to-r from-blue-600/20 to-purple-600/20 text-blue-400' : 'text-slate-400 hover:text-white'
-                    }`}
-                >
-                  <span className="text-lg mr-3"><item.icon /></span>
-                  <span className="font-medium text-sm">{item.name}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Event Calendar Dropdown */}
-          <div>
-            <button
-              onClick={() => handleDropdownClick('event', setEventDropdownOpen, eventDropdownOpen)}
-              className={`w-full flex items-center justify-between px-6 py-3 text-left hover:bg-slate-700/50 transition duration-200 cursor-pointer ${eventItems.some(item => item.id === activeMenu) ? 'bg-gradient-to-r from-blue-600/20 to-purple-600/20 border-r-4 border-blue-400 text-blue-400' : 'text-slate-300 hover:text-white'
-                }`}
-              title={!sidebarOpen ? 'Events' : ''}
-            >
-              <div className="flex items-center">
-                <span className="text-xl mr-3"><MdEvent /></span>
-                {sidebarOpen && <span className="font-medium">Event Calendar</span>}
-              </div>
-              {sidebarOpen && (
-                <span className="text-lg">
-                  {eventDropdownOpen ? <MdExpandLess /> : <MdExpandMore />}
-                </span>
-              )}
-            </button>
-
-            <div className={`bg-slate-800/50 transition-all duration-300 ease-in-out ${eventDropdownOpen && sidebarOpen ? 'h-auto opacity-100' : 'h-0 opacity-0 overflow-hidden'}`} data-dropdown="event">
-              {eventItems.map((item) => (
-                <button
-                  key={item.id}
-                  onClick={() => {
-                    setActiveMenu(item.id);
-                    navigate(item.path);
-                  }}
-                  className={`w-full flex items-center px-12 py-2 text-left hover:bg-slate-700/50 transition duration-200 cursor-pointer ${activeMenu === item.id ? 'bg-gradient-to-r from-blue-600/20 to-purple-600/20 text-blue-400' : 'text-slate-400 hover:text-white'
-                    }`}
-                >
-                  <span className="text-lg mr-3"><item.icon /></span>
-                  <span className="font-medium text-sm">{item.name}</span>
-                </button>
+                  {/* Submenu */}
+                  <div
+                    className={`overflow-hidden transition-all duration-300 ${group.state && sidebarOpen ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'}`}
+                    data-dropdown={group.type}
+                  >
+                    <div className="pl-12 pr-2 py-1 space-y-1 border-l border-slate-800 ml-6 my-1">
+                      {group.items.map((subItem) => (
+                        <button
+                          key={subItem.id}
+                          onClick={() => {
+                            setActiveMenu(subItem.id);
+                            navigate(subItem.path);
+                          }}
+                          className={`w-full text-left px-3 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all ${activeMenu === subItem.id
+                            ? 'text-blue-400 bg-blue-500/5'
+                            : 'text-slate-500 hover:text-slate-300 hover:bg-slate-800/30'
+                            }`}
+                        >
+                          {subItem.name}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
               ))}
             </div>
           </div>
         </nav>
-        {/* Logout Button */}
-        <div className="p-6 border-t border-slate-700">
+
+        {/* Sidebar Footer */}
+        <div className="p-4 border-t border-slate-800 shrink-0 space-y-1">
           <button
             onClick={() => {
               setActiveMenu('change-password');
               navigate('/change-password');
             }}
-            className={`w-full flex items-center px-4 py-3 mb-3 rounded-lg transition duration-200 cursor-pointer ${activeMenu === 'change-password' ? 'bg-gradient-to-r from-blue-600/20 to-purple-600/20 text-blue-400' : 'text-slate-300 hover:bg-slate-700/50 hover:text-white'
+            className={`w-full flex items-center px-4 py-3 rounded-xl transition-all duration-200 cursor-pointer ${activeMenu === 'change-password' ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
               }`}
-            title={!sidebarOpen ? 'Change Password' : ''}
           >
-            <span className="text-xl mr-3"><MdLock /></span>
-            {sidebarOpen && <span className="font-medium">Change Password</span>}
+            <MdLock size={20} />
+            {sidebarOpen && <span className="ml-4 text-sm font-bold tracking-tight">Settings</span>}
           </button>
           <button
             onClick={handleLogout}
-            className="w-full flex items-center px-4 py-3 text-red-400 hover:bg-red-500/20 hover:text-red-300 rounded-lg transition duration-200 cursor-pointer"
-            title={!sidebarOpen ? 'Logout' : ''}
+            className="w-full flex items-center px-4 py-3 rounded-xl text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-all duration-200 cursor-pointer"
           >
-            <span className="text-xl mr-3"><MdLogout /></span>
-            {sidebarOpen && <span className="font-medium">Logout</span>}
+            <MdLogout size={20} />
+            {sidebarOpen && <span className="ml-4 text-sm font-bold tracking-tight">Logout</span>}
           </button>
         </div>
-      </div>
+      </aside>
 
-      {/* Main Content with dynamic margin for sidebar */}
-      <div className={`flex-1 flex flex-col transition-all duration-300 ${sidebarOpen ? 'ml-64' : 'ml-16'}`}>
-        {/* Fixed Navbar */}
-        <nav className={`bg-white shadow-md border-b fixed top-[-12px] right-0 z-20 transition-all duration-300 ${sidebarOpen ? 'left-64' : 'left-16'}`}>
-          <div className="px-6 py-4 flex justify-between items-center">
-            <div>
-              <h2 className="text-2xl font-bold text-gray-800 capitalize">{activeMenu}</h2>
-              <p className="text-sm text-gray-600">Welcome back to your dashboard</p>
+      {/* Main Content Area - Scrollable */}
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+        {/* Top Header - Fixed at Top */}
+        <header className="h-20 bg-white border-b border-slate-200 flex items-center justify-between px-8 shrink-0 z-20">
+          <div>
+            <h2 className="text-xl font-black text-slate-800 capitalize tracking-tight flex items-center gap-2">
+              <span className="w-1.5 h-6 bg-blue-600 rounded-full" />
+              {activeMenu.replace(/-/g, ' ')}
+            </h2>
+            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">Staff Management Panel v2.0</p>
+          </div>
+
+          <div className="flex items-center gap-6">
+            <div className="hidden md:flex flex-col items-end border-r border-slate-100 pr-6 gap-0.5">
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Server Time</p>
+              <p className="text-lg font-black text-blue-600 tabular-nums">
+                {currentTime.toLocaleTimeString('en-US', {
+                  hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true
+                })}
+              </p>
             </div>
-            <div className="flex items-center space-x-6">
-              {/* Live Date & Time */}
-              <div className="text-right">
-                <p className="text-lg font-bold text-blue-600">
-                  {currentTime.toLocaleTimeString('en-US', {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    second: '2-digit'
-                  })}
-                </p>
-                <p className="text-sm font-medium text-gray-900">
-                  {currentTime.toLocaleDateString('en-US', {
-                    weekday: 'long',
 
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
-                  })}
-                </p>
+            <div
+              onClick={() => navigate('/profile')}
+              className="group flex items-center gap-4 cursor-pointer hover:bg-slate-50 p-2 rounded-2xl transition-all active:scale-95 border border-transparent hover:border-slate-200 shadow-sm hover:shadow-md"
+            >
+              <div className="text-right hidden sm:block">
+                <p className="text-sm font-black text-slate-800 group-hover:text-blue-600 transition-colors">Staff_Name</p>
+                <p className="text-[9px] font-black text-slate-400 uppercase tracking-wider">System Administrator</p>
               </div>
-              {/* User Profile */}
-              <div className="flex items-center space-x-3 bg-white rounded-lg shadow-lg px-4 py-2">
-                <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-md">
-                  S
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-gray-900">Staff_Name</p>
-                </div>
+              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center text-white font-black text-xl shadow-lg ring-4 ring-white shadow-blue-200 transition-transform group-hover:rotate-6">
+                S
               </div>
             </div>
           </div>
-        </nav>
+        </header>
 
-        {/* Dashboard Content with top margin for fixed navbar */}
-        <main className="flex-1 pt-24 overflow-y-auto">
-          <div className="p-4 sm:p-6" style={{ width: sidebarOpen ? 'calc(100vw - 256px)' : 'calc(100vw - 64px)' }}>
+        {/* Main Content Body - Scrollable */}
+        <main className="flex-1 overflow-y-auto bg-slate-50/50 scroll-smooth">
+          <div className="max-w-[1600px] mx-auto p-6 md:p-10">
             <Routes>
               <Route path="/dashboard" element={
-                <div className="space-y-6">
-                  {/* Stats Cards */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {stats.map((stat, index) => (
-                      <div key={index} className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition duration-300">
-                        <div className="flex items-center">
-                          <div className={`${stat.color} rounded-lg p-3 text-white text-2xl mr-4`}>
-                            <stat.icon />
+                <div className="space-y-10 animate-fadeIn">
+                  {/* Summary Cards */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    {stats.map((stat, idx) => (
+                      <div key={idx} className="bg-white rounded-3xl p-8 shadow-sm border border-slate-100 hover:shadow-xl hover:-translate-y-2 transition-all duration-500 group overflow-hidden relative">
+                        <div className="absolute -right-4 -bottom-4 opacity-5 group-hover:scale-150 transition-transform duration-700">
+                          <stat.icon size={120} />
+                        </div>
+                        <div className="flex items-center gap-6 relative z-10">
+                          <div className={`${stat.color} p-4 rounded-2xl text-white shadow-2xl group-hover:scale-110 group-hover:rotate-6 transition-all duration-500`}>
+                            <stat.icon size={26} />
                           </div>
                           <div>
-                            <p className="text-sm font-medium text-gray-600">{stat.title}</p>
-                            <p className="text-2xl font-bold text-gray-900">{stat.count}</p>
+                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">{stat.title}</p>
+                            <p className="text-3xl font-black text-slate-800 tabular-nums">{stat.count}</p>
                           </div>
                         </div>
                       </div>
                     ))}
                   </div>
 
-                  {/* Recent Activity & Schedule */}
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <div className="bg-white rounded-xl shadow-lg p-6">
-                      <h3 className="text-xl font-bold text-gray-900 mb-4">Recent Activity</h3>
-                      <div className="space-y-4">
+                  {/* Dashboard Insights */}
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div className="bg-white rounded-[2.5rem] p-10 shadow-sm border border-slate-100">
+                      <div className="flex items-center justify-between mb-10">
+                        <h3 className="text-xl font-black text-slate-800 tracking-tight flex items-center gap-3">
+                          <div className="w-2 h-6 bg-blue-600 rounded-full" />
+                          Activity Stream
+                        </h3>
+                        <button className="text-[10px] font-black uppercase tracking-widest text-blue-600 hover:bg-blue-50 px-5 py-2.5 rounded-full transition-all">
+                          View History
+                        </button>
+                      </div>
+                      <div className="space-y-8">
                         {[
-                          { activity: 'New admission application submitted', time: '30 minutes ago', icon: MdAppRegistration },
-                          { activity: 'Application verified and approved', time: '1 hour ago', icon: MdVerifiedUser },
-                          { activity: 'Fee payment received', time: '2 hours ago', icon: MdPayment },
-                          { activity: 'Student enrolled in Class 10A', time: '3 hours ago', icon: MdPeople }
-                        ].map((item, index) => (
-                          <div key={index} className="flex items-center p-3 bg-gray-50 rounded-lg">
-                            <div className="text-xl mr-3 text-blue-600"><item.icon /></div>
+                          { act: 'Admission Application Received', time: '30m ago', icon: MdAppRegistration, clr: 'bg-blue-50 text-blue-600' },
+                          { act: 'KYC Documents Verified', time: '1h ago', icon: MdVerifiedUser, clr: 'bg-green-50 text-green-600' },
+                          { act: 'Tuition Fee Payment Confirmed', time: '2h ago', icon: MdPayment, clr: 'bg-amber-50 text-amber-600' },
+                          { act: 'Bulk Pupil Enrollment 10A', time: '3h ago', icon: MdPeople, clr: 'bg-purple-50 text-purple-600' }
+                        ].map((item, i) => (
+                          <div key={i} className="flex items-center gap-5 group">
+                            <div className={`w-14 h-14 rounded-2xl flex items-center justify-center ${item.clr} group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 shadow-sm`}>
+                              <item.icon size={22} />
+                            </div>
                             <div className="flex-1">
-                              <p className="text-sm font-medium text-gray-900">{item.activity}</p>
-                              <p className="text-xs text-gray-500">{item.time}</p>
+                              <p className="text-sm font-bold text-slate-800 tracking-tight">{item.act}</p>
+                              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1 opacity-60 italic">{item.time}</p>
                             </div>
                           </div>
                         ))}
                       </div>
                     </div>
 
-                    <div className="bg-white rounded-xl shadow-lg p-6">
-                      <h3 className="text-xl font-bold text-gray-900 mb-4">Admission Process Status</h3>
-                      <div className="space-y-4">
+                    <div className="bg-white rounded-[2.5rem] p-10 shadow-sm border border-slate-100">
+                      <h3 className="text-xl font-black text-slate-800 tracking-tight flex items-center gap-3 mb-10">
+                        <div className="w-2 h-6 bg-indigo-600 rounded-full" />
+                        Admission Funnel
+                      </h3>
+                      <div className="space-y-5">
                         {[
-                          { process: 'New Admission Phase', status: 'Active', count: '156 New', color: 'bg-blue-100 text-blue-800' },
-                          { process: 'Document Verification', status: 'In Progress', count: '89 Pending', color: 'bg-yellow-100 text-yellow-800' },
-                          { process: 'Interview Schedule', status: 'Scheduled', count: '45 Today', color: 'bg-green-100 text-green-800' },
-                          { process: 'Final Admission', status: 'Ongoing', count: '23 Confirmed', color: 'bg-purple-100 text-purple-800' }
-                        ].map((item, index) => (
-                          <div key={index} className="flex items-center justify-between p-3 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg border-l-4 border-blue-500">
-                            <div>
-                              <p className="font-medium text-gray-900">{item.process}</p>
-                              <p className="text-sm text-gray-600">{item.count}</p>
+                          { stage: 'Prospects', info: '156 Inbound Today', val: 'New', clr: 'bg-blue-600' },
+                          { stage: 'Verification', info: '89 Files Pending', val: 'Queue', clr: 'bg-amber-500' },
+                          { stage: 'Interviews', info: '45 Sessions Booked', val: 'Active', clr: 'bg-emerald-600' },
+                          { stage: 'Onboarding', info: '23 Final Checks', val: 'Done', clr: 'bg-indigo-600' }
+                        ].map((item, i) => (
+                          <div key={i} className="flex items-center justify-between p-5 rounded-2xl bg-slate-50/50 border border-slate-100 hover:bg-white hover:shadow-xl hover:border-transparent transition-all duration-500 cursor-default">
+                            <div className="flex items-center gap-5">
+                              <div className={`w-1.5 h-10 rounded-full ${item.clr}`} />
+                              <div>
+                                <p className="font-bold text-slate-800 tracking-tight">{item.stage}</p>
+                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{item.info}</p>
+                              </div>
                             </div>
-                            <div className={`px-3 py-1 rounded-full text-xs font-medium ${item.color}`}>
-                              {item.status}
+                            <div className={`px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-[0.2em] ${item.clr} text-white shadow-lg`}>
+                              {item.val}
                             </div>
                           </div>
                         ))}
@@ -641,6 +480,8 @@ const Dashboard = ({ setIsLoggedIn }) => {
                   </div>
                 </div>
               } />
+
+              {/* Route Definitions */}
               <Route path="/new-admission" element={<Registration />} />
               <Route path="/admissions" element={<Admissions />} />
               <Route path="/id-card" element={<IdCard />} />
@@ -654,8 +495,9 @@ const Dashboard = ({ setIsLoggedIn }) => {
               <Route path="/alumni-management" element={<AlumniManagement />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/change-password" element={<ChangePassword />} />
+              <Route path="/student-profile/:id" element={<StudentProfile />} />
 
-              {/* Hostel Routes */}
+              {/* Modules Grouped Routes */}
               <Route path="/hostel-dashboard" element={<HostelDashboard />} />
               <Route path="/create-hostel" element={<CreateHostel />} />
               <Route path="/room-type-charge" element={<RoomTypeCharges />} />
@@ -664,7 +506,6 @@ const Dashboard = ({ setIsLoggedIn }) => {
               <Route path="/warden-management" element={<Warden />} />
               <Route path="/hostel-report" element={<HostelReport />} />
 
-              {/* Transport Routes */}
               <Route path="/transport-dashboard" element={<TransportDashboard />} />
               <Route path="/vehical-master" element={<VehicleMaster />} />
               <Route path="/driver-master" element={<DriverMaster />} />
@@ -673,26 +514,20 @@ const Dashboard = ({ setIsLoggedIn }) => {
               <Route path="/route-charge" element={<RouteCharge />} />
               <Route path="/transport-allocation" element={<TransportAllocation />} />
 
-              {/* Exam Routes */}
               <Route path="/exam-schedule" element={<CreateSchedule />} />
               <Route path="/manage-marks" element={<ManageMarks />} />
               <Route path="/grading-system" element={<Grading />} />
               <Route path="/online-exam" element={<OnlineExam />} />
 
-              {/* Staff Attendance Routes */}
               <Route path="/attendance-process" element={<AttendanceTracker />} />
               <Route path="/attendance-report" element={<AttendanceReports />} />
               <Route path="/leave-management" element={<LeaveManagement />} />
 
-              {/* Fee Reports Routes */}
               <Route path="/fee-reports" element={<FeeReports />} />
 
-              {/* E-Learning Routes */}
               <Route path="/e-learning" element={<ELearning />} />
               <Route path="/quiz-manager" element={<QuizManager />} />
-              <Route path="/student-profile/:id" element={<StudentProfile />} />
             </Routes>
-
           </div>
         </main>
       </div>

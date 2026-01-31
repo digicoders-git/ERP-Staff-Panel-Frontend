@@ -15,7 +15,7 @@ const AddEvent = () => {
     });
 
     const eventTypes = [
-        { value: 'PTM', label: 'Parent-Teacher Meeting' },
+        { value: 'f PTM', label: 'Parent-Teacher Meeting' },
         { value: 'Annual Day', label: 'Annual Day' },
         { value: 'Sports', label: 'Sports Events' },
         { value: 'Academic', label: 'Academic Events' },

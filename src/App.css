@@ -1,0 +1,43 @@
+@layer utilities {
+  .clip-diagonal {
+    clip-path: polygon(0 0, 100% 0, 100% 75%, 0 100%);
+  }
+
+  .clip-line {
+    clip-path: polygon(0 0, 100% 0, 100% 75%, 0 100%);
+  }
+}
+
+
+@media print {
+  body {
+    margin: 0;
+    padding: 0;
+  }
+
+  body * {
+    visibility: hidden;
+  }
+
+  .print-card,
+  .print-card * {
+    visibility: visible;
+  }
+
+  .print-card {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 360px;
+    height: 540px;
+    box-shadow: none;
+    page-break-inside: avoid;
+  }
+}
+
+@page {
+  size: A4;
+  margin: 0;
+}
+

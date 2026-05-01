@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { FaSpinner, FaUserShield, FaLock, FaEnvelope } from 'react-icons/fa';
 import { MdSchool, MdVisibility, MdVisibilityOff } from 'react-icons/md';
 import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import api from '../utils/api';
 
 const StaffLogin = ({ setIsLoggedIn }) => {
@@ -28,19 +27,29 @@ const StaffLogin = ({ setIsLoggedIn }) => {
     setLoading(true);
     
     try {
+      console.log('Attempting login with:', email);
       const res = await api.post('/api/staff-panel/auth/login', { email, password });
       
-      if (res.data && (res.data.success || res.data.token)) {
+      console.log('Login response:', res.data);
+      
+      if (res.data && res.data.token) {
+        console.log('Token received, saving to localStorage');
         localStorage.setItem('token', res.data.token);
         localStorage.setItem('staff', JSON.stringify(res.data.staff));
+        localStorage.setItem('userRole', res.data.staff?.role || 'staff');
+        
+        console.log('Login successful, token saved');
         
         toast.success('Login successful!', {
           position: "top-right",
           autoClose: 500,
         });
         
+        // Call setIsLoggedIn to trigger navigation
+        console.log('Calling setIsLoggedIn(true)');
         setIsLoggedIn(true);
       } else {
+        console.log('No token in response:', res.data);
         toast.error(res.data?.message || 'Login failed', {
           position: "top-right",
           autoClose: 3000,
@@ -48,12 +57,24 @@ const StaffLogin = ({ setIsLoggedIn }) => {
         setLoading(false);
       }
     } catch (err) {
-      const errorMsg = err.response?.data?.message || 'Invalid credentials. Please try again.';
+      console.error('Login error:', err);
+      setLoading(false);
+      
+      let errorMsg = 'Invalid credentials. Please try again.';
+      
+      if (err.response?.status === 401) {
+        errorMsg = 'Invalid email or password';
+      } else if (err.response?.data?.message) {
+        errorMsg = err.response.data.message;
+      } else if (err.message) {
+        errorMsg = err.message;
+      }
+      
+      console.error('Error message:', errorMsg);
       toast.error(errorMsg, {
         position: "top-right",
         autoClose: 3000,
       });
-      setLoading(false);
     }
   };
 

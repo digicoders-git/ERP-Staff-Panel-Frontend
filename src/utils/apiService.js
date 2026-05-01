@@ -66,6 +66,8 @@ export const examAPI = {
   getMarks: (params) => api.get('/api/staff-panel/exam/marks', { params }),
   getMarksHistory: (params) => api.get('/api/staff-panel/exam/marks/history', { params }),
   updateMarks: (data) => api.post('/api/staff-panel/exam/marks/add', data),
+  getExamTypes: (params) => api.get('/api/staff-panel/exam/exam-types', { params }),
+  getMarksheetTemplate: (examTypeId) => api.get(`/api/staff-panel/exam/exam-types/${examTypeId}/marksheet`),
   
   // Grading System
   getGrading: () => api.get('/api/staff-panel/exam/grading'),

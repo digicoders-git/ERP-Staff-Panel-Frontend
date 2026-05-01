@@ -1,401 +1,708 @@
-import { useState } from "react";
+import React, { useState, useEffect, useRef } from 'react';
+import {
+    FaIdCard, FaSearch, FaSpinner, FaDownload, FaTimes, FaUsers, FaUserGraduate, FaChalkboardTeacher,
+    FaUpload, FaMousePointer, FaTextHeight, FaSave, FaEye, FaCheck, FaBorderAll, FaChevronDown, FaPrint
+} from 'react-icons/fa';
 import jsPDF from 'jspdf';
-import domtoimage from 'dom-to-image';
-import { admissionAPI } from '../utils/apiService';
-import { BASE_URL } from '../utils/api';
-import { toast } from 'react-toastify';
-import { MdSearch, MdPerson, MdCheckCircle } from 'react-icons/md';
-import { FaSpinner } from 'react-icons/fa';
+import html2canvas from 'html2canvas';
+import axios from 'axios';
+import { toast } from 'react-hot-toast';
+import Swal from 'sweetalert2';
 
-export default function IdCardExactLayout() {
-  const [searchId, setSearchId] = useState("");
-  const [searchLoading, setSearchLoading] = useState(false);
-  const [searchResults, setSearchResults] = useState([]);
-  const [showDropdown, setShowDropdown] = useState(false);
-  const [data, setData] = useState({
-    schoolName: "INSTITUTIONAL ACADEMY",
-    schollNumber: "CBSE-83492",
-    addressBottom: "Campus Hub, City Center, Sector 4",
-    name: "",
-    father: "",
-    className: "",
-    dob: "",
-    address: "",
-    contact: "",
-    logo: null,
-    photo: null,
-    sign: null,
-  });
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5002';
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setData({ ...data, [name]: value });
-  };
+const FIELDS_BY_ROLE = {
+  student: [
+    { id: 'student_photo', label: 'Photo', type: 'image', placeholder: 'https://placehold.co/120x150?text=PHOTO' },
+    { id: 'student_name', label: 'Name', type: 'text', placeholder: '[ NAME ]' },
+    { id: 'admission_no', label: 'Adm No', type: 'text', placeholder: '[ ADM NO ]' },
+    { id: 'roll_no', label: 'Roll No', type: 'text', placeholder: '[ ROLL NO ]' },
+    { id: 'class_section', label: 'Class/Sec', type: 'text', placeholder: '[ CLASS/SEC ]' },
+    { id: 'dob', label: 'DOB', type: 'text', placeholder: '[ DD/MM/YYYY ]' },
+    { id: 'blood_group', label: 'Blood Group', type: 'text', placeholder: '[ B+ ]' },
+    { id: 'student_phone', label: 'Student Mobile', type: 'text', placeholder: '[ STUDENT MOBILE ]' },
+    { id: 'guardian_contact', label: 'Guardian Phone', type: 'text', placeholder: '[ GUARDIAN PHONE ]' },
+    { id: 'emergency_contact', label: 'Emergency Contact', type: 'text', placeholder: '[ EMERGENCY CONTACT ]' },
+    { id: 'id_no', label: 'ID Number', type: 'text', placeholder: '[ ID NUMBER ]' },
+    { id: 'email', label: 'Email', type: 'text', placeholder: '[ EMAIL ]' },
+    { id: 'address', label: 'Address', type: 'text', placeholder: '[ ADDRESS ]' },
+    { id: 'father_name', label: 'Father Name', type: 'text', placeholder: '[ FATHER NAME ]' },
+    { id: 'mother_name', label: 'Mother Name', type: 'text', placeholder: '[ MOTHER NAME ]' },
+    { id: 'school_name', label: 'School Name', type: 'text', placeholder: '[ SCHOOL NAME ]' },
+    { id: 'school_logo', label: 'Logo', type: 'image', placeholder: 'https://placehold.co/50?text=LOGO' },
+    { id: 'signature', label: 'Signature', type: 'image', placeholder: 'https://placehold.co/100x40?text=SIGNATURE' },
+    { id: 'qr_code', label: 'QR Code', type: 'image', placeholder: 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=STU-1046' }
+  ],
+  staff: [
+    { id: 'staff_photo', label: 'Photo', type: 'image', placeholder: 'https://placehold.co/120x150?text=PHOTO' },
+    { id: 'staff_name', label: 'Name', type: 'text', placeholder: '[ NAME ]' },
+    { id: 'employee_id', label: 'Emp ID', type: 'text', placeholder: '[ EMP-ID ]' },
+    { id: 'designation', label: 'Designation', type: 'text', placeholder: '[ DESIGNATION ]' },
+    { id: 'department', label: 'Department', type: 'text', placeholder: '[ DEPARTMENT ]' },
+    { id: 'staff_phone', label: 'Phone', type: 'text', placeholder: '[ PHONE ]' },
+    { id: 'staff_email', label: 'Email', type: 'text', placeholder: '[ EMAIL ]' },
+    { id: 'staff_address', label: 'Address', type: 'text', placeholder: '[ ADDRESS ]' },
+    { id: 'blood_group', label: 'Blood Group', type: 'text', placeholder: '[ B+ ]' },
+    { id: 'school_name', label: 'School Name', type: 'text', placeholder: '[ SCHOOL NAME ]' },
+    { id: 'school_logo', label: 'Logo', type: 'image', placeholder: 'https://placehold.co/50?text=LOGO' },
+    { id: 'signature', label: 'Signature', type: 'image', placeholder: 'https://placehold.co/100x40?text=SIGNATURE' },
+    { id: 'qr_code', label: 'QR Code', type: 'image', placeholder: 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=STAFF' }
+  ],
+  teacher: [
+    { id: 'staff_photo', label: 'Photo', type: 'image', placeholder: 'https://placehold.co/120x150?text=PHOTO' },
+    { id: 'staff_name', label: 'Name', type: 'text', placeholder: '[ NAME ]' },
+    { id: 'employee_id', label: 'Teacher ID', type: 'text', placeholder: '[ TCH-ID ]' },
+    { id: 'subject', label: 'Subject', type: 'text', placeholder: '[ SUBJECT ]' },
+    { id: 'qualification', label: 'Qualification', type: 'text', placeholder: '[ QUALIFICATION ]' },
+    { id: 'experience', label: 'Experience', type: 'text', placeholder: '[ EXPERIENCE ]' },
+    { id: 'is_class_teacher', label: 'Class Teacher?', type: 'text', placeholder: '[ YES/NO ]' },
+    { id: 'assigned_class', label: 'Assigned Class', type: 'text', placeholder: '[ CLASS ]' },
+    { id: 'staff_phone', label: 'Phone', type: 'text', placeholder: '[ PHONE ]' },
+    { id: 'staff_email', label: 'Email', type: 'text', placeholder: '[ EMAIL ]' },
+    { id: 'blood_group', label: 'Blood Group', type: 'text', placeholder: '[ B+ ]' },
+    { id: 'school_name', label: 'School Name', type: 'text', placeholder: '[ SCHOOL NAME ]' },
+    { id: 'school_logo', label: 'Logo', type: 'image', placeholder: 'https://placehold.co/50?text=LOGO' },
+    { id: 'signature', label: 'Signature', type: 'image', placeholder: 'https://placehold.co/100x40?text=SIGNATURE' },
+    { id: 'qr_code', label: 'QR Code', type: 'image', placeholder: 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=TEACHER' }
+  ],
+  driver: [
+    { id: 'staff_photo', label: 'Photo', type: 'image', placeholder: 'https://placehold.co/120x150?text=PHOTO' },
+    { id: 'staff_name', label: 'Name', type: 'text', placeholder: '[ NAME ]' },
+    { id: 'employee_id', label: 'Driver ID', type: 'text', placeholder: '[ DRV-ID ]' },
+    { id: 'vehicle_no', label: 'Vehicle No', type: 'text', placeholder: '[ VEHICLE NO ]' },
+    { id: 'route_name', label: 'Route', type: 'text', placeholder: '[ ROUTE ]' },
+    { id: 'staff_phone', label: 'Phone', type: 'text', placeholder: '[ PHONE ]' },
+    { id: 'license_no', label: 'License No', type: 'text', placeholder: '[ LICENSE NO ]' },
+    { id: 'school_name', label: 'School Name', type: 'text', placeholder: '[ SCHOOL NAME ]' },
+    { id: 'school_logo', label: 'Logo', type: 'image', placeholder: 'https://placehold.co/50?text=LOGO' },
+    { id: 'qr_code', label: 'QR Code', type: 'image', placeholder: 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=DRIVER' }
+  ],
+  warden: [
+    { id: 'staff_photo', label: 'Photo', type: 'image', placeholder: 'https://placehold.co/120x150?text=PHOTO' },
+    { id: 'staff_name', label: 'Name', type: 'text', placeholder: '[ NAME ]' },
+    { id: 'employee_id', label: 'Warden ID', type: 'text', placeholder: '[ WRD-ID ]' },
+    { id: 'hostel_name', label: 'Hostel', type: 'text', placeholder: '[ HOSTEL ]' },
+    { id: 'staff_phone', label: 'Phone', type: 'text', placeholder: '[ PHONE ]' },
+    { id: 'school_name', label: 'School Name', type: 'text', placeholder: '[ SCHOOL NAME ]' },
+    { id: 'qr_code', label: 'QR Code', type: 'image', placeholder: 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=WARDEN' }
+  ]
+};
 
-  const handleSearchChange = async (e) => {
-    const value = e.target.value;
-    setSearchId(value);
-    
-    if (value.length > 2) {
-      try {
-        setSearchLoading(true);
-        const res = await admissionAPI.getAll({ search: value, limit: 5 });
-        const students = res.data.students || res.data;
-        setSearchResults(Array.isArray(students) ? students : []);
-        setShowDropdown(true);
-      } catch (err) {
-        console.error("Search protocol failure:", err);
-      } finally {
-        setSearchLoading(false);
-      }
-    } else {
-      setSearchResults([]);
-      setShowDropdown(false);
-    }
-  };
+// Map roles to their specific panel categories
+const ROLE_PANEL_MAP = {
+  student: 'parent',
+  staff: 'staff',
+  teacher: 'teacher',
+  driver: 'transport',
+  warden: 'warden',
+  librarian: 'library',
+  feeadmin: 'fee'
+};
 
-  const selectStudent = (student) => {
-    // Robust URL Resolution Protocol with Path Extraction
-    let studentPhoto = null;
-    if (student.profileImage) {
-      if (student.profileImage.startsWith('http')) {
-        studentPhoto = student.profileImage;
-      } else {
-        // Handle absolute local paths by extracting everything from 'uploads' onwards
-        let cleanPath = student.profileImage.replace(/\\/g, '/');
-        const uploadsIndex = cleanPath.toLowerCase().indexOf('uploads/');
-        if (uploadsIndex !== -1) {
-          cleanPath = cleanPath.slice(uploadsIndex);
+export default function IdCard() {
+    const [viewMode, setViewMode] = useState('generate');
+    const [selectedRole, setSelectedRole] = useState('student');
+    const [classes, setClasses] = useState([]);
+    const [sections, setSections] = useState([]);
+    const [people, setPeople] = useState([]);
+    const [selectedIds, setSelectedIds] = useState([]);
+    const [selectedClass, setSelectedClass] = useState("");
+    const [selectedSection, setSelectedSection] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [generating, setGenerating] = useState(false);
+    const [previewHtml, setPreviewHtml] = useState("");
+    const [search, setSearch] = useState("");
+    const [previewPerson, setPreviewPerson] = useState(null);
+
+    // Designer State
+    const [templateUrl, setTemplateUrl] = useState("");
+    const [configFields, setConfigFields] = useState([]);
+    const [selectedField, setSelectedField] = useState(null);
+    const [isDragging, setIsDragging] = useState(false);
+    const [design, setDesign] = useState({ cardWidth: 350, cardHeight: 550, backgroundColor: '#ffffff' });
+    const [showGrid, setShowGrid] = useState(true);
+    const [saving, setSaving] = useState(false);
+    const mapperRef = useRef(null);
+
+    useEffect(() => {
+        if (selectedRole !== 'student') {
+            fetchPeople();
+        } else if (selectedClass && selectedSection) {
+            fetchPeople();
         }
-        studentPhoto = `${BASE_URL}/${cleanPath.startsWith('/') ? cleanPath.slice(1) : cleanPath}`;
-      }
-    }
+    }, [selectedRole, selectedClass, selectedSection]);
 
-    setData({
-      ...data,
-      name: `${student.firstName} ${student.lastName}`.trim(),
-      father: student.guardianInfo?.fatherName || "",
-      className: `${student.class?.className || ''} ${student.stream ? `(${student.stream})` : ''}`.trim(),
-      dob: student.dob ? student.dob.split('T')[0] : "",
-      address: student.permanentAddress?.address || student.permanentAddress?.city || "",
-      contact: student.phone || student.mobile || "",
-      photo: studentPhoto
-    });
-    
-    setShowDropdown(false);
-    setSearchId(`${student.admissionNumber} - ${student.firstName} ${student.lastName}`);
-    toast.success("IDENTITY MANIFEST SYNCHRONIZED! 🎯");
-  };
+    useEffect(() => {
+        fetchClasses();
+        fetchIdCardDesign();
+    }, [selectedRole]);
 
-  const handleSearch = async () => {
-    if (!searchId) {
-      toast.warning("PLEASE ENTER STUDENT ID SCANNER CODE");
-      return;
-    }
-    // For the direct button click, we use the already fetched results if any, 
-    // or perform a fresh search if no results or multiple results exist.
-    if (searchResults.length === 1) {
-      selectStudent(searchResults[0]);
-    } else {
-      // Fallback search
-      try {
-        setSearchLoading(true);
-        const res = await admissionAPI.getAll({ search: searchId, limit: 1 });
-        const students = res.data.students || res.data;
-        if (students && students.length > 0) {
-          selectStudent(students[0]);
+    useEffect(() => {
+        const firstId = selectedIds[0];
+        if (firstId) {
+            setPreviewPerson(people.find(p => p._id === firstId));
         } else {
-          toast.error("IDENTITY NOT FOUND IN INSTITUTIONAL MATRIX");
+            setPreviewPerson(null);
         }
-      } catch (err) {
-        toast.error("REGISTRY ACCESS DENIED");
-      } finally {
-        setSearchLoading(false);
-      }
-    }
-  };
+    }, [selectedIds, people]);
 
-  const handleFile = (e) => {
-    const { name, files } = e.target;
-    setData({ ...data, [name]: URL.createObjectURL(files[0]) });
-  };
-
-  const handlePrint = () => window.print();
-
-  const handleDownloadPDF = async () => {
-    const element = document.querySelector('.print-card');
-    
-    try {
-      // Convert DOM element to image
-      const dataUrl = await domtoimage.toPng(element, {
-        quality: 1,
-        bgcolor: '#ffffff',
-        width: element.offsetWidth * 2,
-        height: element.offsetHeight * 2,
-        style: {
-          transform: 'scale(2)',
-          transformOrigin: 'top left'
-        }
-      });
-      
-      // Create PDF with ID card dimensions
-      const pdf = new jsPDF({
-        orientation: element.offsetWidth > element.offsetHeight ? 'landscape' : 'portrait',
-        unit: 'px',
-        format: [element.offsetWidth, element.offsetHeight]
-      });
-      
-      // Add image to PDF
-      pdf.addImage(dataUrl, 'PNG', 0, 0, element.offsetWidth, element.offsetHeight);
-      
-      // Save PDF
-      pdf.save(`${data.name || 'student'}_id_card.pdf`);
-      
-    } catch (error) {
-      console.error('PDF generation failed:', error);
-      // Fallback to print dialog
-      window.print();
-    }
-  };
-
-  return (
-    <div className="min-h-screen bg-gray-100 p-6">
-      <div className="grid md:grid-cols-2 gap-6">
-
-        {/* FORM */}
-        <div className="bg-white p-4 sm:p-6 rounded-xl shadow order-2 lg:order-1">
-          <h2 className="text-lg sm:text-xl font-bold mb-4 flex items-center gap-2">
-            <MdPerson className="text-blue-600" /> ID Card Control Panel
-          </h2>
-          
-          {/* SEARCH MANIFOLD */}
-          <div className="mb-8 p-4 bg-blue-50 rounded-2xl border border-blue-100">
-            <label className="block text-[10px] font-black text-blue-600 uppercase tracking-widest mb-2">Institutional Identity Search</label>
-            <div className="flex gap-2">
-              <div className="relative flex-1">
-                <input 
-                  type="text" 
-                  value={searchId}
-                  onChange={handleSearchChange}
-                  onFocus={() => searchResults.length > 0 && setShowDropdown(true)}
-                  placeholder="SEARCH BY ID, NAME, OR MOBILE..." 
-                  className="w-full pl-10 pr-4 py-3 bg-white border-2 border-transparent rounded-xl focus:border-blue-500 outline-none text-xs font-bold tracking-widest transition-all"
-                />
-                <MdSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
+    const fetchIdCardDesign = async () => {
+        try {
+            const res = await axios.get(`${BASE_URL}/api/client-settings`, {
+                headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+            });
+            const settings = res.data.settings;
+            if (settings?.idCard?.[selectedRole]) {
+                const roleData = settings.idCard[selectedRole];
+                setTemplateUrl(roleData.template || '');
+                if (roleData.design) setDesign(prev => ({ ...prev, ...roleData.design }));
                 
-                {/* SEARCH RESULTS DROPDOWN */}
-                {showDropdown && searchResults.length > 0 && (
-                  <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-2xl border border-slate-100 z-[100] max-h-60 overflow-y-auto divide-y divide-slate-50">
-                    {searchResults.map((student) => (
-                      <div 
-                        key={student._id}
-                        onClick={() => selectStudent(student)}
-                        className="p-4 hover:bg-blue-50 cursor-pointer transition-colors flex items-center gap-4 group"
-                      >
-                        <div className="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center overflow-hidden border-2 border-white group-hover:border-blue-200">
-                          {student.profileImage ? (
-                            <img 
-                              src={student.profileImage.startsWith('http') 
-                                ? student.profileImage 
-                                : (() => {
-                                    let cp = student.profileImage.replace(/\\/g, '/');
-                                    const ui = cp.toLowerCase().indexOf('uploads/');
-                                    if (ui !== -1) cp = cp.slice(ui);
-                                    return `${BASE_URL}/${cp.startsWith('/') ? cp.slice(1) : cp}`;
-                                  })()} 
-                              className="w-full h-full object-cover" 
-                              alt="Result"
-                            />
-                          ) : (
-                            <MdPerson className="text-slate-400" />
-                          )}
-                        </div>
-                        <div className="flex-1">
-                          <p className="text-[10px] font-black text-slate-800 uppercase tracking-widest">{student.firstName} {student.lastName}</p>
-                          <p className="text-[8px] font-bold text-blue-600 flex gap-2">
-                            <span>{student.admissionNumber}</span>
-                            <span className="text-slate-300">|</span>
-                            <span>{student.phone}</span>
-                            <span className="text-slate-300">|</span>
-                            <span>{student.class?.className || 'N/A'}</span>
-                          </p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-              <button 
-                onClick={handleSearch}
-                disabled={searchLoading}
-                className="bg-blue-600 text-white px-6 py-3 rounded-xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-200 flex items-center gap-2 disabled:opacity-50"
-              >
-                {searchLoading ? <FaSpinner className="animate-spin" /> : <MdCheckCircle />}
-                <span className="text-[10px] font-black uppercase tracking-widest">SYNCHRONIZE</span>
-              </button>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div className="col-span-2">
-              <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Student Nomenclature</label>
-              <input name="name" value={data.name} onChange={handleChange} placeholder="FULL NAME" className="input w-full" />
-            </div>
-            <div className="col-span-2">
-              <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Guardian Protocol (Father)</label>
-              <input name="father" value={data.father} onChange={handleChange} placeholder="FATHER'S NAME" className="input w-full" />
-            </div>
-            <div>
-              <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Academic Matrix (Class)</label>
-              <input name="className" value={data.className} onChange={handleChange} placeholder="CLASS / STREAM" className="input w-full" />
-            </div>
-            <div>
-              <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Chronological Origin (DOB)</label>
-              <input name="dob" value={data.dob} type="date" onChange={handleChange} className="input w-full" />
-            </div>
-            <div className="col-span-2">
-              <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Primary Hotline (Contact)</label>
-              <input name="contact" value={data.contact} onChange={handleChange} placeholder="CONTACT NO" className="input w-full" />
-            </div>
-            <div className="col-span-2">
-              <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Spatial Residue (Address)</label>
-              <input name="address" value={data.address} onChange={handleChange} placeholder="ADDRESS / CITY" className="input w-full" />
-            </div>
-
-            <div className="col-span-2 pt-4 border-t border-slate-100 mt-2">
-              <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4">Institutional Configuration</h4>
-            </div>
-
-            <div className="col-span-2">
-              <label className="text-sm font-medium mb-1 block">School Logo</label>
-              <input type="file" name="logo" onChange={handleFile} className="w-full text-xs" />
-            </div>
-
-            <div className="col-span-2">
-              <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">School Name</label>
-              <input name="schoolName" value={data.schoolName} onChange={handleChange} placeholder="SCHOOL NAME" className="input w-full" />
-            </div>
-            <div>
-              <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Registry Code</label>
-              <input name="schollNumber" value={data.schollNumber} onChange={handleChange} placeholder="SCHOLL NUMBER" className="input w-full" />
-            </div>
-            <div className="col-span-2">
-              <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Footer Legend</label>
-              <input name="addressBottom" value={data.addressBottom} onChange={handleChange} placeholder="FOOTER ADDRESS" className="input w-full" />
-            </div>
-
-            <div className="col-span-1 pt-4">
-              <label className="text-sm font-medium mb-1 block">Student Photo</label>
-              <input type="file" name="photo" onChange={handleFile} className="w-full text-xs" />
-            </div>
-
-            <div className="col-span-1 pt-4">
-              <label className="text-sm font-medium mb-1 block">Principal Sign</label>
-              <input type="file" name="sign" onChange={handleFile} className="w-full text-xs" />
-            </div>
-          </div>
-        </div>
-        {/* ID CARD */}
-        <div className="flex justify-center items-start order-1 lg:order-2">
-          <div className="w-full max-w-[280px] sm:max-w-[360px] aspect-[2/3] bg-white border shadow print-card relative mx-auto">
-
-            {/* HEADER */}
-            <div className="bg-blue-600 w-full h-5">
-
-              <h1 className="text-sm text-white float-right mr-3 tracking-wide">{data.schollNumber}</h1>
-
-            </div>
-
-            <div className="text-blue-500 p-3 mt-2 h-[50px] flex items-center">
-              <div className="w-12 h-12 flex-shrink-0">
-                {data.logo && <img src={data.logo} className="h-12 w-12 rounded-full bg-white object-cover" />}
-              </div>
-              <div className="flex-1 text-center">
-                <h1 className="text-xl font-extrabold tracking-wide">{data.schoolName}</h1>
-              </div>
-            </div>
-
-
-            {/* PHOTO SECTION */}
-            <div className="relative h-56 isolate overflow- ">
-
-              {/* Blue polygon background (LOW LAYER) */}
-              <div className="absolute inset-0 bg-blue-700 clip-diagonal z-0">
-
-                {/* <div className="absolute bottom-0 w-full h-6 bg-red-400 clip-line2 z-10"></div> */}
-              </div>
-              <div className="absolute bottom-3 sm:bottom-6 -right-1 rotate-[-9deg] w-[50%] sm:w-[101.9%] h-0.5 sm:h-2 bg-yellow-400 z-10"></div>
-
-              
-
-              {/* Yellow attached diagonal line */}
-
-              {/* CONTENT (ABOVE POLYGON) */}
-              <div className="relative z-20 flex flex-col justify-center h-full">
-
-                <div className="text-white text-center py-2 font-bold">
-                  STUDENT ID CARD
-                </div>
-
-                {/* PHOTO FRAME – ALWAYS ABOVE LINE */}
-                <div className="w-32 h-40 mx-auto border-2 border-yellow-400 rounded-lg bg-white relative z-30 -mb-8">
-                  {data.photo && (
-                    <img
-                      src={data.photo}
-                      className="w-full h-full object-cover rounded-md"
-                      alt="student"
-                    />
-                  )}
-                </div>
-
-              </div>
-            </div>
-
-
-
-            {/* DETAILS */}
-            <div className="px-6 mt-4 text-sm space-y-1">
-              <p className="flex gap-3">Name : <span className="text-md"> {data.name}</span></p>
-              <p className="flex gap-3">Father's Name : <span className="text-md"> {data.father}</span></p>
-              <p className="flex gap-3">Class : <span className="text-md"> {data.className}</span></p>
-              <p className="flex gap-3">Date of Birth : <span className="text-md"> {data.dob}</span></p>
-              <p className="flex gap-3">Address : <span className="text-md"> {data.address}</span></p>
-              <p className="flex gap-3">Contact No. : <span className="text-md">{data.contact}</span></p>
-            </div>
-
-            {/* SIGN */}
-            <div className="absolute bottom-10 right-6 text-center">
-              {data.sign && <img src={data.sign} className="h-8 mx-auto" />}
-              <p className="text-xs font-bold">Principal</p>
-            </div>
-
-            {/* FOOTER */}
-            <div className="absolute bottom-[7px] left-0 w-full h-8 bg-yellow-400 "></div>
-
-            <div className="absolute bottom-0 w-full bg-blue-700 h-[32px] text-white text-center p-2 text-xs font-semibold">
-              {data.addressBottom}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* ACTION BUTTONS */}
-      <div className="flex justify-center gap-4 mt-6">
-        <button onClick={handleDownloadPDF} className="px-6 py-2 cursor-pointer bg-green-600 text-white rounded-xl shadow hover:bg-green-700">Download PDF</button>
-        <button onClick={handlePrint} className="px-6 py-2 bg-blue-600 cursor-pointer text-white rounded-xl shadow hover:bg-blue-700">Print ID Card</button>
-      </div>
-
-      <style>{`
-        .input {
-          border: 1px solid #ddd;
-          padding: 8px;
-          border-radius: 6px;
+                const availableFields = FIELDS_BY_ROLE[selectedRole] || [];
+                const existing = roleData.fields || [];
+                
+                const merged = availableFields.map(af => {
+                    const e = existing.find(f => f.id === af.id);
+                    return {
+                        ...af,
+                        ...(e || {}),
+                        label: af.label, // Force registry label
+                        placeholder: af.placeholder,
+                        visible: e ? e.visible : false,
+                        x: e ? e.x : 20,
+                        y: e ? e.y : 20,
+                        fontSize: e ? e.fontSize : 14,
+                        bold: e ? e.bold : false,
+                        color: e ? e.color : '#000000',
+                        width: e ? e.width : (af.type === 'image' ? 100 : 200),
+                        height: e ? e.height : (af.type === 'image' ? 120 : 24)
+                    };
+                });
+                setConfigFields(merged);
+            } else {
+                setTemplateUrl("");
+                setConfigFields((FIELDS_BY_ROLE[selectedRole] || []).map(af => ({
+                    ...af,
+                    visible: false,
+                    x: 20,
+                    y: 20,
+                    fontSize: 14,
+                    bold: false,
+                    color: '#000000',
+                    width: af.type === 'image' ? 100 : 200,
+                    height: af.type === 'image' ? 120 : 24
+                })));
+            }
+        } catch (err) {
+            console.error("Failed to load ID card design");
         }
-        @media print {
-          body * { visibility: hidden; }
-          .print-card, .print-card * { visibility: visible; }
+    };
+
+    const fetchClasses = async () => {
+        try {
+            const res = await axios.get(`${BASE_URL}/api/staff-panel/class/get-all-classes`, {
+                headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+            });
+            setClasses(res.data.classes || []);
+        } catch (err) { toast.error("Failed to load classes"); }
+    };
+
+    const fetchPeople = async () => {
+        if (selectedRole === 'student' && (!selectedClass || !selectedSection)) {
+            // Wait for class/section if student
+            return;
         }
-      `}</style>
-    </div>
-  );
+        setLoading(true);
+        setPeople([]);
+        setSelectedIds([]);
+        try {
+            let url = "";
+            if (selectedRole === 'student') {
+                url = `${BASE_URL}/api/staff-panel/student/get-students-by-section?classId=${selectedClass}&sectionId=${selectedSection}`;
+            } else {
+                url = `${BASE_URL}/api/staff-panel/staff-optimized/all?role=${selectedRole}&limit=1000`;
+            }
+            const res = await axios.get(url, {
+                headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+            });
+            const data = res.data.students || res.data.data || res.data.staff || [];
+            setPeople(data);
+            if (data.length === 0) {
+                toast.error("No records found");
+            } else {
+                toast.success(`${data.length} records fetched`);
+            }
+        } catch (err) { toast.error("Failed to fetch records"); }
+        finally { setLoading(false); }
+    };
+
+    const handleClassChange = async (classId) => {
+        setSelectedClass(classId);
+        setSelectedSection("");
+        setSections([]);
+        if (!classId) return;
+        try {
+            const res = await axios.get(`${BASE_URL}/api/staff-panel/class/get-sections-by-class/${classId}`, {
+                headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+            });
+            setSections(res.data.sections || []);
+        } catch (err) { toast.error("Failed to load sections"); }
+    };
+
+    const handleGenerateAndPreview = async () => {
+        if (selectedIds.length === 0) {
+            toast.error("Select records first");
+            return;
+        }
+
+        setGenerating(true);
+        try {
+            const res = await axios.post(`${BASE_URL}/api/staff-panel/id-card/generate`, {
+                role: selectedRole,
+                studentIds: selectedRole === 'student' ? selectedIds : [],
+                staffIds: selectedRole !== 'student' ? selectedIds : []
+            }, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } });
+
+            if (res.data.success) {
+                setPreviewHtml(res.data.html);
+                toast.success("ID Cards Generated!");
+            } else { toast.error("Failed to generate cards"); }
+        } catch (err) { toast.error("Error generating ID cards"); }
+        finally { setGenerating(false); }
+    };
+
+
+
+    const downloadCards = async (action = 'print') => {
+        if (!previewHtml) return;
+
+        if (action === 'download') {
+            try {
+                Swal.fire({
+                    title: 'Generating PDF...',
+                    html: 'Please wait while we prepare your high-quality ID cards.',
+                    allowOutsideClick: false,
+                    didOpen: () => Swal.showLoading()
+                });
+
+                // Create a temporary container
+                const container = document.createElement('div');
+                container.style.position = 'fixed';
+                container.style.left = '-9999px';
+                container.style.top = '0';
+                container.style.width = 'fit-content';
+                container.innerHTML = previewHtml;
+                document.body.appendChild(container);
+
+                const firstPerson = previewPerson || (selectedIds.length > 0 ? people.find(p => p._id === selectedIds[0]) : null);
+                const fileName = firstPerson ? `${firstPerson.firstName}_${firstPerson.lastName}_ID_Cards.pdf` : 'ID_Cards.pdf';
+
+                const canvas = await html2canvas(container, {
+                    useCORS: true,
+                    scale: 2, // Higher quality
+                    backgroundColor: null
+                });
+
+                document.body.removeChild(container);
+
+                const imgData = canvas.toDataURL('image/png');
+                const pdf = new jsPDF({
+                    orientation: design.cardWidth > design.cardHeight ? 'landscape' : 'portrait',
+                    unit: 'px',
+                    format: [canvas.width / 2, canvas.height / 2]
+                });
+
+                pdf.addImage(imgData, 'PNG', 0, 0, canvas.width / 2, canvas.height / 2);
+                pdf.save(fileName);
+                
+                Swal.close();
+                toast.success("PDF Downloaded!");
+            } catch (error) {
+                console.error("PDF Export Error:", error);
+                Swal.fire('Error', 'Failed to generate PDF. Please try again.', 'error');
+            }
+            return;
+        }
+
+        const printWindow = window.open('', '', 'height=800,width=1000');
+        printWindow.document.write(`
+            <html>
+                <head>
+                    <title>${selectedRole.toUpperCase()} ID Cards</title>
+                    <style>
+                        body { margin: 0; padding: 20px; background: #fff; }
+                        @media print { 
+                            .no-print { display: none; } 
+                            body { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+                        }
+                        .id-card-wrapper { 
+                            margin: 10px; 
+                            display: inline-block; 
+                            vertical-align: top; 
+                            page-break-inside: avoid; 
+                            -webkit-print-color-adjust: exact !important; 
+                            print-color-adjust: exact !important; 
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div id="print-content">${previewHtml}</div>
+                    <script>
+                        window.onload = () => { window.print(); window.close(); };
+                    </script>
+                </body>
+            </html>
+        `);
+        printWindow.document.close();
+    };
+
+    const handleFileUpload = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const formData = new FormData();
+        formData.append('template', file);
+        formData.append('role', selectedRole);
+        try {
+            Swal.fire({ title: 'Uploading...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+            const res = await axios.post(`${BASE_URL}/api/client-settings/idcard/upload-template`, formData, {
+                headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+            });
+            setTemplateUrl(res.data.templateUrl);
+            Swal.fire('Uploaded!', `${selectedRole.toUpperCase()} template uploaded!`, 'success');
+        } catch (err) { Swal.fire('Error', 'Upload failed', 'error'); }
+    };
+
+    const handleSaveLayout = async () => {
+        setSaving(true);
+        try {
+            const fieldsToSave = configFields.map(({ placeholder, label, type, ...rest }) => rest);
+            await axios.put(`${BASE_URL}/api/client-settings/idcard/config/update`, {
+                role: selectedRole,
+                template: templateUrl,
+                fields: fieldsToSave,
+                design: design
+            }, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } });
+            toast.success("Layout Saved!");
+            fetchIdCardDesign();
+        } catch (err) { toast.error("Failed to save layout"); }
+        finally { setSaving(false); }
+    };
+
+    const handleMouseDown = (e, id) => {
+        e.stopPropagation();
+        setSelectedField(id);
+        setIsDragging(true);
+    };
+
+    const handleMouseMove = (e) => {
+        if (!isDragging || !selectedField || !mapperRef.current) return;
+        const rect = mapperRef.current.getBoundingClientRect();
+        let newX = e.clientX - rect.left;
+        let newY = e.clientY - rect.top;
+        newX = Math.max(0, Math.min(newX, design.cardWidth - 20));
+        newY = Math.max(0, Math.min(newY, design.cardHeight - 10));
+        setConfigFields(prev => prev.map(f => f.id === selectedField ? { ...f, x: Math.round(newX), y: Math.round(newY) } : f));
+    };
+
+    const handleMouseUp = () => setIsDragging(false);
+
+    const getPreviewValue = (field) => {
+        const p = previewPerson;
+        
+        const mapping = {
+            student_photo: p?.profileImage || p?.studentPhoto || 'https://placehold.co/120x150?text=PHOTO',
+            student_name: p?.name || `${p?.firstName} ${p?.lastName || ''}`.trim() || 'Student Name',
+            admission_no: p?.admissionNumber || 'ADM-001',
+            roll_no: p?.rollNumber || '01',
+            class_section: p?.assignedClass?.className ? `${p.assignedClass.className} - ${p.assignedSection?.sectionName || ''}` : (p?.classId?.className || 'Class-X'),
+            dob: p?.dob ? new Date(p.dob).toLocaleDateString() : '01/01/2010',
+            blood_group: p?.bloodGroup || 'B+',
+            student_phone: p?.mobileNumber || p?.mobile || '9876543210',
+            guardian_contact: p?.guardianPhone || p?.fatherMobile || '9876543211',
+            emergency_contact: p?.emergencyContact || '9876543212',
+            id_no: p?.customId || p?.staffId || p?.admissionNumber || 'ID-001',
+            email: p?.email || 'student@school.com',
+            address: p?.address || 'School Address Area',
+            father_name: p?.fatherName || 'Father Name',
+            mother_name: p?.motherName || 'Mother Name',
+            
+            // Staff/Teacher specific
+            staff_photo: p?.profileImage || 'https://placehold.co/120x150?text=PHOTO',
+            staff_name: p?.name || (p?.firstName ? `${p.firstName} ${p.lastName || ''}`.trim() : 'Staff Name'),
+            employee_id: p?.staffId || p?.customId || 'EMP-001',
+            designation: p?.designation || 'Staff',
+            department: p?.department || 'General',
+            staff_phone: p?.mobile || p?.mobileNo || p?.phone || '9876543210',
+            staff_email: p?.email || 'staff@school.com',
+            staff_address: p?.address || 'Staff Address Area',
+            subject: p?.subjects?.join(', ') || p?.subject || 'N/A',
+            qualification: p?.qualification || 'N/A',
+            experience: p?.experience ? `${p.experience} Years` : 'N/A',
+            is_class_teacher: p?.isClassTeacher ? 'YES' : 'NO',
+            assigned_class: p?.assignedClass?.className || 'N/A',
+            vehicle_no: p?.vehicleNumber || p?.vehicle?.vehicleNumber || 'N/A',
+            route_name: p?.route?.routeName || 'N/A',
+            license_no: p?.licenseNumber || 'N/A',
+            hostel_name: p?.hostel?.hostelName || 'N/A',
+
+            school_name: p?.branch?.branchName || 'My School Name',
+            school_logo: p?.branch?.logo || 'https://placehold.co/50?text=LOGO',
+            signature: 'https://placehold.co/100x40?text=SIGNATURE',
+            qr_code: `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${p?._id || 'VERIFY'}`
+        };
+
+        return mapping[field.id] || field.placeholder;
+    };
+
+    return (
+        <div className="p-6 max-w-7xl mx-auto space-y-6" onMouseMove={handleMouseMove} onMouseUp={handleMouseUp}>
+            {/* Header */}
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-6 rounded-2xl border shadow-sm">
+                <div>
+                    <h2 className="text-2xl font-black text-slate-800 flex items-center gap-3">
+                        <FaIdCard className="text-blue-600" /> ID Card System
+                    </h2>
+                    <p className="text-slate-400 text-xs font-bold uppercase tracking-widest mt-1">Generate & Configure Student/Staff ID Cards</p>
+                </div>
+                <div className="flex bg-slate-100 p-1 rounded-xl border">
+                    <button onClick={() => setViewMode('generate')} className={`px-6 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${viewMode === 'generate' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}>Generate</button>
+                    <button onClick={() => setViewMode('config')} className={`px-6 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${viewMode === 'config' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}>Designer</button>
+                </div>
+            </div>
+
+            {viewMode === 'generate' ? (
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                    {/* Filters */}
+                    <div className="lg:col-span-4 space-y-6">
+                        <div className="bg-white p-6 rounded-2xl border shadow-sm space-y-4">
+                            <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest border-b pb-3">Selection Filters</h3>
+                            <div className="space-y-4">
+                                <div className="space-y-1">
+                                    <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Select Role</label>
+                                    <select 
+                                        value={selectedRole} 
+                                        onChange={(e) => setSelectedRole(e.target.value)}
+                                        className="w-full bg-slate-50 border-slate-200 rounded-xl text-xs font-bold py-3 px-4 focus:ring-blue-500 transition-all"
+                                    >
+                                        <option value="student">Students</option>
+                                        <option value="teacher">Teachers</option>
+                                        <option value="driver">Drivers</option>
+                                        <option value="staff">Other Staff</option>
+                                        <option value="warden">Wardens</option>
+                                        <option value="librarian">Librarians</option>
+                                    </select>
+                                </div>
+
+                                {selectedRole === 'student' && (
+                                    <div className="grid grid-cols-2 gap-4 animate-in fade-in slide-in-from-top-2 duration-300">
+                                        <div className="space-y-1">
+                                            <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Class</label>
+                                            <select value={selectedClass} onChange={(e) => handleClassChange(e.target.value)} className="w-full bg-slate-50 border-slate-200 rounded-lg text-xs font-bold focus:ring-blue-500">
+                                                <option value="">Select Class</option>
+                                                {classes.map(c => <option key={c._id} value={c._id}>{c.className}</option>)}
+                                            </select>
+                                        </div>
+                                        <div className="space-y-1">
+                                            <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Section</label>
+                                            <select value={selectedSection} onChange={(e) => setSelectedSection(e.target.value)} className="w-full bg-slate-50 border-slate-200 rounded-lg text-xs font-bold focus:ring-blue-500">
+                                                <option value="">Select Section</option>
+                                                {sections.map(s => <option key={s._id} value={s._id}>{s.sectionName}</option>)}
+                                            </select>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+
+                            <div className="pt-4 space-y-3">
+                                {selectedRole === 'student' && !people.length && (
+                                    <button onClick={fetchPeople} disabled={loading} className="w-full py-3 bg-blue-50 text-blue-600 rounded-xl font-black uppercase tracking-widest flex items-center justify-center gap-3 hover:bg-blue-100 transition-all border border-blue-100 disabled:opacity-50">
+                                        {loading ? <FaSpinner className="animate-spin" /> : <FaSearch />} Fetch Students
+                                    </button>
+                                )}
+
+                                <button onClick={handleGenerateAndPreview} disabled={generating || selectedIds.length === 0} className="w-full py-4 bg-slate-900 text-white rounded-xl font-black uppercase tracking-widest flex items-center justify-center gap-3 hover:bg-black transition-all shadow-xl shadow-slate-200 disabled:opacity-50">
+                                    {generating ? <FaSpinner className="animate-spin" /> : <FaEye />} Generate {selectedIds.length > 0 ? `(${selectedIds.length})` : ''}
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* List View */}
+                        <div className="bg-white rounded-2xl border shadow-sm overflow-hidden flex flex-col h-[400px]">
+                            <div className="p-4 border-b bg-slate-50 flex items-center justify-between">
+                                <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{selectedRole.toUpperCase()} List</h3>
+                                <span className="px-2 py-1 bg-blue-100 text-blue-600 rounded text-[9px] font-black">{selectedIds.length} Selected</span>
+                            </div>
+                            <div className="flex-1 overflow-y-auto p-4 space-y-2">
+                                {loading ? (
+                                    <div className="h-full flex items-center justify-center"><FaSpinner className="animate-spin text-slate-300 text-2xl" /></div>
+                                ) : people.length === 0 ? (
+                                    <div className="h-full flex flex-col items-center justify-center text-slate-300">
+                                        <FaUsers size={40} className="mb-2" />
+                                        <p className="text-[10px] font-black uppercase tracking-widest">No Records Found</p>
+                                    </div>
+                                ) : people.map(person => (
+                                    <div key={person._id} className={`p-3 rounded-xl border flex items-center gap-3 cursor-pointer transition-all ${selectedIds.includes(person._id) ? 'bg-blue-50 border-blue-200 ring-1 ring-blue-200' : 'bg-white border-slate-100 hover:border-slate-300'}`} onClick={() => {
+                                        setSelectedIds(prev => prev.includes(person._id) ? prev.filter(id => id !== person._id) : [...prev, person._id]);
+                                    }}>
+                                        <div className="w-8 h-8 rounded-full bg-slate-200 overflow-hidden flex-shrink-0">
+                                            <img src={person.profileImage || person.studentPhoto || 'https://placehold.co/100'} alt="" className="w-full h-full object-cover" />
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <p className="text-[11px] font-black text-slate-800 truncate">{person.name || `${person.firstName} ${person.lastName}`}</p>
+                                            <p className="text-[9px] font-bold text-slate-400 uppercase truncate">{person.admissionNumber || person.staffId || 'No ID'}</p>
+                                        </div>
+                                        {selectedIds.includes(person._id) && <FaCheck className="text-blue-600" size={10} />}
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Preview Area */}
+                    <div className="lg:col-span-8 flex flex-col bg-white rounded-2xl border shadow-sm overflow-hidden">
+                        <div className="p-4 border-b flex items-center justify-between bg-slate-50">
+                            <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Live Preview</h3>
+                            {previewHtml && (
+                                <div className="relative group">
+                                    <button className="flex items-center gap-2 px-6 py-2 bg-slate-900 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-black transition-all shadow-xl shadow-slate-200">
+                                        <FaDownload /> Export Actions <FaChevronDown className="ml-2 group-hover:rotate-180 transition-transform" />
+                                    </button>
+                                    <div className="absolute top-full right-0 mt-2 w-48 bg-white rounded-xl border shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 overflow-hidden">
+                                        <button onClick={() => downloadCards('print')} className="w-full px-4 py-3 text-left text-[10px] font-black text-slate-600 uppercase hover:bg-slate-50 flex items-center gap-3 border-b border-slate-50">
+                                            <FaPrint className="text-blue-500" /> Print ID Cards
+                                        </button>
+                                        <button onClick={() => downloadCards('download')} className="w-full px-4 py-3 text-left text-[10px] font-black text-slate-600 uppercase hover:bg-slate-50 flex items-center gap-3">
+                                            <FaDownload className="text-green-500" /> Save as PDF
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                        <div className="flex-1 bg-slate-200 p-8 overflow-y-auto flex flex-col items-center">
+                            {previewHtml ? (
+                                <div className="p-4 bg-white shadow-2xl rounded" dangerouslySetInnerHTML={{ __html: previewHtml }} />
+                            ) : (
+                                <div className="h-full flex flex-col items-center justify-center text-slate-400 opacity-50 text-center">
+                                    <FaIdCard size={80} className="mb-4" />
+                                    <p className="text-sm font-black uppercase tracking-[0.2em]">Generate Preview to View ID Cards</p>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            ) : (
+                <div className="bg-white border rounded-2xl shadow-xl flex flex-col h-[750px] overflow-hidden">
+                    {/* Designer Header */}
+                    <div className="flex border-b bg-slate-50 items-center px-6 py-3">
+                        <div className="flex-1 flex items-center gap-4">
+                            <div className="flex items-center gap-2">
+                                <span className="text-[9px] font-black text-slate-400 uppercase">Role:</span>
+                                <select value={selectedRole} onChange={(e) => setSelectedRole(e.target.value)} className="bg-transparent border-none text-[10px] font-black text-blue-600 uppercase focus:ring-0 cursor-pointer">
+                                    <option value="student">Student</option>
+                                    <option value="staff">Staff</option>
+                                    <option value="teacher">Teacher</option>
+                                    <option value="driver">Driver</option>
+                                    <option value="warden">Warden</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div className="flex gap-3">
+                            <label className="px-4 py-2 bg-slate-800 text-white font-black text-[10px] uppercase tracking-widest hover:bg-black transition-all flex items-center gap-2 rounded-lg cursor-pointer">
+                                <input type="file" className="hidden" onChange={handleFileUpload} accept="image/*" />
+                                <FaUpload /> Change Background
+                            </label>
+                            <button onClick={handleSaveLayout} disabled={saving || !templateUrl} className="px-6 py-2 bg-green-600 text-white font-black text-[10px] uppercase tracking-widest hover:bg-green-700 transition-all flex items-center gap-2 rounded-lg shadow-lg shadow-green-200">
+                                {saving ? <FaSpinner className="animate-spin" /> : <FaSave />} Save Layout
+                            </button>
+                        </div>
+                    </div>
+
+                    <div className="flex-1 flex overflow-hidden">
+                        {/* Field Sidebar */}
+                        <div className="w-64 border-r bg-slate-50 flex flex-col">
+                            <div className="p-4 border-b bg-white">
+                                <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Data Attributes</h4>
+                            </div>
+                            <div className="flex-1 overflow-y-auto p-3 space-y-2">
+                                {configFields.map(field => (
+                                    <button key={field.id} onClick={() => {
+                                        const isVisible = !field.visible;
+                                        setConfigFields(prev => prev.map(f => f.id === field.id ? { ...f, visible: isVisible } : f));
+                                        if (isVisible) setSelectedField(field.id);
+                                        else if (selectedField === field.id) setSelectedField(null);
+                                    }} className={`w-full flex items-center justify-between p-3 rounded-xl border font-bold transition-all ${field.visible ? 'bg-blue-600 text-white border-blue-700 shadow-lg' : 'bg-white text-slate-600 border-slate-200 hover:border-blue-300'}`}>
+                                        <span className="truncate text-left flex-1">{field.label}</span>
+                                        {field.visible && <FaCheck size={10} />}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Designer Canvas */}
+                        <div className="flex-1 bg-slate-200 flex items-center justify-center relative p-8">
+                            <div ref={mapperRef} className="relative bg-white shadow-2xl overflow-hidden border-4 border-white rounded-sm" style={{ width: `${design.cardWidth}px`, height: `${design.cardHeight}px`, backgroundImage: `url('${templateUrl.startsWith('http') ? templateUrl : BASE_URL + '/' + templateUrl}')`, backgroundSize: '100% 100%' }}>
+                                {!templateUrl && (
+                                    <div className="absolute inset-0 bg-slate-50 flex flex-col items-center justify-center p-6 text-center">
+                                        <FaUpload className="text-slate-200 text-5xl mb-4" />
+                                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">No Template Loaded</p>
+                                    </div>
+                                )}
+                                {showGrid && templateUrl && <div className="absolute inset-0 pointer-events-none opacity-10" style={{ backgroundImage: 'radial-gradient(#000 0.5px, transparent 0.5px)', backgroundSize: '10px 10px' }} />}
+                                {configFields.filter(f => f.visible).map(field => (
+                                    <div key={field.id} onMouseDown={(e) => handleMouseDown(e, field.id)} className={`absolute cursor-move select-none ${selectedField === field.id ? 'ring-2 ring-blue-500 bg-blue-50/50 rounded z-10' : ''}`} style={{ top: field.y, left: field.x, color: field.color, fontSize: `${field.fontSize}px`, fontWeight: field.bold ? 'bold' : 'normal', width: field.type === 'image' ? field.width : 'auto', height: field.type === 'image' ? field.height : 'auto' }}>
+                                        {field.type === 'image' ? (
+                                            <div className="w-full h-full border-2 border-dashed border-slate-400 flex items-center justify-center bg-white/80 overflow-hidden">
+                                                <img src={getPreviewValue(field)} className="w-full h-full object-contain pointer-events-none" alt="" />
+                                            </div>
+                                        ) : <span className="block break-words leading-tight" style={{ width: `${field.width}px` }}>{getPreviewValue(field)}</span>}
+                                    </div>
+                                ))}
+                            </div>
+
+                            {/* Toolbar */}
+                            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 bg-slate-900 text-white px-6 py-3 rounded-full shadow-2xl flex items-center gap-6 text-[10px] font-black uppercase tracking-widest">
+                                <button onClick={() => setShowGrid(!showGrid)} className={`flex items-center gap-2 ${showGrid ? 'text-blue-400' : 'opacity-50'}`}><FaBorderAll /> Grid</button>
+                                <span className="opacity-20">|</span>
+                                <span>{design.cardWidth} x {design.cardHeight} px</span>
+                            </div>
+
+                            {/* Field Properties Panel */}
+                            {selectedField && (
+                                <div className="absolute top-6 right-6 w-64 bg-white rounded-2xl border shadow-2xl p-4 space-y-4">
+                                    <div className="flex items-center justify-between border-b pb-2">
+                                        <h4 className="text-[10px] font-black text-slate-800 uppercase">Field Styling</h4>
+                                        <button onClick={() => setSelectedField(null)}><FaTimes className="text-slate-400" /></button>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-1">
+                                            <label className="text-[9px] font-black text-slate-400 uppercase">Font Size</label>
+                                            <input type="number" value={configFields.find(f => f.id === selectedField)?.fontSize} onChange={(e) => setConfigFields(prev => prev.map(f => f.id === selectedField ? { ...f, fontSize: parseInt(e.target.value) } : f))} className="w-full p-2 bg-slate-50 border rounded-lg text-xs font-bold" />
+                                        </div>
+                                        <div className="space-y-1">
+                                            <label className="text-[9px] font-black text-slate-400 uppercase">Color</label>
+                                            <input type="color" value={configFields.find(f => f.id === selectedField)?.color} onChange={(e) => setConfigFields(prev => prev.map(f => f.id === selectedField ? { ...f, color: e.target.value } : f))} className="w-full h-8 p-0 border-none bg-transparent" />
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <button onClick={() => setConfigFields(prev => prev.map(f => f.id === selectedField ? { ...f, bold: !f.bold } : f))} className={`flex-1 py-2 rounded-lg border text-[10px] font-black uppercase tracking-widest transition-all ${configFields.find(f => f.id === selectedField)?.bold ? 'bg-slate-900 text-white' : 'bg-slate-50 text-slate-400'}`}>Bold</button>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4 pt-2 border-t">
+                                        <div className="space-y-1">
+                                            <label className="text-[9px] font-black text-slate-400 uppercase">Width</label>
+                                            <input type="number" value={configFields.find(f => f.id === selectedField)?.width} onChange={(e) => setConfigFields(prev => prev.map(f => f.id === selectedField ? { ...f, width: parseInt(e.target.value) } : f))} className="w-full p-2 bg-slate-50 border rounded-lg text-xs font-bold" />
+                                        </div>
+                                        {configFields.find(f => f.id === selectedField)?.type === 'image' && (
+                                            <div className="space-y-1">
+                                                <label className="text-[9px] font-black text-slate-400 uppercase">Height</label>
+                                                <input type="number" value={configFields.find(f => f.id === selectedField)?.height} onChange={(e) => setConfigFields(prev => prev.map(f => f.id === selectedField ? { ...f, height: parseInt(e.target.value) } : f))} className="w-full p-2 bg-slate-50 border rounded-lg text-xs font-bold" />
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
 }

@@ -186,6 +186,18 @@ const TeacherManagement = () => {
         setImagePreview(null);
     };
 
+    const getClassName = (classObj) => {
+        if (!classObj) return 'N/A';
+        if (typeof classObj === 'string') return classObj;
+        return classObj.className || 'N/A';
+    };
+
+    const getSectionName = (sectionObj) => {
+        if (!sectionObj) return 'N/A';
+        if (typeof sectionObj === 'string') return sectionObj;
+        return sectionObj.sectionName || 'N/A';
+    };
+
     return (
         <div className="space-y-8 bg-slate-50/50 min-h-screen">
             {/* Header section with Stats */}
@@ -278,10 +290,10 @@ const TeacherManagement = () => {
                                     <td className="px-8 py-6">
                                         <div className="flex items-center gap-1">
                                             <span className="px-2.5 py-1 bg-blue-50 text-blue-600 rounded-lg text-[10px] font-black uppercase tracking-tight">
-                                                {teacher.assignedClass?.className || 'N/A'}
+                                                {getClassName(teacher.assignedClass)}
                                             </span>
                                             <span className="px-2.5 py-1 bg-indigo-50 text-indigo-600 rounded-lg text-[10px] font-black uppercase tracking-tight">
-                                                {teacher.assignedSection?.sectionName || 'N/A'}
+                                                {getSectionName(teacher.assignedSection)}
                                             </span>
                                         </div>
                                     </td>

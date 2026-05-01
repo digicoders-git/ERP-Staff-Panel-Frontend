@@ -1,11 +1,15 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { ToastContainer } from 'react-toastify';
+import { Toaster } from 'react-hot-toast';
 import 'react-toastify/dist/ReactToastify.css';
+import './App.css';
 import Login from './components/Login';
 import Dashboard from './components/Dashboard';
+import DebugLogin from './components/DebugLogin';
 
-function App() {
+function AppContent() {
+  const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(() => {
     return !!localStorage.getItem('token');
   });
@@ -23,15 +27,31 @@ function App() {
   const handleSetIsLoggedIn = (value) => {
     if (value) {
       setIsLoggedIn(true);
-      window.location.href = '/dashboard';
+      navigate('/dashboard', { replace: true });
     } else {
       localStorage.clear();
       sessionStorage.clear();
       setIsLoggedIn(false);
-      window.location.href = '/login';
+      navigate('/login', { replace: true });
     }
   };
 
+  return (
+    <Routes>
+      <Route path="/debug-login" element={<DebugLogin />} />
+      <Route 
+        path="/login" 
+        element={isLoggedIn ? <Navigate to="/dashboard" replace /> : <Login setIsLoggedIn={handleSetIsLoggedIn} />} 
+      />
+      <Route 
+        path="/*" 
+        element={isLoggedIn ? <Dashboard setIsLoggedIn={handleSetIsLoggedIn} /> : <Navigate to="/login" replace />} 
+      />
+    </Routes>
+  );
+}
+
+function App() {
   return (
     <Router>
       <div className="App">
@@ -47,16 +67,8 @@ function App() {
           pauseOnHover
           theme="colored"
         />
-        <Routes>
-          <Route 
-            path="/login" 
-            element={isLoggedIn ? <Navigate to="/dashboard" replace /> : <Login setIsLoggedIn={handleSetIsLoggedIn} />} 
-          />
-          <Route 
-            path="/*" 
-            element={isLoggedIn ? <Dashboard setIsLoggedIn={handleSetIsLoggedIn} /> : <Navigate to="/login" replace />} 
-          />
-        </Routes>
+        <Toaster position="top-center" reverseOrder={false} />
+        <AppContent />
       </div>
     </Router>
   );

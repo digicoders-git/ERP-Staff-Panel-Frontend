@@ -104,7 +104,7 @@ const Classes = () => {
                    <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center mr-3">
                     <MdSchool size={16} />
                   </div>
-                  Teacher: {cls.teachers?.[0]?.name || 'Not Assigned'}
+                  Teacher: {cls.classTeacher?.name || 'Not Assigned'}
                 </div>
               </div>
 

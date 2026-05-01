@@ -237,7 +237,9 @@ const LeaveManagement = () => {
                               ) : (req.staffName || 'T')[0]}
                            </div>
                            <div>
-                              <p className="text-sm font-black text-slate-800 tracking-tight">{req.staffName || req.staffId?.name || 'Unknown Staff'}</p>
+                              <p className="text-sm font-black text-slate-800 tracking-tight">
+                                {req.studentName || (req.studentId ? `${req.studentId.firstName} ${req.studentId.lastName}` : (req.staffName || req.staffId?.name || 'Unknown'))}
+                              </p>
                               <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-1 italic">Faculty ID: {req.staffId?._id?.slice(-8) || 'External'}</p>
                            </div>
                         </div>

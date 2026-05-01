@@ -53,10 +53,10 @@ const Admissions = () => {
           stream: s.stream || '-',
           section: s.section?.sectionName || s.sectionName || '-',
           status: s.admissionStatus === 'confirmed' ? 'confirmed' : 
+                 (s.verificationStatus === 'partial' ? 'partial' :
                  (s.admissionStatus === 'rejected' || s.applicationStatus === 'rejected' ? 'rejected' : 
-                 (s.applicationStatus === 'approved' ? 'verified' : 'pending')),
-          applicationStatus: s.applicationStatus || 'pending',
-          admissionStatus: s.admissionStatus || 'pending',
+                 (s.applicationStatus === 'approved' ? 'verified' : 'pending'))),
+          verificationRemarks: s.verificationRemarks || '',
           date: s.createdAt ? new Date(s.createdAt).toLocaleDateString() : new Date().toLocaleDateString(),
           mobile: s.phone || s.mobile || '-',
           email: s.email || '-',
@@ -164,6 +164,7 @@ const Admissions = () => {
     switch (status) {
       case 'confirmed': return 'bg-green-100 text-green-700 border border-green-200';
       case 'verified': return 'bg-purple-100 text-purple-700 border border-purple-200';
+      case 'partial': return 'bg-orange-100 text-orange-700 border border-orange-200';
       case 'pending': return 'bg-yellow-100 text-yellow-700 border border-yellow-200';
       case 'rejected': return 'bg-red-100 text-red-700 border border-red-200';
       default: return 'bg-gray-100 text-gray-700 border border-gray-200';
@@ -309,9 +310,16 @@ const Admissions = () => {
                   <td className="hidden lg:table-cell px-3 py-4 whitespace-nowrap text-sm text-gray-700">{item.mobile}</td>
                   <td className="hidden xl:table-cell px-3 py-4 whitespace-nowrap text-sm text-gray-700">{item.email}</td>
                   <td className="px-3 py-4 whitespace-nowrap">
-                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(item.status)}`}>
-                      {item.status.charAt(0).toUpperCase() + item.status.slice(1)}
-                    </span>
+                    <div className="flex flex-col">
+                      <span className={`inline-flex px-2 py-1 text-[10px] font-black uppercase rounded-lg w-fit ${getStatusColor(item.status)}`}>
+                        {item.status}
+                      </span>
+                      {item.status === 'partial' && item.verificationRemarks && (
+                        <span className="text-[8px] text-orange-500 font-bold mt-1 max-w-[120px] truncate" title={item.verificationRemarks}>
+                          {item.verificationRemarks.replace('Pending Documents: ', '')}
+                        </span>
+                      )}
+                    </div>
                   </td>
                   <td className="px-3 py-4 whitespace-nowrap text-sm font-medium">
                     <div className="flex space-x-1">

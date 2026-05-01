@@ -59,7 +59,7 @@ const Fees = () => {
       if (res.data) {
         setVerifiedStudent(res.data);
         setCollectForm(prev => ({
-          ...prev, 
+          ...prev,
           studentId: res.data.student.admissionNumber,
           amount: res.data.totalPending || 0
         }));
@@ -86,16 +86,16 @@ const Fees = () => {
 
       // DETECT SEARCH MODE: If not a MongoDB ObjectID, perform a lookup first
       const isObjectId = /^[0-9a-fA-H]{24}$/i.test(searchTerm);
-      
+
       if (!isObjectId) {
         toast.info('Initiating multi-parameter registry search...', { autoClose: 1000 });
         const searchRes = await studentAPI.getEnrollmentList({ search: searchTerm, limit: 1 });
         const students = searchRes.data.students || searchRes.data;
-        
+
         if (!students || students.length === 0) {
           throw new Error('No matching student found for this search term.');
         }
-        
+
         targetId = students[0]._id;
       }
 
@@ -104,7 +104,7 @@ const Fees = () => {
       if (res.data) {
         setVerifiedStudent(res.data);
         setCollectForm(prev => ({
-          ...prev, 
+          ...prev,
           studentId: res.data.student.admissionNumber, // Keep human-readable ID
           amount: res.data.totalPending || 0
         }));
@@ -122,8 +122,8 @@ const Fees = () => {
   const fetchFees = async () => {
     try {
       setLoading(true);
-      const params = { 
-        page: pagination.page, 
+      const params = {
+        page: pagination.page,
         limit: 10,
         search: searchTerm,
         status: filterStatus !== 'all' ? filterStatus : undefined
@@ -150,12 +150,12 @@ const Fees = () => {
     } else if (Number(collectForm.amountPaid) > Number(collectForm.amount)) {
       errors.amountPaid = `Maximum payable: ₹${collectForm.amount}`;
     }
-    
+
     if (collectForm.paymentMode === 'Cheque') {
       if (!collectForm.chequeNumber) errors.chequeNumber = 'Cheque number required';
       if (!collectForm.bankName) errors.bankName = 'Bank name required';
     }
-    
+
     if (['Common Service Point', 'Bank Transfer'].includes(collectForm.paymentMode) && !collectForm.transactionId) {
       errors.transactionId = 'Transaction reference required';
     }
@@ -219,15 +219,15 @@ const Fees = () => {
         </div>
         <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
           <div>
-            <h2 className="text-4xl font-black mb-2 tracking-tight">Fee Collection Terminal</h2>
-            <p className="text-indigo-200 text-lg font-medium">Manage institutional revenue, student fiscal manifests, and live collection tracking</p>
+            <h2 className="text-4xl font-black mb-2 tracking-tight">Fee Collection Center</h2>
+            <p className="text-indigo-200 text-lg font-medium">Manage student fees, track payments, and generate receipts</p>
           </div>
-          <button 
+          <button
             onClick={() => setShowCollectModal(true)}
             className="px-8 py-3 bg-white text-slate-900 rounded-xl font-black text-[12px] uppercase tracking-[0.2em] hover:bg-slate-50 transition-all shadow-xl shadow-slate-900/20 flex items-center gap-3"
           >
             <MdPayment size={18} />
-            Manifest Collection
+            Collect Fee
           </button>
         </div>
       </div>
@@ -241,7 +241,7 @@ const Fees = () => {
             </div>
             <span className="text-[10px] font-black text-emerald-600 bg-emerald-50 px-2 py-1 rounded-lg uppercase tracking-widest">LIVE</span>
           </div>
-          <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Today Collection</h3>
+          <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Today's Total</h3>
           <p className="text-3xl font-black text-slate-800 mt-1 tabular-nums">₹{summary.todayCollection.toLocaleString()}</p>
         </div>
 
@@ -252,7 +252,7 @@ const Fees = () => {
             </div>
             <span className="text-[10px] font-black text-blue-600 bg-blue-50 px-2 py-1 rounded-lg uppercase tracking-widest">MONTHLY</span>
           </div>
-          <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Metric Collection</h3>
+          <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-wider">This Month</h3>
           <p className="text-3xl font-black text-slate-800 mt-1 tabular-nums">₹{summary.monthlyCollection.toLocaleString()}</p>
         </div>
 
@@ -263,7 +263,7 @@ const Fees = () => {
             </div>
             <span className="text-[10px] font-black text-amber-600 bg-amber-50 px-2 py-1 rounded-lg uppercase tracking-widest">PARTIAL</span>
           </div>
-          <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Arrears Manifest</h3>
+          <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Total Pending</h3>
           <p className="text-3xl font-black text-slate-800 mt-1 tabular-nums">₹{statusWiseTotal('partial').toLocaleString()}</p>
         </div>
 
@@ -274,7 +274,7 @@ const Fees = () => {
             </div>
             <span className="text-[10px] font-black text-slate-400 bg-slate-100 px-2 py-1 rounded-lg uppercase tracking-widest">RECORDS</span>
           </div>
-          <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Total Manifests</h3>
+          <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Total Records</h3>
           <p className="text-3xl font-black text-slate-800 mt-1 tabular-nums">{pagination.total}</p>
         </div>
       </div>
@@ -287,22 +287,21 @@ const Fees = () => {
               <button
                 key={status}
                 onClick={() => setFilterStatus(status)}
-                className={`px-6 py-2 rounded-xl font-black text-[9px] uppercase tracking-widest transition-all border ${
-                  filterStatus === status 
-                    ? 'bg-slate-900 text-white border-slate-900 shadow-lg' 
+                className={`px-6 py-2 rounded-xl font-black text-[9px] uppercase tracking-widest transition-all border ${filterStatus === status
+                    ? 'bg-slate-900 text-white border-slate-900 shadow-lg'
                     : 'bg-white text-slate-400 border-slate-100 hover:bg-slate-50'
-                }`}
+                  }`}
               >
-                {status} Manifest
+                {status} List
               </button>
             ))}
           </div>
 
           <div className="relative group w-full md:w-72">
             <MdSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-600 transition-colors" size={20} />
-            <input 
+            <input
               type="text"
-              placeholder="FILTER MANIFESTS..."
+              placeholder="SEARCH STUDENT..."
               value={searchTerm}
               onChange={(e) => {
                 setSearchTerm(e.target.value);
@@ -312,21 +311,21 @@ const Fees = () => {
               className="w-full pl-12 pr-6 py-3 bg-white border border-slate-200 rounded-2xl outline-none font-black text-[10px] tracking-widest focus:border-indigo-600 focus:ring-4 focus:ring-indigo-50/50 transition-all shadow-sm"
             />
           </div>
-          
+
           <div className="flex gap-3 w-full md:w-auto">
-             <button 
-              onClick={() => setPagination(prev => ({...prev, page: Math.max(1, prev.page - 1)}))}
+            <button
+              onClick={() => setPagination(prev => ({ ...prev, page: Math.max(1, prev.page - 1) }))}
               disabled={pagination.page === 1}
               className="px-5 py-2.5 bg-white border border-slate-200 rounded-xl disabled:opacity-30 hover:bg-slate-50 font-black text-[10px] uppercase tracking-widest transition-all shadow-sm"
-             >Prev</button>
-             <div className="flex items-center px-4 font-black text-slate-600 text-[10px] uppercase tracking-widest bg-slate-100/50 rounded-xl">
-               Manifest {pagination.page} / {pagination.totalPages || 1}
-             </div>
-             <button 
-              onClick={() => setPagination(prev => ({...prev, page: Math.min(prev.totalPages, prev.page + 1)}))}
+            >Prev</button>
+            <div className="flex items-center px-4 font-black text-slate-600 text-[10px] uppercase tracking-widest bg-slate-100/50 rounded-xl">
+              Page {pagination.page} of {pagination.totalPages || 1}
+            </div>
+            <button
+              onClick={() => setPagination(prev => ({ ...prev, page: Math.min(prev.totalPages, prev.page + 1) }))}
               disabled={pagination.page >= pagination.totalPages}
               className="px-5 py-2.5 bg-white border border-slate-200 rounded-xl disabled:opacity-30 hover:bg-slate-50 font-black text-[10px] uppercase tracking-widest transition-all shadow-sm"
-             >Next</button>
+            >Next</button>
           </div>
         </div>
 
@@ -334,13 +333,13 @@ const Fees = () => {
           <table className="w-full">
             <thead>
               <tr className="text-left text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] bg-slate-50/50">
-                <th className="px-8 py-6">Student Nomenclature</th>
-                <th className="px-8 py-6">Fiscal Type</th>
-                <th className="px-8 py-6 text-right">Target Amount</th>
-                <th className="px-8 py-6 text-right">Manifested</th>
-                <th className="px-8 py-6 text-right">Arrears</th>
-                <th className="px-8 py-6 text-center">Status Hub</th>
-                <th className="px-8 py-6">Timestamp</th>
+                <th className="px-8 py-6">Student Name</th>
+                <th className="px-8 py-6">Fee Type</th>
+                <th className="px-8 py-6 text-right">Total Fee</th>
+                <th className="px-8 py-6 text-right">Collected</th>
+                <th className="px-8 py-6 text-right">Balance</th>
+                <th className="px-8 py-6 text-center">Status</th>
+                <th className="px-8 py-6">Date</th>
                 <th className="px-8 py-6 text-center">Actions</th>
               </tr>
             </thead>
@@ -365,10 +364,9 @@ const Fees = () => {
                   <td className="px-8 py-6 text-sm font-black text-rose-500 text-right tabular-nums">₹{(fee.balance || (fee.amount - fee.amountPaid)).toLocaleString()}</td>
                   <td className="px-8 py-6">
                     <div className="flex justify-center">
-                      <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest flex items-center gap-1.5 shadow-sm border ${
-                        fee.status === 'paid' ? 'bg-emerald-50 text-emerald-700 border-emerald-100' :
-                        fee.status === 'partial' ? 'bg-amber-50 text-amber-700 border-amber-100' :
-                          'bg-red-50 text-red-700 border-red-100'
+                      <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest flex items-center gap-1.5 shadow-sm border ${fee.status === 'paid' ? 'bg-emerald-50 text-emerald-700 border-emerald-100' :
+                          fee.status === 'partial' ? 'bg-amber-50 text-amber-700 border-amber-100' :
+                            'bg-red-50 text-red-700 border-red-100'
                         }`}>
                         {fee.status === 'paid' ? <MdCheckCircle size={14} /> : <MdPending size={14} />}
                         {fee.status}
@@ -377,17 +375,17 @@ const Fees = () => {
                   </td>
                   <td className="px-8 py-6">
                     <div className="text-[10px] font-black text-slate-500 uppercase tracking-widest">{fee.paymentDate ? new Date(fee.paymentDate).toLocaleDateString() : 'N/A'}</div>
-                    <div className="text-[9px] font-bold text-slate-400 mt-1">{fee.paymentDate ? new Date(fee.paymentDate).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : '--:--'}</div>
+                    <div className="text-[9px] font-bold text-slate-400 mt-1">{fee.paymentDate ? new Date(fee.paymentDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '--:--'}</div>
                   </td>
                   <td className="px-8 py-6">
                     <div className="flex justify-center gap-2">
-                       <button 
-                         onClick={() => window.open(`${import.meta.env.VITE_API_BASE_URL}/api/staff-panel/fee-collection/receipt/${fee._id}`, '_blank')}
-                         className="p-3 bg-slate-50 text-slate-500 rounded-xl hover:bg-slate-900 hover:text-white transition-all shadow-sm border border-slate-100"
-                         title="Institutional Receipt"
-                       >
-                         <MdDescription size={18} />
-                       </button>
+                      <button
+                        onClick={() => window.open(`${import.meta.env.VITE_API_BASE_URL}/api/staff-panel/fee-collection/receipt/${fee._id}?token=${localStorage.getItem('token')}`, '_blank')}
+                        className="p-3 bg-slate-50 text-slate-500 rounded-xl hover:bg-slate-900 hover:text-white transition-all shadow-sm border border-slate-100"
+                        title="Institutional Receipt"
+                      >
+                        <MdDescription size={18} />
+                      </button>
                     </div>
                   </td>
                 </tr>
@@ -412,9 +410,9 @@ const Fees = () => {
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-3xl p-10 max-w-2xl w-full shadow-2xl border border-indigo-50 relative overflow-hidden">
             <div className="absolute top-0 right-0 w-48 h-48 bg-indigo-50 rounded-full -mr-24 -mt-24 opacity-50" />
-            
+
             <h3 className="text-2xl font-black text-slate-800 mb-8 flex items-center gap-3">
-              <MdPayment className="text-indigo-600" size={32} /> Manifest Fiscal Collection
+              <MdPayment className="text-indigo-600" size={32} /> Collect New Fee
             </h3>
 
             <form onSubmit={handleCollectSubmit} className="space-y-6 relative z-10">
@@ -429,7 +427,7 @@ const Fees = () => {
                         placeholder="NAME / ID / MOBILE..."
                         value={collectForm.studentId}
                         onChange={(e) => {
-                          setCollectForm({...collectForm, studentId: e.target.value});
+                          setCollectForm({ ...collectForm, studentId: e.target.value });
                           if (verifiedStudent) setVerifiedStudent(null);
                         }}
                         className={`w-full px-5 py-3 bg-slate-50 border ${formErrors.studentId ? 'border-red-500' : 'border-slate-100'} rounded-2xl focus:ring-2 focus:ring-indigo-500 font-bold text-slate-800 transition-all`}
@@ -496,7 +494,7 @@ const Fees = () => {
                   <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1">Fiscal Category</label>
                   <select
                     value={collectForm.feeType}
-                    onChange={(e) => setCollectForm({...collectForm, feeType: e.target.value})}
+                    onChange={(e) => setCollectForm({ ...collectForm, feeType: e.target.value })}
                     className="w-full px-5 py-3 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-2 focus:ring-indigo-500 font-bold text-slate-800 appearance-none"
                   >
                     {(!verifiedStudent?.assignedStructure || verifiedStudent.assignedStructure.length === 0) && (
@@ -517,7 +515,7 @@ const Fees = () => {
                     type="number"
                     required
                     value={collectForm.amount}
-                    onChange={(e) => setCollectForm({...collectForm, amount: e.target.value})}
+                    onChange={(e) => setCollectForm({ ...collectForm, amount: e.target.value })}
                     className="w-full px-5 py-3 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-2 focus:ring-indigo-500 font-bold text-slate-800"
                   />
                 </div>
@@ -527,7 +525,7 @@ const Fees = () => {
                     type="number"
                     required
                     value={collectForm.amountPaid}
-                    onChange={(e) => setCollectForm({...collectForm, amountPaid: e.target.value})}
+                    onChange={(e) => setCollectForm({ ...collectForm, amountPaid: e.target.value })}
                     className={`w-full px-5 py-3 bg-slate-50 border ${formErrors.amountPaid ? 'border-red-500' : 'border-slate-100'} rounded-2xl focus:ring-2 focus:ring-indigo-500 font-bold text-slate-800`}
                   />
                   {formErrors.amountPaid && <p className="text-red-500 text-[9px] mt-1 font-bold flex items-center gap-1"><FaExclamationCircle /> {formErrors.amountPaid}</p>}
@@ -539,7 +537,7 @@ const Fees = () => {
                   <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1">Payment Protocol</label>
                   <select
                     value={collectForm.paymentMode}
-                    onChange={(e) => setCollectForm({...collectForm, paymentMode: e.target.value})}
+                    onChange={(e) => setCollectForm({ ...collectForm, paymentMode: e.target.value })}
                     className={`w-full px-5 py-3 bg-slate-50 border ${formErrors.paymentMode ? 'border-red-500' : 'border-slate-100'} rounded-2xl focus:ring-2 focus:ring-indigo-500 font-bold text-slate-800 appearance-none`}
                   >
                     <option value="Cash">Institutional Cash</option>
@@ -554,7 +552,7 @@ const Fees = () => {
                     type="text"
                     placeholder="Ref No / Txn ID"
                     value={collectForm.transactionId}
-                    onChange={(e) => setCollectForm({...collectForm, transactionId: e.target.value})}
+                    onChange={(e) => setCollectForm({ ...collectForm, transactionId: e.target.value })}
                     className={`w-full px-5 py-3 bg-slate-50 border ${formErrors.transactionId ? 'border-red-500' : 'border-slate-100'} rounded-2xl focus:ring-2 focus:ring-indigo-500 font-bold text-slate-800`}
                   />
                   {formErrors.transactionId && <p className="text-red-500 text-[9px] mt-1 font-bold flex items-center gap-1"><FaExclamationCircle /> {formErrors.transactionId}</p>}
@@ -565,20 +563,20 @@ const Fees = () => {
                 <div className="grid grid-cols-2 gap-6 animate-in fade-in slide-in-from-top-4">
                   <div>
                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1">Cheque Number</label>
-                    <input 
+                    <input
                       type="text"
                       value={collectForm.chequeNumber}
-                      onChange={(e) => setCollectForm({...collectForm, chequeNumber: e.target.value})}
+                      onChange={(e) => setCollectForm({ ...collectForm, chequeNumber: e.target.value })}
                       placeholder="XXXXXX"
                       className={`w-full px-5 py-3 bg-slate-50 border ${formErrors.chequeNumber ? 'border-red-500' : 'border-slate-100'} rounded-2xl focus:ring-2 focus:ring-indigo-500 font-bold text-slate-800`}
                     />
                   </div>
                   <div>
                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1">Bank Name</label>
-                    <input 
+                    <input
                       type="text"
                       value={collectForm.bankName}
-                      onChange={(e) => setCollectForm({...collectForm, bankName: e.target.value})}
+                      onChange={(e) => setCollectForm({ ...collectForm, bankName: e.target.value })}
                       placeholder="Bank Name"
                       className={`w-full px-5 py-3 bg-slate-50 border ${formErrors.bankName ? 'border-red-500' : 'border-slate-100'} rounded-2xl focus:ring-2 focus:ring-indigo-500 font-bold text-slate-800`}
                     />
@@ -591,7 +589,7 @@ const Fees = () => {
                 <textarea
                   rows="2"
                   value={collectForm.remarks}
-                  onChange={(e) => setCollectForm({...collectForm, remarks: e.target.value})}
+                  onChange={(e) => setCollectForm({ ...collectForm, remarks: e.target.value })}
                   className="w-full px-5 py-3 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-2 focus:ring-indigo-500 font-bold text-slate-800 resize-none"
                 ></textarea>
               </div>
@@ -627,4 +625,4 @@ const Fees = () => {
   );
 };
 
-export default Fees;
+export default Fees;

@@ -1,33 +1,38 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
-  FaSearch, FaSpinner, FaUserGraduate, FaSave, FaChartBar
+  FaSearch, FaSpinner, FaUserGraduate, FaSave, FaChartBar, FaPrint
 } from 'react-icons/fa';
 import { MdRefresh } from 'react-icons/md';
 import { toast } from 'react-toastify';
 import { examAPI, classAPI } from '../utils/apiService';
+import MarksheetPrintModal from './MarksheetPrintModal';
 
 const ManageMarks = () => {
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
 
-  const [classesList, setClassesList] = useState([]);
+  const [classesList, setClassesList] = useState([]); 
   const [schedulesList, setSchedulesList] = useState([]);
 
   const [selectedClass, setSelectedClass] = useState('');
   const [selectedExam, setSelectedExam] = useState('');
 
   const [students, setStudents] = useState([]);
-  const [marks, setMarks] = useState({});
+  const [marks, setMarks] = useState({}); // Stores { stuId: { theory: X, practical: Y, total: Z } }
   const [showTable, setShowTable] = useState(false);
   const [scheduleObj, setScheduleObj] = useState(null);
+  const [printStudent, setPrintStudent] = useState(null);
 
   useEffect(() => {
     const init = async () => {
       setLoading(true);
       try {
+        const staff = JSON.parse(localStorage.getItem('staff') || '{}');
+        const branchId = staff.branch?._id || staff.branch;
+        
         const [classRes, schedRes] = await Promise.all([
-          classAPI.getAll(),
-          examAPI.getSchedules({ limit: 200 })
+          classAPI.getAll({ branchId }),
+          examAPI.getSchedules({ limit: 200, branchId })
         ]);
         if (classRes.data?.classes) setClassesList(classRes.data.classes);
         if (schedRes.data?.examSchedules) setSchedulesList(schedRes.data.examSchedules);
@@ -84,7 +89,11 @@ const ManageMarks = () => {
             : m.examSchedule?.toString?.() ?? m.examSchedule;
           return mExamId === selectedExam;
         });
-        saved[stu._id] = existingMark != null ? String(existingMark.marksObtained) : '';
+        saved[stu._id] = {
+          theory: existingMark != null ? String(existingMark.theoryMarksObtained || 0) : '',
+          practical: existingMark != null ? String(existingMark.practicalMarksObtained || 0) : '',
+          total: existingMark != null ? String(existingMark.marksObtained || 0) : ''
+        };
       });
       setMarks(saved);
       setShowTable(true);
@@ -97,10 +106,18 @@ const ManageMarks = () => {
     }
   }, [selectedClass, selectedExam, schedulesList]);
 
-  const handleMarkChange = (studentId, value) => {
-    const tm = scheduleObj?.totalMarks || 100;
-    if (value !== '' && Number(value) > tm) return;
-    setMarks(prev => ({ ...prev, [studentId]: value }));
+  const handleMarkChange = (studentId, field, value) => {
+    const et = scheduleObj?.examTypeId;
+    const max = field === 'theory' ? (et?.theoryMarks || 100) : (et?.practicalMarks || 100);
+    
+    if (value !== '' && Number(value) > max) return;
+
+    setMarks(prev => {
+        const stuMarks = { ...prev[studentId], [field]: value };
+        // Auto-calc total
+        stuMarks.total = Number(stuMarks.theory || 0) + Number(stuMarks.practical || 0);
+        return { ...prev, [studentId]: stuMarks };
+    });
   };
 
   const handleSave = async () => {
@@ -108,12 +125,14 @@ const ManageMarks = () => {
     if (!entries.length) { toast.warning('No marks entered'); return; }
     setSaving(true);
     try {
-      await Promise.all(entries.map(([studentId, marksObtained]) =>
+      await Promise.all(entries.map(([studentId, mData]) =>
         examAPI.updateMarks({
           examScheduleId: selectedExam,
           studentId,
           subject: scheduleObj?.subject || '',
-          marksObtained: Number(marksObtained),
+          theoryMarksObtained: Number(mData.theory || 0),
+          practicalMarksObtained: Number(mData.practical || 0),
+          marksObtained: Number(mData.total || 0),
           totalMarks: scheduleObj?.totalMarks || 100,
           remarks: 'Entered via Staff Panel'
         })
@@ -261,7 +280,7 @@ const ManageMarks = () => {
                 <table className="w-full text-left">
                   <thead>
                     <tr className="bg-slate-50 border-b border-slate-100">
-                      {['#', 'Admission No.', 'Student Name', 'Roll No.', 'Marks (out of ' + tm + ')', 'Grade', 'Result'].map(h => (
+                      {['#', 'Admission No.', 'Student Name', 'Roll No.', 'Marks (out of ' + tm + ')', 'Grade', 'Result', 'Action'].map(h => (
                         <th key={h} className="px-6 py-4 text-xs font-black text-slate-400 uppercase tracking-widest">{h}</th>
                       ))}
                     </tr>
@@ -298,17 +317,42 @@ const ManageMarks = () => {
                             {stu.rollNumber || '—'}
                           </td>
                           <td className="px-6 py-4">
-                            <div className="flex items-center gap-2">
-                              <input
-                                type="number"
-                                min="0"
-                                max={tm}
-                                value={val}
-                                onChange={e => handleMarkChange(stu._id, e.target.value)}
-                                placeholder="0"
-                                className="w-20 text-center px-3 py-2 bg-slate-50 border-2 border-slate-200 rounded-xl font-black text-slate-800 text-base focus:outline-none focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-500/10 transition-all"
-                              />
-                              <span className="text-xs text-slate-400 font-semibold">/ {tm}</span>
+                            <div className="flex flex-col gap-2">
+                                {scheduleObj?.examTypeId?.marksType === 'theory+practical' ? (
+                                    <div className="flex gap-2">
+                                        <div className="flex flex-col items-center">
+                                            <input
+                                                type="number"
+                                                value={val.theory}
+                                                onChange={e => handleMarkChange(stu._id, 'theory', e.target.value)}
+                                                className="w-16 px-2 py-1 bg-slate-50 border-2 border-slate-200 rounded-lg text-xs font-bold focus:border-indigo-500 outline-none"
+                                                placeholder="T"
+                                            />
+                                            <span className="text-[9px] text-slate-400 font-bold uppercase mt-1">Theory ({scheduleObj.examTypeId.theoryMarks})</span>
+                                        </div>
+                                        <div className="flex flex-col items-center">
+                                            <input
+                                                type="number"
+                                                value={val.practical}
+                                                onChange={e => handleMarkChange(stu._id, 'practical', e.target.value)}
+                                                className="w-16 px-2 py-1 bg-slate-50 border-2 border-slate-200 rounded-lg text-xs font-bold focus:border-indigo-500 outline-none"
+                                                placeholder="P"
+                                            />
+                                            <span className="text-[9px] text-slate-400 font-bold uppercase mt-1">Prac ({scheduleObj.examTypeId.practicalMarks})</span>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div className="flex items-center gap-2">
+                                        <input
+                                            type="number"
+                                            value={val.total}
+                                            onChange={e => handleMarkChange(stu._id, 'total', e.target.value)}
+                                            placeholder="0"
+                                            className="w-20 text-center px-3 py-2 bg-slate-50 border-2 border-slate-200 rounded-xl font-black text-slate-800 text-base focus:outline-none focus:border-indigo-500 transition-all"
+                                        />
+                                        <span className="text-xs text-slate-400 font-semibold">/ {tm}</span>
+                                    </div>
+                                )}
                             </div>
                           </td>
                           <td className="px-6 py-4">
@@ -331,6 +375,18 @@ const ManageMarks = () => {
                               </span>
                             )}
                           </td>
+                          <td className="px-6 py-4">
+                            {num !== null ? (
+                              <button
+                                onClick={() => setPrintStudent(stu)}
+                                className="flex items-center gap-2 px-3 py-1.5 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition text-sm font-medium"
+                              >
+                                <FaPrint size={12} /> Print
+                              </button>
+                            ) : (
+                              <span className="text-xs text-slate-400">—</span>
+                            )}
+                          </td>
                         </tr>
                       );
                     })}
@@ -348,6 +404,16 @@ const ManageMarks = () => {
           <p className="font-bold text-base text-slate-400">Select a class and exam to load the gradebook</p>
           <p className="text-sm text-slate-300 mt-1">Use the filters above and click "Load Students"</p>
         </div>
+      )}
+
+      {/* Marksheet Print Modal */}
+      {printStudent && scheduleObj && (
+        <MarksheetPrintModal
+          student={printStudent}
+          examSchedule={scheduleObj}
+          marksData={marks[printStudent._id] || { theory: 0, practical: 0, total: 0 }}
+          onClose={() => setPrintStudent(null)}
+        />
       )}
     </div>
   );

@@ -16,6 +16,8 @@ import Profile from './Profile';
 import ChangePassword from './ChangePassword';
 import StaffAttendance from './StaffAttendance';
 import AttendanceRegistry from './AttendanceRegistry';
+import MultiRoleAttendance from './MultiRoleAttendance';
+import MyAttendanceHistory from './MyAttendanceHistory';
 
 import AttendanceReports from './AttendanceReports';
 import StudentLeaveManagement from './StudentLeaveManagement';
@@ -65,6 +67,8 @@ import TransportAssign from './TransportAssign';
 import TransportReport from './TransportReport';
 import MarksHistory from './MarksHistory';
 import TeacherProfile from './TeacherProfile';
+import BulkResultImport from './BulkResultImport';
+import ViewResults from './ViewResults';
 
 
 import {
@@ -228,6 +232,7 @@ const Dashboard = ({ setIsLoggedIn }) => {
     { id: 'notices', name: 'Notices', icon: MdCampaign, path: '/notices' },
     { id: 'alumni-management', name: 'Alumni Management', icon: MdConnectWithoutContact, path: '/alumni-management' },
     { id: 'notifications', name: 'Notifications', icon: MdCampaign, path: '/notifications' },
+    { id: 'my-attendance-log', name: 'My Attendance', icon: MdAccessTime, path: '/my-attendance-log' },
     { id: 'profile', name: 'Profile', icon: MdPerson, path: '/profile' }
   ];
 
@@ -256,7 +261,9 @@ const Dashboard = ({ setIsLoggedIn }) => {
   const examItems = [
     { id: 'academic-timetable', name: 'Academic Timetable', icon: MdSchedule, path: '/academic-timetable' },
     { id: 'exam-schedule', name: 'Create Schedule', icon: MdSchedule, path: '/exam-schedule' },
-    { id: 'manage-marks', name: 'Manage Marks', icon: MdAssignment, path: '/manage-marks' },
+    // { id: 'manage-marks', name: 'Manage Marks', icon: MdAssignment, path: '/manage-marks' },
+    { id: 'bulk-result', name: 'Bulk Result Import', icon: MdDescription, path: '/bulk-result' },
+    { id: 'view-results', name: 'View Class Results', icon: MdBarChart, path: '/view-results' },
     { id: 'marks-history', name: 'Marks History', icon: MdBarChart, path: '/marks-history' },
     // { id: 'grading-system', name: 'Grading System', icon: MdGrade, path: '/grading-system' },
     { id: 'online-exam', name: 'Online Exam', icon: MdComputer, path: '/online-exam' }
@@ -268,7 +275,7 @@ const Dashboard = ({ setIsLoggedIn }) => {
   ];
 
   const staffAttendanceItems = [
-    { id: 'teacher-attendance', name: 'Mark Staff Attendance', icon: MdAccessAlarm, path: '/teacher-attendance' },
+    { id: 'teacher-attendance', name: 'Universal Staff Attendance', icon: MdAccessAlarm, path: '/teacher-attendance' },
     { id: 'staff-attendance-report', name: 'Staff Attendance Reports', icon: MdBarChart, path: '/staff-attendance-report' },
     { id: 'leave-management', name: 'Staff Leave Records', icon: MdAssignment, path: '/leave-management' }
   ];
@@ -610,6 +617,7 @@ const Dashboard = ({ setIsLoggedIn }) => {
               <Route path="/change-password" element={<ChangePassword />} />
               <Route path="/student-profile/:id" element={<StudentProfile />} />
               <Route path="/notifications" element={<NotificationCenter />} />
+              <Route path="/my-attendance-log" element={<MyAttendanceHistory />} />
 
               {/* Modules Grouped Routes */}
               <Route path="/hostel-dashboard" element={<HostelDashboard />} />
@@ -633,6 +641,8 @@ const Dashboard = ({ setIsLoggedIn }) => {
               <Route path="/exam-schedule" element={<CreateSchedule />} />
               <Route path="/academic-timetable" element={<AcademicTimetable />} />
               <Route path="/manage-marks" element={<ManageMarks />} />
+              <Route path="/bulk-result" element={<BulkResultImport />} />
+              <Route path="/view-results" element={<ViewResults />} />
               <Route path="/marks-history" element={<MarksHistory />} />
               <Route path="/grading-system" element={<Grading />} />
               <Route path="/online-exam" element={<OnlineExam />} />
@@ -652,7 +662,7 @@ const Dashboard = ({ setIsLoggedIn }) => {
 
               <Route path="/teacher-management" element={<TeacherManagement />} />
               <Route path="/teacher-profile/:id" element={<TeacherProfile />} />
-              <Route path="/teacher-attendance" element={<TeacherAttendance />} />
+              <Route path="/teacher-attendance" element={<MultiRoleAttendance />} />
               <Route path="/salary-management" element={<SalaryManagement />} />
               <Route path="/performance-evaluation" element={<PerformanceEvaluation />} />
 

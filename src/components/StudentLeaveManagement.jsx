@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { MdPerson, MdCalendarToday, MdNoteAdd, MdHistory, MdFilterList, MdCheckCircle, MdCancel, MdRefresh, MdPeople } from 'react-icons/md';
-import { attendanceAPI, classAPI, studentAPI } from '../utils/apiService';
+import { MdPerson, MdCalendarToday, MdNoteAdd, MdHistory, MdFilterList, MdCheckCircle, MdCancel, MdRefresh, MdPeople, MdDescription, MdPending, MdClose } from 'react-icons/md';
+import { attendanceAPI, classAPI, studentAPI, leaveAPI } from '../utils/apiService';
 import { toast } from 'react-toastify';
 import { FaSpinner, FaPaperPlane } from 'react-icons/fa';
 import Swal from 'sweetalert2';
@@ -17,10 +17,13 @@ const StudentLeaveManagement = () => {
 
     const [newLeave, setNewLeave] = useState({
         studentId: '',
+        leaveType: 'Medical',
         startDate: new Date().toISOString().split('T')[0],
         endDate: new Date().toISOString().split('T')[0],
         reason: ''
     });
+
+    const leaveTypes = ['Medical', 'Family Event', 'Marriage', 'Urgent Work', 'Others', 'Sick Leave', 'Casual Leave'];
 
     useEffect(() => {
         fetchClasses();
@@ -52,10 +55,15 @@ const StudentLeaveManagement = () => {
     const fetchRecentLeaves = async () => {
         try {
             setLoading(true);
-            const res = await attendanceAPI.getAll({ type: 'student', status: 'leave', limit: 20 });
-            if (res.data && res.data.attendance) setLeaveList(res.data.attendance);
+            const res = await leaveAPI.getAll();
+            if (res.data && res.data.leaves) {
+                // Filter for leaves that have a studentId (student leaves)
+                const studentLeaves = res.data.leaves.filter(l => l.studentId);
+                setLeaveList(studentLeaves);
+            }
         } catch (err) {
             console.error(err);
+            toast.error('Failed to load leave applications');
         } finally {
             setLoading(false);
         }
@@ -79,27 +87,16 @@ const StudentLeaveManagement = () => {
 
         try {
             setSubmitting(true);
+            const student = students.find(s => s._id === newLeave.studentId);
             
-            // In a real system, we'd mark the date range. 
-            // For now, we utilize the bulk mark API to record the leave for the selected dates.
-            const start = new Date(newLeave.startDate);
-            const end = new Date(newLeave.endDate);
-            const cur = new Date(start);
-            
-            while (cur <= end) {
-                const dateStr = cur.toISOString().split('T')[0];
-                await attendanceAPI.mark({
-                    date: dateStr,
-                    type: 'student',
-                    classId: selectedClass,
-                    sectionId: selectedSection,
-                    records: [{ studentId: newLeave.studentId, status: 'leave', remark: newLeave.reason }]
-                });
-                cur.setDate(cur.getDate() + 1);
-            }
+            await leaveAPI.create({
+                ...newLeave,
+                studentName: student ? `${student.firstName} ${student.lastName}` : '',
+                status: 'approved' // Staff recorded leaves are pre-approved
+            });
 
             toast.success('Leave recorded successfully');
-            setNewLeave({ studentId: '', startDate: new Date().toISOString().split('T')[0], endDate: new Date().toISOString().split('T')[0], reason: '' });
+            setNewLeave({ studentId: '', leaveType: 'Medical', startDate: new Date().toISOString().split('T')[0], endDate: new Date().toISOString().split('T')[0], reason: '' });
             fetchRecentLeaves();
         } catch (err) {
             toast.error('Failed to record leave');
@@ -108,10 +105,35 @@ const StudentLeaveManagement = () => {
         }
     };
 
+    const handleStatusUpdate = async (id, status) => {
+        const action = status === 'approved' ? 'Approve' : 'Reject';
+        const result = await Swal.fire({
+            title: `${action} Leave?`,
+            text: `Are you sure you want to ${status} this leave request?`,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: status === 'approved' ? '#10b981' : '#ef4444',
+            confirmButtonText: `Yes, ${action}`
+        });
+
+        if (result.isConfirmed) {
+            try {
+                setLoading(true);
+                await leaveAPI.updateStatus(id, status);
+                toast.success(`Leave ${status} successfully`);
+                fetchRecentLeaves();
+            } catch (err) {
+                toast.error('Failed to update status');
+            } finally {
+                setLoading(false);
+            }
+        }
+    };
+
     const handleDeleteLeave = async (id) => {
         const result = await Swal.fire({
-            title: 'Delete Leave Record?',
-            text: 'This will remove the leave entry from the attendance logs.',
+            title: 'Delete Application?',
+            text: 'This will permanently remove the leave application.',
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#ef4444',
@@ -121,17 +143,23 @@ const StudentLeaveManagement = () => {
         if (result.isConfirmed) {
             try {
                 setLoading(true);
-                // In attendance API, we don't have a direct delete by ID necessarily, 
-                // but we could set it back to absent/present or use a delete route if it exists.
-                // For simplicity, let's assume we can delete by ID if the API supports it.
-                await attendanceAPI.delete(id); 
-                toast.success('Record removed');
+                await leaveAPI.delete(id); 
+                toast.success('Application deleted');
                 fetchRecentLeaves();
             } catch (err) {
-                toast.error('Cannot remove record');
+                toast.error('Failed to delete application');
             } finally {
                 setLoading(false);
             }
+        }
+    };
+
+    const getStatusStyle = (status) => {
+        switch (status?.toLowerCase()) {
+            case 'approved': return 'bg-emerald-100 text-emerald-700 border-emerald-200';
+            case 'pending': return 'bg-amber-100 text-amber-700 border-amber-200';
+            case 'rejected': return 'bg-rose-100 text-rose-700 border-rose-200';
+            default: return 'bg-slate-100 text-slate-500 border-slate-200';
         }
     };
 
@@ -144,7 +172,7 @@ const StudentLeaveManagement = () => {
                         <div className="w-1.5 h-10 bg-blue-600 rounded-full" />
                         <div>
                             <h1 className="text-2xl font-bold text-slate-800 tracking-tight">Student Leave Management</h1>
-                            <p className="text-xs text-slate-500 mt-1 uppercase tracking-wider font-medium">Record and track student leave applications</p>
+                            <p className="text-xs text-slate-500 mt-1 uppercase tracking-wider font-medium">Approve and track student absence requests</p>
                         </div>
                     </div>
                 </div>
@@ -201,6 +229,18 @@ const StudentLeaveManagement = () => {
                             </select>
                         </div>
 
+                        <div className="space-y-1">
+                            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider ml-1">Leave Type</label>
+                            <select 
+                                value={newLeave.leaveType}
+                                onChange={(e) => setNewLeave({...newLeave, leaveType: e.target.value})}
+                                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-semibold text-sm outline-none focus:bg-white focus:border-blue-600 transition-all"
+                                required
+                            >
+                                {leaveTypes.map(t => <option key={t} value={t}>{t}</option>)}
+                            </select>
+                        </div>
+
                         <div className="grid grid-cols-2 gap-3">
                             <div className="space-y-1">
                                 <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider ml-1">Start Date</label>
@@ -251,9 +291,9 @@ const StudentLeaveManagement = () => {
                     <div className="flex justify-between items-center mb-6">
                         <div>
                             <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2">
-                                <MdHistory className="text-slate-400" size={20} /> Recent Leave Logs
+                                <MdHistory className="text-slate-400" size={20} /> Leave Applications
                             </h3>
-                            <p className="text-[10px] font-medium text-slate-400 uppercase tracking-wider mt-1">Absence tracking history</p>
+                            <p className="text-[10px] font-medium text-slate-400 uppercase tracking-wider mt-1">Pending and recent requests</p>
                         </div>
                         <button onClick={fetchRecentLeaves} className="p-2 bg-slate-50 hover:bg-slate-200 rounded-lg transition-all text-slate-600"><MdRefresh size={20} /></button>
                     </div>
@@ -264,9 +304,9 @@ const StudentLeaveManagement = () => {
                             <thead>
                                 <tr className="text-left text-[9px] font-black text-slate-400 uppercase tracking-widest bg-slate-50/50">
                                     <th className="px-6 py-5">Student</th>
-                                    <th className="px-6 py-5">Class</th>
-                                    <th className="px-6 py-5">Date</th>
-                                    <th className="px-6 py-5">Reason</th>
+                                    <th className="px-6 py-5">Leave Type</th>
+                                    <th className="px-6 py-5 text-center">Dates</th>
+                                    <th className="px-6 py-5">Status</th>
                                     <th className="px-6 py-5 text-right">Actions</th>
                                 </tr>
                             </thead>
@@ -276,38 +316,66 @@ const StudentLeaveManagement = () => {
                                         <td className="px-6 py-6">
                                             <div className="flex items-center gap-3">
                                                 <div className="w-10 h-10 rounded-xl bg-slate-900 text-white flex items-center justify-center font-black text-sm uppercase">
-                                                    {(item.studentId?.firstName || 'S')[0]}
+                                                    {(item.studentName || item.studentId?.firstName || 'S')[0]}
                                                 </div>
-                                                <div className="text-xs font-black text-slate-800 uppercase tracking-tight">
-                                                    {item.studentId?.firstName} {item.studentId?.lastName}
+                                                <div>
+                                                    <div className="text-xs font-black text-slate-800 uppercase tracking-tight">
+                                                        {item.studentName || `${item.studentId?.firstName} ${item.studentId?.lastName}`}
+                                                    </div>
+                                                    <div className="text-[8px] font-bold text-slate-400 uppercase">Roll: {item.studentId?.rollNumber || 'N/A'}</div>
                                                 </div>
                                             </div>
                                         </td>
                                         <td className="px-6 py-6">
-                                            <span className="px-3 py-1 bg-blue-50 text-blue-600 rounded-lg text-[10px] font-black uppercase tracking-widest italic">{item.classId?.className}</span>
+                                            <div className="text-[10px] font-black text-slate-600 uppercase">{item.leaveType}</div>
+                                            <div className="text-[9px] text-slate-400 italic truncate max-w-[100px]">{item.reason}</div>
                                         </td>
                                         <td className="px-6 py-6">
-                                            <div className="flex items-center gap-2 text-slate-500 font-bold text-[10px] tabular-nums">
-                                                <MdCalendarToday size={14} className="text-slate-300" />
-                                                {new Date(item.date).toLocaleDateString()}
+                                            <div className="flex flex-col items-center gap-1 text-slate-500 font-bold text-[9px] tabular-nums">
+                                                <span>{new Date(item.startDate).toLocaleDateString()}</span>
+                                                <span className="text-slate-300">to</span>
+                                                <span>{new Date(item.endDate).toLocaleDateString()}</span>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-6 font-medium text-[10px] text-slate-400 italic">
-                                            <p className="max-w-[200px] truncate">{item.remark || 'No reason provided'}</p>
+                                        <td className="px-6 py-6">
+                                            <span className={`px-2 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest border ${getStatusStyle(item.status)}`}>
+                                                {item.status}
+                                            </span>
                                         </td>
                                         <td className="px-6 py-6 text-right">
-                                            <button 
-                                                onClick={() => handleDeleteLeave(item._id)}
-                                                className="p-3 bg-rose-50 text-rose-500 rounded-xl hover:bg-rose-500 hover:text-white transition-all shadow-sm"
-                                            >
-                                                <MdCancel size={16} />
-                                            </button>
+                                            <div className="flex justify-end gap-2">
+                                                {item.status === 'pending' && (
+                                                    <>
+                                                        <button 
+                                                            onClick={() => handleStatusUpdate(item._id, 'approved')}
+                                                            className="p-2 bg-emerald-50 text-emerald-600 rounded-lg hover:bg-emerald-600 hover:text-white transition-all"
+                                                            title="Approve"
+                                                        >
+                                                            <MdCheckCircle size={18} />
+                                                        </button>
+                                                        <button 
+                                                            onClick={() => handleStatusUpdate(item._id, 'rejected')}
+                                                            className="p-2 bg-rose-50 text-rose-600 rounded-lg hover:bg-rose-600 hover:text-white transition-all"
+                                                            title="Reject"
+                                                        >
+                                                            <MdCancel size={18} />
+                                                        </button>
+                                                    </>
+                                                )}
+                                                <button 
+                                                    onClick={() => handleDeleteLeave(item._id)}
+                                                    className="p-2 text-slate-300 hover:text-slate-600 transition-all"
+                                                    title="Delete"
+                                                >
+                                                    <MdClose size={18} />
+                                                </button>
+                                            </div>
                                         </td>
                                     </tr>
                                 ))}
                                 {leaveList.length === 0 && (
                                     <tr>
-                                        <td colSpan="5" className="py-20 text-center text-slate-300 font-black text-[10px] uppercase tracking-widest">No Recent Leaves Recorded</td>
+                                        <td colSpan="5" className="py-20 text-center text-slate-300 font-black text-[10px] uppercase tracking-widest">No Student Leaves Found</td>
                                     </tr>
                                 )}
                                 

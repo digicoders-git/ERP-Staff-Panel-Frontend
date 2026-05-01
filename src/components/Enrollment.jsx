@@ -103,6 +103,18 @@ const Enrollment = () => {
     }
   };
 
+  const getClassName = (classObj) => {
+    if (!classObj) return 'UNASSIGNED';
+    if (typeof classObj === 'string') return classObj;
+    return classObj.className || 'UNASSIGNED';
+  };
+
+  const getSectionName = (sectionObj) => {
+    if (!sectionObj) return 'GENERAL';
+    if (typeof sectionObj === 'string') return sectionObj;
+    return sectionObj.sectionName || 'GENERAL';
+  };
+
   return (
     <div className="space-y-10">
       {loading && (
@@ -186,8 +198,8 @@ const Enrollment = () => {
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-2">
-                      <span className="px-2 py-1 bg-slate-100 rounded text-[9px] font-black text-slate-600 border border-slate-200">{student.class?.className || 'UNASSIGNED'}</span>
-                      <span className="px-2 py-1 bg-blue-50 rounded text-[9px] font-black text-blue-600 border border-blue-100">{student.section?.sectionName || 'GENERAL'}</span>
+                      <span className="px-2 py-1 bg-slate-100 rounded text-[9px] font-black text-slate-600 border border-slate-200">{getClassName(student.class)}</span>
+                      <span className="px-2 py-1 bg-blue-50 rounded text-[9px] font-black text-blue-600 border border-blue-100">{getSectionName(student.section)}</span>
                     </div>
                   </td>
                   <td className="px-6 py-4">

@@ -24,7 +24,7 @@ export default function RouteCharges() {
       }));
       setRouteCharges(mappedCharges);
     } catch (err) {
-      toast.error('Fiscal registry synchronization failure');
+      toast.error('Fiscal records synchronization failure');
     } finally {
       setLoading(false);
     }
@@ -45,8 +45,8 @@ export default function RouteCharges() {
               <MdCurrencyExchange size={40} className="text-white" />
             </div>
             <div>
-              <h1 className="text-4xl font-black mb-2 tracking-tight">Tariff Registry</h1>
-              <p className="text-rose-200 font-medium text-lg">Detailed manifest of transit fiscal models, path-based tariffs, and operational charges</p>
+              <h1 className="text-4xl font-black mb-2 tracking-tight">Tariff Records</h1>
+              <p className="text-rose-200 font-medium text-lg">Detailed record of transit fiscal models, path-based tariffs, and operational charges</p>
             </div>
           </div>
         </div>
@@ -58,11 +58,11 @@ export default function RouteCharges() {
         </div>
       )}
 
-      {/* Fiscal Registry Table */}
+      {/* Fiscal Records Table */}
       <div className="bg-white rounded-[2.5rem] shadow-xl border border-slate-100 overflow-hidden">
         <div className="p-10 border-b border-slate-50 flex flex-col md:flex-row justify-between items-center gap-8 bg-slate-50/30">
           <div>
-            <h3 className="text-2xl font-black text-slate-800 tracking-tight">Tariff Manifest Registry</h3>
+            <h3 className="text-2xl font-black text-slate-800 tracking-tight">Tariff Record Records</h3>
             <p className="text-slate-400 text-sm font-medium mt-1 uppercase tracking-widest">Active path tariffs: {routeCharges.length} profiles</p>
           </div>
           
@@ -123,7 +123,7 @@ export default function RouteCharges() {
                 <tr>
                   <td colSpan="4" className="px-10 py-32 text-center text-slate-300">
                      <MdCurrencyExchange size={80} className="mx-auto mb-6 opacity-20" />
-                     <p className="text-[11px] font-black uppercase tracking-[0.2em]">Fiscal Registry Purged</p>
+                     <p className="text-[11px] font-black uppercase tracking-[0.2em]">Fiscal Records Purged</p>
                   </td>
                 </tr>
               )}

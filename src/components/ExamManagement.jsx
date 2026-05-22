@@ -21,7 +21,7 @@ const ExamManagement = () => {
 
   return (
     <div className="space-y-10 animate-in fade-in duration-700">
-      {/* Premium Institutional Header */}
+      {/* Premium School Header */}
       <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 rounded-[3rem] p-12 text-white shadow-2xl relative overflow-hidden border border-white/5">
         <div className="absolute top-0 right-0 w-[40rem] h-[40rem] bg-indigo-500/10 rounded-full -mr-64 -mt-64 blur-[100px] animate-pulse" />
         <div className="absolute bottom-0 left-0 w-80 h-80 bg-blue-500/5 rounded-full -ml-40 -mb-40 blur-[80px]" />
@@ -36,7 +36,7 @@ const ExamManagement = () => {
                 Scholastic Command
               </h1>
               <div className="flex items-center gap-4 text-indigo-300/80 font-bold text-lg">
-                <span>Examination Registry</span>
+                <span>Examination Records</span>
                 <span className="w-1.5 h-1.5 bg-indigo-500 rounded-full" />
                 <span className="opacity-60">Academic Performance Manifold</span>
               </div>

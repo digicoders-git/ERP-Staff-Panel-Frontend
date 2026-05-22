@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { MdVerifiedUser, MdCancel, MdCheckCircle, MdVisibility } from 'react-icons/md';
 import { toast } from 'react-toastify';
 import { studentAPI } from '../utils/apiService';
 import { FaSpinner } from 'react-icons/fa';
 
 const Verification = () => {
+  const navigate = useNavigate();
   const [filter, setFilter] = useState('all');
-  const [showModal, setShowModal] = useState(false);
-  const [selectedItem, setSelectedItem] = useState(null);
   const [loading, setLoading] = useState(true);
   const [verificationList, setVerificationList] = useState([]);
 
@@ -25,7 +25,7 @@ const Verification = () => {
       setVerificationList(Array.isArray(students) ? students : []);
     } catch (err) {
       console.error('Verification fetch failure:', err);
-      toast.error('Identity validation registry inaccessible');
+      toast.error('Could not load verification list');
     } finally {
       setLoading(false);
     }
@@ -33,8 +33,8 @@ const Verification = () => {
 
   const handleVerify = async (id) => {
     try {
-      await studentAPI.verify(id, { status: 'verified', remarks: 'Documents cleared via institutional terminal' });
-      toast.success(`Identity manifest ${id} verified! ✅`);
+      await studentAPI.verify(id, { status: 'verified', remarks: 'Documents verified successfully' });
+      toast.success(`Student ${id} verified! ✅`);
       fetchVerificationList();
     } catch (err) {
       toast.error('Verification synchronization failed');
@@ -43,27 +43,16 @@ const Verification = () => {
 
   const handleReject = async (id) => {
     try {
-      await studentAPI.verify(id, { status: 'rejected', remarks: 'Identity manifest rejected due to artifact inconsistency' });
-      toast.error(`Identity manifest ${id} rejected! ❌`);
+      await studentAPI.verify(id, { status: 'rejected', remarks: 'Documents rejected due to incorrect information' });
+      toast.error(`Student ${id} rejected! ❌`);
       fetchVerificationList();
     } catch (err) {
-      toast.error('Protocol denial failed');
+      toast.error('Rejection failed');
     }
   };
 
-  const resolveDocUrl = (url) => {
-    if (!url) return '#';
-    if (url.startsWith('http')) return url;
-    const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5002';
-    let cleanPath = url.replace(/\\/g, '/');
-    const uploadsIndex = cleanPath.toLowerCase().indexOf('uploads/');
-    if (uploadsIndex !== -1) cleanPath = cleanPath.slice(uploadsIndex);
-    return `${BASE_URL.replace(/\/$/, '')}/${cleanPath.startsWith('/') ? cleanPath.slice(1) : cleanPath}`;
-  };
-
   const handleView = (item) => {
-    setSelectedItem(item);
-    setShowModal(true);
+    navigate(`/application-view/${item.admissionNumber || item._id}`);
   };
 
   return (
@@ -80,8 +69,8 @@ const Verification = () => {
           <MdVerifiedUser size={120} />
         </div>
         <div className="relative z-10">
-          <h2 className="text-4xl font-black mb-2 tracking-tight">Verification Terminal</h2>
-          <p className="text-emerald-200 text-lg font-medium">Verify identity manifests and audit digital artifacts for institutional clearance</p>
+          <h2 className="text-4xl font-black mb-2 tracking-tight">Document Verification</h2>
+          <p className="text-emerald-200 text-lg font-medium">Verify student documents and approve admissions</p>
         </div>
       </div>
 
@@ -94,7 +83,7 @@ const Verification = () => {
             </div>
             <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded-lg">REGISTRY</span>
           </div>
-          <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider">Total Audits</h3>
+          <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider">Total Students</h3>
           <p className="text-3xl font-black text-slate-800 mt-1">{verificationList.length}</p>
         </div>
 
@@ -114,9 +103,9 @@ const Verification = () => {
             <div className="p-3 bg-emerald-50 rounded-xl text-emerald-600">
               <MdCheckCircle size={24} />
             </div>
-            <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-lg">CLEARED</span>
+            <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-lg">VERIFIED</span>
           </div>
-          <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider">Verified Identities</h3>
+          <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider">Verified Students</h3>
           <p className="text-3xl font-black text-slate-800 mt-1">{verificationList.filter(v => v.verificationStatus === 'verified').length}</p>
         </div>
       </div>
@@ -134,7 +123,7 @@ const Verification = () => {
                     : 'bg-white text-slate-400 border-slate-100 hover:bg-slate-50'
                 }`}
               >
-                {status} Manifests
+                {status} Students
               </button>
             ))}
           </div>
@@ -144,7 +133,7 @@ const Verification = () => {
           {loading ? (
             <div className="flex flex-col items-center justify-center py-20 gap-4 opacity-50">
               <FaSpinner className="animate-spin text-blue-600" size={30} />
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Accessing Institutional Vault...</p>
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Loading Documents...</p>
             </div>
           ) : (
             <>
@@ -159,7 +148,7 @@ const Verification = () => {
                       </div>
                       <div>
                         <h3 className="font-black text-slate-800 text-sm uppercase tracking-tight">{item.name || `${item.firstName} ${item.lastName}`}</h3>
-                        <p className="text-[10px] font-bold text-blue-600 tracking-widest">{item.admissionNumber || 'ID ALLOCATION PENDING'}</p>
+                        <p className="text-[10px] font-bold text-blue-600 tracking-widest">{item.admissionNumber || 'ID PENDING'}</p>
                         <div className="flex gap-2 mt-2">
                           {Object.keys(item.documents || {}).filter(k => item.documents[k]).map((doc, idx) => (
                             <span key={idx} className="bg-white border border-slate-200 px-2 py-0.5 rounded-md text-[8px] font-black text-slate-400 uppercase tracking-widest">
@@ -173,7 +162,7 @@ const Verification = () => {
                       <button 
                         onClick={() => handleView(item)}
                         className="flex-1 sm:flex-none p-2 bg-white border border-slate-200 text-slate-400 rounded-xl hover:text-blue-600 hover:border-blue-200 transition-all"
-                        title="Analyze Artifacts"
+                        title="View Documents"
                       >
                         <MdVisibility size={20} />
                       </button>
@@ -182,14 +171,14 @@ const Verification = () => {
                           <button 
                             onClick={() => handleVerify(item._id)}
                             className="flex-1 sm:flex-none p-2 bg-white border border-slate-200 text-slate-400 rounded-xl hover:text-emerald-600 hover:border-emerald-200 transition-all"
-                            title="Verify Identity Manifest"
+                            title="Verify Documents"
                           >
                             <MdCheckCircle size={20} />
                           </button>
                           <button 
                             onClick={() => handleReject(item._id)}
                             className="flex-1 sm:flex-none p-2 bg-white border border-slate-200 text-slate-400 rounded-xl hover:text-red-500 hover:border-red-200 transition-all"
-                            title="Deny Validation"
+                            title="Reject Documents"
                           >
                             <MdCancel size={20} />
                           </button>
@@ -201,7 +190,7 @@ const Verification = () => {
               )) : (
                 <div className="py-20 text-center opacity-30 flex flex-col items-center gap-4">
                   <MdVerifiedUser size={60} />
-                  <p className="text-xs font-black uppercase tracking-[0.3em]">Institutional clearance registry empty</p>
+                  <p className="text-xs font-black uppercase tracking-[0.3em]">No students found</p>
                 </div>
               )}
             </>
@@ -209,76 +198,6 @@ const Verification = () => {
         </div>
       </div>
 
-      {/* Modal for viewing documents */}
-      {showModal && selectedItem && (
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-8 max-w-md w-full shadow-2xl border border-blue-50 relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-blue-50 rounded-full -mr-16 -mt-16 opacity-50" />
-            
-            <h3 className="text-xl font-black text-blue-900 mb-6 flex items-center gap-2">
-              <MdVisibility className="text-blue-600" /> Artifact Inspection
-            </h3>
-
-            <div className="space-y-4 relative z-10">
-              <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
-                <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest block mb-1">Student Nomenclature</span>
-                <span className="text-sm font-bold text-slate-800">{selectedItem.name || `${selectedItem.firstName} ${selectedItem.lastName}`}</span>
-              </div>
-
-              <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
-                <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest block mb-1">Institutional ID</span>
-                <span className="text-xs font-bold text-blue-600 tracking-widest">{selectedItem.admissionNumber || 'PENDING ALLOCATION'}</span>
-              </div>
-
-              <div className="p-4 bg-slate-50 rounded-xl border border-slate-100">
-                <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest block mb-3 underline decoration-blue-200">Deposited Artifacts</span>
-                <ul className="space-y-3">
-                  {Object.keys(selectedItem.documents || {}).filter(k => selectedItem.documents[k]).map((docKey, index) => {
-                    const docUrl = selectedItem.documents[docKey];
-                    return (
-                      <li key={index} className="flex items-center justify-between p-3 bg-white border border-slate-100 rounded-xl group hover:border-blue-300 transition-all">
-                        <div className="flex items-center gap-3">
-                          <MdCheckCircle className="text-emerald-500" size={16} />
-                          <span className="text-[10px] font-black text-slate-600 uppercase tracking-widest leading-none">
-                            {docKey.replace(/([A-Z])/g, ' $1').trim()}
-                          </span>
-                        </div>
-                        <button 
-                          onClick={() => window.open(resolveDocUrl(docUrl), '_blank')}
-                          className="px-4 py-2 bg-blue-50 text-blue-600 rounded-lg text-[8px] font-black uppercase tracking-widest hover:bg-blue-600 hover:text-white transition-all shadow-sm"
-                        >
-                          Audit File
-                        </button>
-                      </li>
-                    );
-                  })}
-                  {Object.keys(selectedItem.documents || {}).filter(k => selectedItem.documents[k]).length === 0 && (
-                    <li className="text-[10px] font-bold text-slate-400 uppercase italic py-4 text-center">No digital artifacts detected</li>
-                  )}
-                </ul>
-              </div>
-
-              <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
-                <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest block mb-1">Validation Status</span>
-                <span className={`inline-block mt-1 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${
-                  (selectedItem.verificationStatus || 'pending') === 'verified' ? 'bg-emerald-100 text-emerald-800' : 
-                  (selectedItem.verificationStatus || 'pending') === 'pending' ? 'bg-orange-100 text-orange-800' :
-                  'bg-red-100 text-red-800'
-                }`}>
-                  {selectedItem.verificationStatus || 'pending'}
-                </span>
-              </div>
-            </div>
-
-            <button
-              onClick={() => setShowModal(false)}
-              className="w-full mt-8 py-3 bg-blue-600 text-white rounded-xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-blue-700 transition-all shadow-lg shadow-blue-200"
-            >
-              Close Inspection
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

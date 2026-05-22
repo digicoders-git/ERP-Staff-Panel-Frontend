@@ -59,11 +59,11 @@ const StudentProfile = () => {
                       casteCertificate: s.casteCertificate,
                       studentPhoto: s.profileImage
                     });
-                    console.log('Student ID:', id, 'Manifest Synchronized:', s);
+                    console.log('Student ID:', id, 'Record Synchronized:', s);
                 }
             } catch (err) {
                 console.error('Failed to fetch student profile:', err);
-                toast.error('Institutional Registry Error: Failed to fetch manifest');
+                toast.error('School Records Error: Failed to fetch record');
             } finally {
                 setLoading(false);
             }
@@ -76,7 +76,7 @@ const StudentProfile = () => {
         return (
             <div className="flex flex-col items-center justify-center min-h-[60vh]">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-4"></div>
-                <p className="text-gray-600 font-medium">Synchronizing Institutional Manifest...</p>
+                <p className="text-gray-600 font-medium">Synchronizing School Record...</p>
             </div>
         );
     }
@@ -84,8 +84,8 @@ const StudentProfile = () => {
     if (!student) {
         return (
             <div className="flex flex-col items-center justify-center min-h-[60vh]">
-                <p className="text-red-500 font-bold">CRITICAL: Manifest Not Found</p>
-                <button onClick={() => navigate('/admissions')} className="mt-4 text-blue-600 hover:underline">Return to Registry</button>
+                <p className="text-red-500 font-bold">CRITICAL: Record Not Found</p>
+                <button onClick={() => navigate('/admissions')} className="mt-4 text-blue-600 hover:underline">Return to Records</button>
             </div>
         );
     }
@@ -174,11 +174,11 @@ const StudentProfile = () => {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Left Column: Essential Info */}
                 <div className="lg:col-span-1 space-y-6">
-                    {/* Identity Artifacts */}
+                    {/* Identity Documents */}
                     <div className="bg-white rounded-3xl p-8 shadow-sm border border-slate-100">
                         <h3 className="text-xs font-black text-slate-400 mb-8 flex items-center uppercase tracking-[0.3em]">
                             <FaSpinner className="mr-3 text-blue-500" />
-                            Identity Artifacts
+                            Identity Documents
                         </h3>
                         <div className="space-y-6">
                             <div className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl">
@@ -200,7 +200,7 @@ const StudentProfile = () => {
                                 )}
                             </div>
                             <div className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl">
-                                <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Institutional Category</span>
+                                <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">School Category</span>
                                 <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-lg text-[10px] font-black uppercase tracking-tighter">{student.category}</span>
                             </div>
                         </div>
@@ -245,19 +245,19 @@ const StudentProfile = () => {
 
                 {/* Right Column: Detailed Info */}
                 <div className="lg:col-span-2 space-y-6">
-                    {/* Guardian Manifest */}
+                    {/* Guardian Record */}
                     <div className="bg-white rounded-3xl p-8 shadow-sm border border-slate-100">
                         <h3 className="text-xs font-black text-slate-400 mb-10 flex items-center uppercase tracking-[0.3em]">
                             <MdFamilyRestroom className="text-amber-500 mr-3" size={24} />
-                            Guardian Manifest
+                            Guardian Record
                         </h3>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                             <div className="p-6 bg-slate-50 rounded-3xl border border-slate-100">
-                                <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-3">Father's Nomenclature</p>
+                                <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-3">Father's Name</p>
                                 <p className="text-slate-800 font-black text-lg">{student.guardianInfo.fatherName || '-'}</p>
                             </div>
                             <div className="p-6 bg-slate-50 rounded-3xl border border-slate-100">
-                                <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-3">Mother's Nomenclature</p>
+                                <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-3">Mother's Name</p>
                                 <p className="text-slate-800 font-black text-lg">{student.guardianInfo.motherName || '-'}</p>
                             </div>
                             <div className="p-6 bg-amber-50 rounded-3xl border border-amber-100/50">
@@ -305,7 +305,7 @@ const StudentProfile = () => {
                         </div>
                     </div>
 
-                    {/* Institutional Origins (Previous Academic) */}
+                    {/* School Origins (Previous Academic) */}
                     {student.hasPreviousEducation === 'yes' && (
                         <div className="bg-slate-900 rounded-[3rem] p-10 text-white shadow-2xl relative overflow-hidden">
                              <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl -mr-20 -mt-20" />
@@ -323,7 +323,7 @@ const StudentProfile = () => {
                                      <p className="text-xl font-black text-white">{student.previousEducation.previousPercentage}% <span className="text-[10px] text-slate-400 font-bold italic">({student.previousEducation.previousMarksType})</span></p>
                                  </div>
                                  <div className="md:col-span-2">
-                                     <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-2">Institutional Nomenclature (School)</p>
+                                     <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-2">School Name (School)</p>
                                      <p className="text-lg font-bold text-slate-200 mb-1">{student.previousEducation.previousSchoolName || '-'}</p>
                                      <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">{student.previousEducation.previousSchoolAddress || '-'}</p>
                                  </div>
@@ -333,7 +333,7 @@ const StudentProfile = () => {
                                          <div className="flex justify-center">{student.previousEducation.marksheet ? <MdCheckCircle className="text-emerald-500" size={20} /> : <MdError className="text-white/20" size={20} />}</div>
                                      </div>
                                      <div className="text-center">
-                                         <p className="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-2">TC Artifact</p>
+                                         <p className="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-2">TC Document</p>
                                          <div className="flex justify-center">{student.previousEducation.transferCertificate ? <MdCheckCircle className="text-emerald-500" size={20} /> : <MdError className="text-white/20" size={20} />}</div>
                                      </div>
                                      <div className="text-center">
@@ -362,7 +362,7 @@ const StudentProfile = () => {
                                  </div>
                              </div>
                              <div className="text-right">
-                                 <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Manifest Integrity</p>
+                                 <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Record Integrity</p>
                                  <span className="px-4 py-1.5 bg-emerald-100 text-emerald-700 rounded-full text-[10px] font-black uppercase tracking-tighter">VERIFIED MANIFEST</span>
                              </div>
                          </div>

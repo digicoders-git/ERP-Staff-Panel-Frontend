@@ -226,7 +226,7 @@ const StaffAttendance = () => {
            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 via-emerald-500 to-amber-500" />
            <div className="flex justify-between items-center mb-10">
               <div>
-                 <h3 className="text-xl font-black uppercase italic tracking-tight">Real-Time Registry</h3>
+                 <h3 className="text-xl font-black uppercase italic tracking-tight">Real-Time Records</h3>
                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-2 italic">Latest {activeTab === 'attendance-summary' ? 'Presence' : 'Leave'} events</p>
               </div>
               <div className="relative group">

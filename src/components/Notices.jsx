@@ -404,7 +404,7 @@ const Notices = () => {
                 </div>
                 <div>
                   <h3 className="text-xl font-black text-slate-800 tracking-tight">Notice Detailed View</h3>
-                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-0.5">Manifest ID: {selectedNotice.id.slice(-6)}</p>
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-0.5">Record ID: {selectedNotice.id.slice(-6)}</p>
                 </div>
               </div>
               <button 

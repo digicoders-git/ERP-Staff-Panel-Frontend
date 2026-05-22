@@ -54,7 +54,7 @@ const NotificationCenter = () => {
       setNotifications(historyRes.data);
       setSettings(settingsRes.data);
     } catch (err) {
-      toast.error('Failed to sync with matrix registry');
+      toast.error('Failed to sync with matrix records');
     } finally {
       setLoading(false);
     }
@@ -81,7 +81,7 @@ const NotificationCenter = () => {
     setSettings(updatedSettings);
     try {
       await notificationAPI.updateSettings(updatedSettings);
-      toast.success('Registry updated', { position: "bottom-center", autoClose: 1000 });
+      toast.success('Records updated', { position: "bottom-center", autoClose: 1000 });
     } catch (err) {
       toast.error('Failed to sync settings');
     }
@@ -113,7 +113,7 @@ const NotificationCenter = () => {
                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-500">Logistics Hub</span>
             </div>
             <h2 className="text-4xl lg:text-5xl font-black tracking-tight leading-none">Notification Center</h2>
-            <p className="text-slate-400 text-lg font-medium max-w-xl italic">Coordinate institutional alerts, student communications, and automated reporting thresholds across the matrix.</p>
+            <p className="text-slate-400 text-lg font-medium max-w-xl italic">Coordinate school alerts, student communications, and automated reporting thresholds across the matrix.</p>
           </div>
           <div className="flex gap-4 w-full md:w-auto">
             <button
@@ -160,7 +160,7 @@ const NotificationCenter = () => {
       <div className="flex flex-col md:flex-row gap-4 justify-between bg-slate-50/50 p-3 rounded-[2rem] border border-slate-100">
         <div className="flex gap-2">
           {[
-            { id: 'notifications', label: 'Dispatch Registry', icon: MdOutlineRule },
+            { id: 'notifications', label: 'Dispatch Records', icon: MdOutlineRule },
             { id: 'settings', label: 'Threshold Terminal', icon: MdEditNotifications }
           ].map(tab => (
             <button
@@ -186,7 +186,7 @@ const NotificationCenter = () => {
             <div className="p-10 border-b border-slate-100 bg-slate-50/30 flex justify-between items-center">
               <div>
                  <h3 className="text-2xl font-black text-slate-800 tracking-tight">System Dispatch Stream</h3>
-                 <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">Live tracking of institutional dispatches</p>
+                 <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">Live tracking of school dispatches</p>
               </div>
               <span className="flex items-center gap-2 bg-emerald-100 text-emerald-700 text-[10px] font-black px-5 py-2 rounded-full uppercase tracking-widest border border-emerald-200 border-dashed animate-pulse">
                 <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></div>
@@ -197,7 +197,7 @@ const NotificationCenter = () => {
             {loading ? (
               <div className="p-20 text-center space-y-4">
                  <div className="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
-                 <p className="text-[10px] font-black text-slate-300 uppercase tracking-[0.3em]">Accessing Registry...</p>
+                 <p className="text-[10px] font-black text-slate-300 uppercase tracking-[0.3em]">Accessing Records...</p>
               </div>
             ) : notifications.length === 0 ? (
               <div className="p-32 text-center text-slate-300">
@@ -220,7 +220,7 @@ const NotificationCenter = () => {
                               {n.status}
                             </span>
                             <div className="flex items-center gap-2 p-2 bg-slate-100 rounded-xl text-slate-400 group-hover/item:text-slate-600 transition-colors">
-                              {n.method === 'email' && <MdEmail size={18} title="Institutional Email" />}
+                              {n.method === 'email' && <MdEmail size={18} title="School Email" />}
                               {n.method === 'sms' && <MdSms size={18} title="Carrier Gateway" />}
                               {n.method === 'both' && <div className="flex gap-1"><MdEmail size={16}/><MdSms size={16}/></div>}
                             </div>
@@ -296,7 +296,7 @@ const NotificationCenter = () => {
                     <MdOutlineRule size={28} />
                  </div>
                  <div>
-                    <h3 className="text-2xl font-black text-slate-800 tracking-tight">Registry Thresholds</h3>
+                    <h3 className="text-2xl font-black text-slate-800 tracking-tight">Records Thresholds</h3>
                     <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Calibration of dispatch trigger points</p>
                  </div>
               </div>
@@ -338,7 +338,7 @@ const NotificationCenter = () => {
                 <div className="pt-8 flex gap-4">
                    <div className="flex-1 p-5 bg-[#0f172a] rounded-2xl text-center shadow-xl">
                       <p className="text-[8px] font-black text-emerald-500 uppercase tracking-[0.2em] mb-1">Status</p>
-                      <p className="font-bold text-white text-xs">Registry Synchronized</p>
+                      <p className="font-bold text-white text-xs">Records Synchronized</p>
                    </div>
                    <div className="flex-1 p-5 bg-slate-50 rounded-2xl text-center border border-slate-100">
                       <p className="text-[8px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">Protection</p>
@@ -392,7 +392,7 @@ const NotificationCenter = () => {
                   </select>
                 </div>
                 <div className="space-y-3">
-                  <label className="text-[11px] font-black text-slate-500 uppercase tracking-widest pl-2">Registry Title</label>
+                  <label className="text-[11px] font-black text-slate-500 uppercase tracking-widest pl-2">Records Title</label>
                   <input
                     type="text"
                     value={newNotification.title}
@@ -405,7 +405,7 @@ const NotificationCenter = () => {
               </div>
 
               <div className="space-y-3">
-                <label className="text-[11px] font-black text-slate-500 uppercase tracking-widest pl-2">Manifest Payload</label>
+                <label className="text-[11px] font-black text-slate-500 uppercase tracking-widest pl-2">Record Payload</label>
                 <textarea
                   value={newNotification.message}
                   onChange={(e) => setNewNotification({...newNotification, message: e.target.value})}
@@ -435,7 +435,7 @@ const NotificationCenter = () => {
                     onChange={(e) => setNewNotification({...newNotification, method: e.target.value})}
                     className="w-full px-6 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 font-bold text-slate-800 outline-none transition-all appearance-none cursor-pointer"
                   >
-                    <option value="email">Institutional Mail</option>
+                    <option value="email">School Mail</option>
                     <option value="sms">Carrier Gateway</option>
                     <option value="both">Hybrid Stream</option>
                   </select>

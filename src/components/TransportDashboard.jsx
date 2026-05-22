@@ -39,7 +39,7 @@ export default function TransportDashboard() {
     { title: 'Vehicle Master', desc: 'Sync fleet inventory', icon: MdDirectionsBus, color: 'blue', link: '/transport/vehicles' },
     { title: 'Driver Master', desc: 'Manage operational staff', icon: MdPerson, color: 'emerald', link: '/transport/drivers' },
     { title: 'Route Master', desc: 'Optimize transit paths', icon: MdMap, color: 'purple', link: '/transport/routes' },
-    { title: 'Route Stops', desc: 'Manifest transit nodes', icon: MdPlace, color: 'orange', link: '/transport/route-stops' },
+    { title: 'Route Stops', desc: 'Record transit nodes', icon: MdPlace, color: 'orange', link: '/transport/route-stops' },
     { title: 'Route Charges', desc: 'Fiscal transit setup', icon: MdPayments, color: 'indigo', link: '/transport/route-charges' },
     { title: 'Assignment', desc: 'Vehicle-Driver mapping', icon: MdSettings, color: 'teal', link: '/transport/assignments' },
     { title: 'Allocation', desc: 'Student residency mapping', icon: MdGroups, color: 'rose', link: '/transport/allocations' }
@@ -66,7 +66,7 @@ export default function TransportDashboard() {
             </div>
             <div>
               <h1 className="text-4xl font-black tracking-tight mb-2">Transport Matrix</h1>
-              <p className="text-blue-200/80 text-lg font-medium">Detailed manifest of fleet logistics, transit routes, and student allocation metrics</p>
+              <p className="text-blue-200/80 text-lg font-medium">Detailed record of fleet logistics, transit routes, and student allocation metrics</p>
             </div>
           </div>
           <div className="flex gap-4">
@@ -137,7 +137,7 @@ export default function TransportDashboard() {
                 </div>
                 <div>
                   <h4 className="text-2xl font-black tracking-tight">Fleet Security & Compliance</h4>
-                  <p className="text-blue-100/80 font-medium">Verify insurance manifests and vehicle fitness certification audits</p>
+                  <p className="text-blue-100/80 font-medium">Verify insurance records and vehicle fitness certification audits</p>
                 </div>
              </div>
              <button className="relative z-10 px-8 py-4 bg-white text-blue-700 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-blue-50 transition-all">
@@ -156,7 +156,7 @@ export default function TransportDashboard() {
               { type: 'Assignment', detail: 'Bus-08 Manifested to RT-12', time: '14:20 PM', icon: FaCog },
               { type: 'Maintenance', detail: 'Bus-02 Protocol initiated', time: '12:15 PM', icon: FaBus },
               { type: 'Allocation', detail: '12 New students mapped to RT-05', time: '09:45 AM', icon: FaUsers },
-              { type: 'Fleet Audit', detail: 'Compliance registry updated', time: 'Yesterday', icon: FaShieldAlt }
+              { type: 'Fleet Audit', detail: 'Compliance records updated', time: 'Yesterday', icon: FaShieldAlt }
             ].map((item, i) => (
               <div key={i} className="relative pl-12 group">
                 <div className="absolute left-0 top-0 w-8 h-8 bg-white border-2 border-slate-100 rounded-full flex items-center justify-center z-10 group-hover:border-blue-500 group-hover:text-blue-500 transition-colors">

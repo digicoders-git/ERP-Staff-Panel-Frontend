@@ -3,6 +3,7 @@ import { useNavigate, Routes, Route, useLocation } from 'react-router-dom';
 import api from '../utils/api';
 import Registration from './Registration';
 import Applications from './Applications';
+import ApplicationView from './ApplicationView';
 import Verification from './Verification';
 import Admissions from './Admissions';
 import TransportDashboard from './TransportDashboard';
@@ -238,7 +239,7 @@ const Dashboard = ({ setIsLoggedIn }) => {
 
   const hostelItems = [
     { id: 'hostel-dashboard', name: 'Dashboard', icon: MdDashboard, path: '/hostel-dashboard' },
-    { id: 'create-hostel', name: 'Dormitory Registry', icon: MdHome, path: '/create-hostel' },
+    { id: 'create-hostel', name: 'Dormitory Records', icon: MdHome, path: '/create-hostel' },
     { id: 'room-type-charge', name: 'Room Type & Charge', icon: MdOutlineCurrencyRupee, path: '/room-type-charge' },
     { id: 'room-management', name: 'Room Management', icon: MdBed, path: '/room-management' },
     { id: 'hostel-allocation', name: 'Hostel Allocation', icon: MdAssignmentInd, path: '/hostel-allocation' },
@@ -601,6 +602,7 @@ const Dashboard = ({ setIsLoggedIn }) => {
               <Route path="/new-admission" element={<Registration />} />
               <Route path="/edit-admission/:id" element={<Registration />} />
               <Route path="/applications" element={<Applications />} />
+              <Route path="/application-view/:id" element={<ApplicationView />} />
               <Route path="/verification" element={<Verification />} />
               <Route path="/enrollment" element={<Enrollment />} />
               <Route path="/admissions" element={<Admissions />} />

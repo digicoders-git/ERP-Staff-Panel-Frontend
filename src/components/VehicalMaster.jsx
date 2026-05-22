@@ -26,7 +26,7 @@ export default function VehicleMaster() {
       }));
       setVehicles(mappedVehicles);
     } catch (err) {
-      toast.error('Fleet registry synchronization failure');
+      toast.error('Fleet records synchronization failure');
     } finally {
       setLoading(false);
     }
@@ -49,7 +49,7 @@ export default function VehicleMaster() {
             </div>
             <div>
               <h1 className="text-4xl font-black mb-2 tracking-tight">Fleet Command</h1>
-              <p className="text-blue-200 font-medium text-lg">Manage institutional vehicle inventory, compliance status, and operational readiness</p>
+              <p className="text-blue-200 font-medium text-lg">Manage school vehicle inventory, compliance status, and operational readiness</p>
             </div>
           </div>
         </div>
@@ -61,11 +61,11 @@ export default function VehicleMaster() {
         </div>
       )}
 
-      {/* Fleet Registry Table */}
+      {/* Fleet Records Table */}
       <div className="bg-white rounded-[2.5rem] shadow-xl border border-slate-100 overflow-hidden">
         <div className="p-10 border-b border-slate-50 flex flex-col md:flex-row justify-between items-center gap-8 bg-slate-50/30">
           <div>
-            <h3 className="text-2xl font-black text-slate-800 tracking-tight">Fleet Registry Manifest</h3>
+            <h3 className="text-2xl font-black text-slate-800 tracking-tight">Fleet Records Record</h3>
             <p className="text-slate-400 text-sm font-medium mt-1 uppercase tracking-widest">Active Fleet: {vehicles.length} Units</p>
           </div>
           
@@ -73,7 +73,7 @@ export default function VehicleMaster() {
             <MdSearch className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors" size={24} />
             <input
               type="text"
-              placeholder="Search Fleet Manifest..."
+              placeholder="Search Fleet Record..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-16 pr-6 py-4 bg-white border border-slate-200 rounded-2xl focus:ring-2 focus:ring-blue-500 font-bold text-slate-800 transition-all outline-none"
@@ -103,7 +103,7 @@ export default function VehicleMaster() {
                       </div>
                       <div>
                         <div className="text-sm font-black text-slate-800 group-hover:text-blue-600 transition-colors">{vehicle.vehicleNumber}</div>
-                        <div className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">Registry Ref: {vehicle.rcNumber || 'N/A'}</div>
+                        <div className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">Records Ref: {vehicle.rcNumber || 'N/A'}</div>
                       </div>
                     </div>
                   </td>

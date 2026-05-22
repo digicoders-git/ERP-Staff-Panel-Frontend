@@ -49,7 +49,7 @@ const Enrollment = () => {
       }
     } catch (err) {
       console.error('Enrollment fetch failure:', err);
-      toast.error('Institutional enrollment registry inaccessible');
+      toast.error('School enrollment records inaccessible');
     } finally {
       setLoading(false);
     }
@@ -130,7 +130,7 @@ const Enrollment = () => {
         </div>
         <div className="relative z-10">
           <h2 className="text-4xl font-black mb-2 tracking-tight">Enrollment Terminal</h2>
-          <p className="text-blue-200 text-lg font-medium">Finalize student enrollment and assign academic units within the institutional matrix</p>
+          <p className="text-blue-200 text-lg font-medium">Finalize student enrollment and assign academic units within the school matrix</p>
         </div>
       </div>
 
@@ -172,15 +172,15 @@ const Enrollment = () => {
       {/* Enrollment Table */}
       <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-slate-100">
         <div className="p-6 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
-          <h3 className="text-xl font-black text-slate-800">Enrollment Registry</h3>
-          <span className="px-4 py-1.5 bg-blue-50 text-blue-700 rounded-full text-[10px] font-black uppercase tracking-widest border border-blue-100">Operational Manifest</span>
+          <h3 className="text-xl font-black text-slate-800">Enrollment Records</h3>
+          <span className="px-4 py-1.5 bg-blue-50 text-blue-700 rounded-full text-[10px] font-black uppercase tracking-widest border border-blue-100">Operational Record</span>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="bg-slate-50">
               <tr>
                 <th className="px-6 py-4 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Enrollment ID</th>
-                <th className="px-6 py-4 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Student Nomenclature</th>
+                <th className="px-6 py-4 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Student Name</th>
                 <th className="px-6 py-4 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Academic Matrix</th>
                 <th className="px-6 py-4 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Status Hub</th>
                 <th className="px-6 py-4 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Actions Terminal</th>
@@ -227,7 +227,7 @@ const Enrollment = () => {
                 <tr>
                   <td colSpan="5" className="px-6 py-24 text-center opacity-30 flex flex-col items-center gap-4">
                     <MdPeople size={64} className="text-slate-200" />
-                    <p className="text-[10px] font-black uppercase tracking-[0.3em]">Institutional clearance registry empty</p>
+                    <p className="text-[10px] font-black uppercase tracking-[0.3em]">School clearance records empty</p>
                   </td>
                 </tr>
               )}
@@ -249,7 +249,7 @@ const Enrollment = () => {
             <form onSubmit={handleEnrollSubmit} className="space-y-6 relative z-10">
               <div className="grid grid-cols-2 gap-6">
                 <div>
-                  <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest block mb-1">Institutional ID / Admission No</label>
+                  <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest block mb-1">School ID / Admission No</label>
                   <input
                     type="text"
                     required
@@ -304,7 +304,7 @@ const Enrollment = () => {
                   onClick={() => setShowEnrollModal(false)}
                   className="flex-1 py-4 bg-slate-100 text-slate-600 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-slate-200 transition-all"
                 >
-                  Cancel Manifest
+                  Cancel Record
                 </button>
                 <button
                   type="submit"

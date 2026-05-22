@@ -65,7 +65,7 @@ const MarksHistory = () => {
                     </div>
                     <div>
                         <h2 className="text-xl font-black text-slate-800 uppercase tracking-tight">Marks Archive</h2>
-                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Historical Performance Registry</p>
+                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Historical Performance Records</p>
                     </div>
                 </div>
 
@@ -94,7 +94,7 @@ const MarksHistory = () => {
                 </div>
             </div>
 
-            {/* Main Registry Table */}
+            {/* Main Records Table */}
             <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="w-full text-left">

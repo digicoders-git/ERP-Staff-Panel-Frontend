@@ -41,14 +41,14 @@ export default function HostelDashboard() {
       setRecentActivities(allocations.slice(0, 5).map(a => ({
         id: a._id,
         title: 'Room Allocation Manifested',
-        desc: `Room ${a.roomNo} assigned to student registry ID: ${a.studentId}`,
+        desc: `Room ${a.roomNo} assigned to student records ID: ${a.studentId}`,
         icon: FaUser,
         color: 'blue'
       })));
 
     } catch (err) {
       console.error('Hostel Fetch Failure:', err);
-      toast.error('Institutional hostel registry inaccessible');
+      toast.error('School hostel records inaccessible');
     } finally {
       setLoading(false);
     }
@@ -75,12 +75,12 @@ export default function HostelDashboard() {
             </div>
             <div>
               <h1 className="text-4xl font-black tracking-tight mb-2">Hostel Matrix</h1>
-              <p className="text-indigo-200/80 text-lg font-medium">Coordinate residential facilities, room allocations, and vacancy manifests</p>
+              <p className="text-indigo-200/80 text-lg font-medium">Coordinate residential facilities, room allocations, and vacancy records</p>
             </div>
           </div>
           <div className="flex gap-4">
             <button className="px-6 py-3 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-white/20 transition-all">
-              Export Registry
+              Export Records
             </button>
           </div>
         </div>
@@ -92,7 +92,7 @@ export default function HostelDashboard() {
           { label: 'Total Hostels', value: stats.totalHostels, icon: FaBuilding, color: 'from-blue-600 to-indigo-700', bg: 'bg-blue-50' },
           { label: 'Inventory Rooms', value: stats.totalRooms, icon: FaBed, color: 'from-emerald-600 to-teal-700', bg: 'bg-emerald-50' },
           { label: 'Occupied Matrix', value: stats.occupiedRooms, icon: FaUsers, color: 'from-rose-600 to-pink-700', bg: 'bg-rose-50' },
-          { label: 'Vacancy Manifest', value: stats.availableRooms, icon: FaUnlock, color: 'from-amber-500 to-orange-600', bg: 'bg-amber-50' }
+          { label: 'Vacancy Record', value: stats.availableRooms, icon: FaUnlock, color: 'from-amber-500 to-orange-600', bg: 'bg-amber-50' }
         ].map((card, idx) => (
           <div key={idx} className="bg-white rounded-[2rem] p-8 border border-slate-100 shadow-sm hover:shadow-xl transition-all group overflow-hidden relative">
             <div className={`absolute top-0 right-0 w-24 h-24 ${card.bg} rounded-full -mr-12 -mt-12 opacity-50 group-hover:scale-150 transition-transform duration-500`} />
@@ -132,7 +132,7 @@ export default function HostelDashboard() {
             )) : (
               <div className="py-20 text-center flex flex-col items-center gap-4 opacity-30">
                 <FaUsers size={48} className="text-slate-200" />
-                <p className="text-xs font-black uppercase tracking-[0.2em]">Activity Manifest Stream Idle</p>
+                <p className="text-xs font-black uppercase tracking-[0.2em]">Activity Record Stream Idle</p>
               </div>
             )}
           </div>

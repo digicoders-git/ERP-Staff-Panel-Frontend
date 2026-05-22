@@ -189,9 +189,9 @@ const AttendanceTracker = () => {
                 <div className="p-10 border-b border-slate-100 flex flex-col md:flex-row justify-between items-center gap-8 bg-slate-50/50">
                     <div>
                         <h3 className="text-xl font-black text-slate-800 tracking-tight flex items-center gap-3">
-                            <FaHistory className="text-blue-600" size={20} /> Deployment Registry
+                            <FaHistory className="text-blue-600" size={20} /> Deployment Records
                         </h3>
-                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mt-2 italic">Institutional activity stream v4.0</p>
+                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mt-2 italic">School activity stream v4.0</p>
                     </div>
 
                     <div className="flex gap-4">
@@ -243,7 +243,7 @@ const AttendanceTracker = () => {
                                             </div>
                                             <div>
                                                 <div className="text-sm font-black text-slate-800 tracking-tight">{record.teacherName}</div>
-                                                <div className="text-[9px] font-black text-slate-300 uppercase tracking-widest mt-1">Verified Institutional Unit</div>
+                                                <div className="text-[9px] font-black text-slate-300 uppercase tracking-widest mt-1">Verified School Unit</div>
                                             </div>
                                         </div>
                                     </td>

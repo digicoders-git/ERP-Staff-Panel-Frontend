@@ -99,7 +99,7 @@ const MultiRoleAttendance = () => {
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 border-b pb-6 gap-4">
                     <div>
                         <div className="flex items-center gap-3 mb-1">
-                            <h1 className="text-2xl font-bold text-gray-800">Staff Attendance Registry</h1>
+                            <h1 className="text-2xl font-bold text-gray-800">Staff Attendance Records</h1>
                             <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-widest flex items-center gap-1.5 border ${
                                 activeMode === 'manual' ? 'bg-blue-50 text-blue-600 border-blue-100' :
                                 activeMode === 'biometric' ? 'bg-purple-50 text-purple-600 border-purple-100' :

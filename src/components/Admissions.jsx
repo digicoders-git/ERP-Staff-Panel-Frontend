@@ -142,8 +142,8 @@ const Admissions = () => {
   const handleAdmissionAction = async (appId, action) => {
     try {
       if (action === 'approve') {
-        await studentAPI.verify(appId, { status: 'verified', remarks: 'Institutional Authorization Granted' });
-        Swal.fire('Success', 'Manifest Verified: Identity Authorized! ✅', 'success');
+        await studentAPI.verify(appId, { status: 'verified', remarks: 'School Authorization Granted' });
+        Swal.fire('Success', 'Record Verified: Identity Authorized! ✅', 'success');
       } else if (action === 'confirm') {
         await admissionAPI.update(appId, { admissionStatus: 'confirmed' });
         Swal.fire('Success', 'Seat Confirmed: Admission Finalized! 🛡️', 'success');
@@ -154,7 +154,7 @@ const Admissions = () => {
       fetchAdmissions();
     } catch (err) {
       console.error('Status sync failure:', err);
-      Swal.fire('Error', 'Registry Sync Protocol Interrupted', 'error');
+      Swal.fire('Error', 'Records Sync Protocol Interrupted', 'error');
     }
   };
 
@@ -342,7 +342,7 @@ const Admissions = () => {
                         <button 
                           onClick={() => handleAdmissionAction(item.id, 'approve')}
                           className="p-1 text-emerald-600 hover:bg-emerald-100 rounded"
-                          title="Verify Manifest"
+                          title="Verify Record"
                         >
                           <MdCheckCircle size={16} />
                         </button>

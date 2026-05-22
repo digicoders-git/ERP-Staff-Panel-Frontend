@@ -25,7 +25,7 @@ export default function RouteStops() {
       }));
       setRouteStops(mappedStops);
     } catch (err) {
-      toast.error('Logistics registry synchronization failure');
+      toast.error('Logistics records synchronization failure');
     } finally {
       setLoading(false);
     }
@@ -47,7 +47,7 @@ export default function RouteStops() {
               <MdLocationOn size={40} className="text-white" />
             </div>
             <div>
-              <h1 className="text-4xl font-black mb-2 tracking-tight">Node Manifest</h1>
+              <h1 className="text-4xl font-black mb-2 tracking-tight">Node Record</h1>
               <p className="text-blue-200 font-medium text-lg">Detailed sequence of path nodes, transit intervals, and arrival-departure protocols</p>
             </div>
           </div>
@@ -60,11 +60,11 @@ export default function RouteStops() {
         </div>
       )}
 
-      {/* Registry Manifest Dual View */}
+      {/* Records Record Dual View */}
       <div className="bg-white rounded-[2.5rem] shadow-xl border border-slate-100 overflow-hidden">
         <div className="p-10 border-b border-slate-50 flex flex-col md:flex-row justify-between items-center gap-8 bg-slate-50/30">
           <div>
-            <h3 className="text-2xl font-black text-slate-800 tracking-tight">Node Matrix Registry</h3>
+            <h3 className="text-2xl font-black text-slate-800 tracking-tight">Node Matrix Records</h3>
             <p className="text-slate-400 text-sm font-medium mt-1 uppercase tracking-widest">Active nodes Manifested: {routeStops.length} nodes</p>
           </div>
           
@@ -148,7 +148,7 @@ export default function RouteStops() {
                   <tr>
                     <td colSpan="5" className="px-10 py-32 text-center text-slate-300">
                        <MdLocationOn size={80} className="mx-auto mb-6 opacity-20" />
-                       <p className="text-[11px] font-black uppercase tracking-[0.2em]">Node Registry Purged</p>
+                       <p className="text-[11px] font-black uppercase tracking-[0.2em]">Node Records Purged</p>
                     </td>
                   </tr>
                 )}

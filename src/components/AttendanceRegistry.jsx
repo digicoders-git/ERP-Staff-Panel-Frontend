@@ -135,7 +135,7 @@ const AttendanceRegistry = () => {
                             <div className="w-2 h-10 bg-blue-500 rounded-full" />
                             Mark Attendance
                         </h1>
-                        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.4em] mt-3">Daily Student Attendance Registry</p>
+                        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.4em] mt-3">Daily Student Attendance Records</p>
                     </div>
 
                     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 w-full lg:w-auto">

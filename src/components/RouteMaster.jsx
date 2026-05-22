@@ -24,7 +24,7 @@ export default function RouteMaster() {
       }));
       setRoutes(mappedRoutes);
     } catch (err) {
-      toast.error('Transit registry synchronization failure');
+      toast.error('Transit records synchronization failure');
     } finally {
       setLoading(false);
     }
@@ -46,8 +46,8 @@ export default function RouteMaster() {
               <MdMap size={40} className="text-white" />
             </div>
             <div>
-              <h1 className="text-4xl font-black mb-2 tracking-tight">Transit Registry</h1>
-              <p className="text-indigo-200 font-medium text-lg">Detailed manifest of institutional transit channels, terminal nodes, and path metrics</p>
+              <h1 className="text-4xl font-black mb-2 tracking-tight">Transit Records</h1>
+              <p className="text-indigo-200 font-medium text-lg">Detailed record of school transit channels, terminal nodes, and path metrics</p>
             </div>
           </div>
         </div>
@@ -59,11 +59,11 @@ export default function RouteMaster() {
         </div>
       )}
 
-      {/* Registry Manifest Dual View */}
+      {/* Records Record Dual View */}
       <div className="bg-white rounded-[2.5rem] shadow-xl border border-slate-100 overflow-hidden">
         <div className="p-10 border-b border-slate-50 flex flex-col md:flex-row justify-between items-center gap-8 bg-slate-50/30">
           <div>
-            <h3 className="text-2xl font-black text-slate-800 tracking-tight">Active Path Registry</h3>
+            <h3 className="text-2xl font-black text-slate-800 tracking-tight">Active Path Records</h3>
             <p className="text-slate-400 text-sm font-medium mt-1 uppercase tracking-widest">Transit Nodes Manifested: {routes.length} paths</p>
           </div>
           
@@ -113,7 +113,7 @@ export default function RouteMaster() {
                   <tr key={route._id} className="hover:bg-indigo-50/20 transition-all group">
                     <td className="px-10 py-8 text-left">
                       <div className="text-sm font-black text-slate-800 group-hover:text-indigo-600 transition-colors">{route.routeName}</div>
-                      <div className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">Operational Manifest</div>
+                      <div className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">Operational Record</div>
                     </td>
                     <td className="px-6 py-8">
                       <div className="inline-flex items-center gap-2 px-3 py-1 bg-slate-100 rounded-lg text-xs font-black text-slate-600 border border-slate-200 uppercase tracking-widest">

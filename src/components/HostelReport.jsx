@@ -36,7 +36,7 @@ export default function HostelReports() {
       setAllocations(allocationsRes.data.allocations || []);
       setWardens(wardensRes.data.wardens || []);
     } catch (err) {
-      toast.error('Comprehensive institutional report synchronization failed');
+      toast.error('Comprehensive school report synchronization failed');
     } finally {
       setLoading(false);
     }

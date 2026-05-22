@@ -51,7 +51,7 @@ export default function TransportAssignment() {
             </div>
             <div>
               <h1 className="text-4xl font-black mb-2 tracking-tight">Resource Matrix</h1>
-              <p className="text-violet-200 font-medium text-lg">Integrated manifest of Vehicle-Driver-Route assignments and operational mapping</p>
+              <p className="text-violet-200 font-medium text-lg">Integrated record of Vehicle-Driver-Route assignments and operational mapping</p>
             </div>
           </div>
         </div>
@@ -63,11 +63,11 @@ export default function TransportAssignment() {
         </div>
       )}
 
-      {/* Resource Registry Table */}
+      {/* Resource Records Table */}
       <div className="bg-white rounded-[2.5rem] shadow-xl border border-slate-100 overflow-hidden">
         <div className="p-10 border-b border-slate-50 flex flex-col md:flex-row justify-between items-center gap-8 bg-slate-50/30">
           <div>
-            <h3 className="text-2xl font-black text-slate-800 tracking-tight">Resource Assignment Registry</h3>
+            <h3 className="text-2xl font-black text-slate-800 tracking-tight">Resource Assignment Records</h3>
             <p className="text-slate-400 text-sm font-medium mt-1 uppercase tracking-widest">Active assignments: {assignments.length} Mappings</p>
           </div>
           
@@ -114,7 +114,7 @@ export default function TransportAssignment() {
                       </div>
                       <div>
                         <div className="text-sm font-black text-slate-800">{assignment.driverName}</div>
-                        <div className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">Operator Manifest</div>
+                        <div className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">Operator Record</div>
                       </div>
                     </div>
                   </td>
@@ -144,7 +144,7 @@ export default function TransportAssignment() {
                 <tr>
                   <td colSpan="4" className="px-10 py-32 text-center text-slate-300">
                      <MdAssignmentInd size={80} className="mx-auto mb-6 opacity-20" />
-                     <p className="text-[11px] font-black uppercase tracking-[0.2em]">Resource Registry Purged</p>
+                     <p className="text-[11px] font-black uppercase tracking-[0.2em]">Resource Records Purged</p>
                   </td>
                 </tr>
               )}

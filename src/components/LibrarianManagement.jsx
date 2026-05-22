@@ -209,7 +209,7 @@ const LibrarianManagement = () => {
           <h1 className="text-3xl font-black text-slate-800 tracking-tight uppercase underline decoration-indigo-600 underline-offset-4 decoration-4">
             Librarian Management
           </h1>
-          <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-2">Staff Registry & Digital Profiles</p>
+          <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-2">Staff Records & Digital Profiles</p>
         </div>
         <div className="flex gap-4">
           <div className="relative">
@@ -448,7 +448,7 @@ const LibrarianManagement = () => {
                     <p className="text-sm font-bold text-slate-700">{selectedLibrarian.phone}</p>
                   </div>
                   <div>
-                    <h4 className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2 flex items-center gap-2"><MdLocationOn className="text-indigo-400" /> Registry Address</h4>
+                    <h4 className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2 flex items-center gap-2"><MdLocationOn className="text-indigo-400" /> Records Address</h4>
                     <p className="text-sm font-bold text-slate-700 leading-relaxed">{selectedLibrarian.address || 'Address Not Recorded'}</p>
                   </div>
                </div>
@@ -470,7 +470,7 @@ const LibrarianManagement = () => {
                         <p className="text-sm font-bold text-slate-700 uppercase">{selectedLibrarian.gender || 'Not Specified'}</p>
                      </div>
                      <div className="text-right">
-                        <h4 className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2 flex items-center gap-2 justify-end"><MdCalendarToday className="text-indigo-400" /> Birth Registry</h4>
+                        <h4 className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2 flex items-center gap-2 justify-end"><MdCalendarToday className="text-indigo-400" /> Birth Records</h4>
                         <p className="text-sm font-bold text-slate-700">{selectedLibrarian.dob ? new Date(selectedLibrarian.dob).toLocaleDateString('en-GB', {day: '2-digit', month: 'short', year: 'numeric'}) : 'N/A'}</p>
                      </div>
                   </div>

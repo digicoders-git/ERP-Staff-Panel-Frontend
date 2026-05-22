@@ -94,7 +94,7 @@ const TeacherManagement = () => {
 
             if (editingId) {
                 await teacherAPI.update(editingId, data);
-                toast.success('Faculty identity manifest updated');
+                toast.success('Faculty identity record updated');
             } else {
                 await teacherAPI.create(data);
                 toast.success('New faculty identity registered');
@@ -132,7 +132,7 @@ const TeacherManagement = () => {
     const handleDelete = async (id) => {
         const result = await Swal.fire({
             title: 'Terminate Identity?',
-            text: 'This will permanently remove the faculty manifest from the institutional registry.',
+            text: 'This will permanently remove the faculty record from the school records.',
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#2563eb',

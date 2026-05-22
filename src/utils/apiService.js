@@ -18,7 +18,8 @@ export const studentAPI = {
   getEnrollmentList: (params) => api.get('/api/staff-panel/student/enrollment-list', { params }),
   enroll: (id, data) => api.put(`/api/staff-panel/student/enroll/${id}`, data),
   update: (id, data) => api.put(`/api/staff-panel/student/profile/${id}`, data),
-  delete: (id) => api.delete(`/api/staff-panel/student/${id}`)
+  delete: (id) => api.delete(`/api/staff-panel/student/${id}`),
+  searchActive: (params) => api.get('/api/staff-panel/student/search-active', { params })
 };
 
 // Class APIs
@@ -97,15 +98,35 @@ export const dashboardAPI = {
 
 // Hostel APIs
 export const hostelAPI = {
+  // Hostels
   getAll: (params) => api.get('/api/staff-panel/hostel/hostels', { params }),
   create: (data) => api.post('/api/staff-panel/hostel/hostels', data),
   update: (id, data) => api.put(`/api/staff-panel/hostel/hostels/${id}`, data),
   delete: (id) => api.delete(`/api/staff-panel/hostel/hostels/${id}`),
+
+  // Room Types
   getRoomTypes: (params) => api.get('/api/staff-panel/hostel/room-types', { params }),
+  createRoomType: (data) => api.post('/api/staff-panel/hostel/room-types', data),
+  updateRoomType: (id, data) => api.put(`/api/staff-panel/hostel/room-types/${id}`, data),
+  deleteRoomType: (id) => api.delete(`/api/staff-panel/hostel/room-types/${id}`),
+
+  // Rooms
   getRooms: (params) => api.get('/api/staff-panel/hostel/rooms', { params }),
+  createRoom: (data) => api.post('/api/staff-panel/hostel/rooms', data),
+  updateRoom: (id, data) => api.put(`/api/staff-panel/hostel/rooms/${id}`, data),
+  deleteRoom: (id) => api.delete(`/api/staff-panel/hostel/rooms/${id}`),
+
+  // Allocations
   getAllocations: (params) => api.get('/api/staff-panel/hostel/allocations', { params }),
   allocate: (data) => api.post('/api/staff-panel/hostel/allocations', data),
-  getWardens: (params) => api.get('/api/staff-panel/hostel/wardens', { params })
+  updateAllocation: (id, data) => api.put(`/api/staff-panel/hostel/allocations/${id}`, data),
+  deleteAllocation: (id) => api.delete(`/api/staff-panel/hostel/allocations/${id}`),
+
+  // Wardens
+  getWardens: (params) => api.get('/api/staff-panel/hostel/wardens', { params }),
+  createWarden: (data) => api.post('/api/staff-panel/hostel/wardens', data),
+  updateWarden: (id, data) => api.put(`/api/staff-panel/hostel/wardens/${id}`, data),
+  deleteWarden: (id) => api.delete(`/api/staff-panel/hostel/wardens/${id}`)
 };
 
 // Transport APIs

@@ -165,7 +165,7 @@ export default function IdCard() {
                     return {
                         ...af,
                         ...(e || {}),
-                        label: af.label, // Force registry label
+                        label: af.label, // Force records label
                         placeholder: af.placeholder,
                         visible: e ? e.visible : false,
                         x: e ? e.x : 20,

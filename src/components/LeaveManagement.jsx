@@ -179,7 +179,7 @@ const LeaveManagement = () => {
         {/* Table Toolbar */}
         <div className="p-10 border-b border-slate-50 flex flex-col md:flex-row justify-between items-center gap-6 bg-slate-50/10">
            <div>
-              <h3 className="text-xl font-black text-slate-800 italic uppercase underline decoration-blue-200 decoration-8 underline-offset-4 tracking-tight">Application Registry</h3>
+              <h3 className="text-xl font-black text-slate-800 italic uppercase underline decoration-blue-200 decoration-8 underline-offset-4 tracking-tight">Application Records</h3>
               <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-3 italic">{filteredRequests.length} records in current view</p>
            </div>
 

@@ -20,7 +20,7 @@ export default function TransportAllocation() {
       const res = await transportAPI.getAllocations();
       setAllocations(res.data.transportAllocations || res.data.allocations || []);
     } catch (err) {
-      toast.error('Personnel logistics registry synchronization failure');
+      toast.error('Personnel logistics records synchronization failure');
     } finally {
       setLoading(false);
     }
@@ -44,8 +44,8 @@ export default function TransportAllocation() {
               <MdManageAccounts size={40} className="text-white" />
             </div>
             <div>
-              <h1 className="text-4xl font-black mb-2 tracking-tight">Privilege Registry</h1>
-              <p className="text-emerald-200 font-medium text-lg">Integrated manifest of student service allocations, transit privileges, and fiscal mapping</p>
+              <h1 className="text-4xl font-black mb-2 tracking-tight">Privilege Records</h1>
+              <p className="text-emerald-200 font-medium text-lg">Integrated record of student service allocations, transit privileges, and fiscal mapping</p>
             </div>
           </div>
         </div>
@@ -57,11 +57,11 @@ export default function TransportAllocation() {
         </div>
       )}
 
-      {/* Allocation Registry Table */}
+      {/* Allocation Records Table */}
       <div className="bg-white rounded-[2.5rem] shadow-xl border border-slate-100 overflow-hidden">
         <div className="p-10 border-b border-slate-50 flex flex-col md:flex-row justify-between items-center gap-8 bg-slate-50/30">
           <div>
-            <h3 className="text-2xl font-black text-slate-800 tracking-tight">Privilege Manifest Registry</h3>
+            <h3 className="text-2xl font-black text-slate-800 tracking-tight">Privilege Record Records</h3>
             <p className="text-slate-400 text-sm font-medium mt-1 uppercase tracking-widest">Active unit Privileges: {allocations.length} Allocations</p>
           </div>
           
@@ -136,7 +136,7 @@ export default function TransportAllocation() {
                 <tr>
                   <td colSpan="4" className="px-10 py-32 text-center text-slate-300">
                     <MdManageAccounts size={80} className="mx-auto mb-6 opacity-20" />
-                    <p className="text-[11px] font-black uppercase tracking-[0.2em]">Service Registry Purged</p>
+                    <p className="text-[11px] font-black uppercase tracking-[0.2em]">Service Records Purged</p>
                   </td>
                 </tr>
               )}

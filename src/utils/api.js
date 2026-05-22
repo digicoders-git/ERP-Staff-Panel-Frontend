@@ -19,7 +19,8 @@ api.interceptors.response.use(
     if (error.response?.status === 401) {
       // Only redirect if token is actually invalid, not for permission issues
       const token = localStorage.getItem('token');
-      if (!token || error.response?.data?.message?.includes('Invalid token') || error.response?.data?.message?.includes('No token')) {
+      const isLoginPage = window.location.pathname === '/login' || window.location.pathname === '/';
+      if (!isLoginPage && (!token || error.response?.data?.message?.includes('Invalid token') || error.response?.data?.message?.includes('No token'))) {
         localStorage.clear();
         sessionStorage.clear();
         window.location.href = '/login';

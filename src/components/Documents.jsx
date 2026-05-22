@@ -94,7 +94,7 @@ const Documents = () => {
     if (!url) return '#';
     if (url.startsWith('http')) return url;
 
-    // Institutional Anti-Path-Collision Logic
+    // School Anti-Path-Collision Logic
     const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5002';
     
     // Extract everything from 'uploads' onwards to handle absolute local paths
@@ -109,13 +109,13 @@ const Documents = () => {
 
   const handleDownload = (doc) => {
     if (!doc.fileUrl) {
-      toast.error('Identity artifact link not found');
+      toast.error('Identity document link not found');
       return;
     }
     
     const finalUrl = resolveDocUrl(doc.fileUrl);
     window.open(finalUrl, '_blank');
-    toast.info('Accessing institutional artifact...');
+    toast.info('Accessing school document...');
   };
 
   return (
@@ -153,7 +153,7 @@ const Documents = () => {
         <div className="p-8 border-b border-slate-50 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div>
             <h3 className="text-xl font-black text-slate-800 tracking-tight">Recent Documents</h3>
-            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">Live Institutional Registry</p>
+            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">Live School Records</p>
           </div>
           
           <div className="flex flex-wrap items-center gap-4">

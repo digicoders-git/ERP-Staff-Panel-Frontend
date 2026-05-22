@@ -10,8 +10,6 @@ const Applications = () => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
-  const [showModal, setShowModal] = useState(false);
-  const [selectedApp, setSelectedApp] = useState(null);
   const [loading, setLoading] = useState(true);
   const [applications, setApplications] = useState([]);
 
@@ -30,7 +28,7 @@ const Applications = () => {
       setApplications(Array.isArray(apps) ? apps : []);
     } catch (err) {
       console.error('Failed to fetch applications:', err);
-      toast.error('Could not access application registry');
+      toast.error('Could not access application records');
     } finally {
       setLoading(false);
     }
@@ -39,29 +37,28 @@ const Applications = () => {
   const handleAdmissionAction = async (appId, action) => {
     try {
       if (action === 'approve') {
-        await studentAPI.verify(appId, { status: 'verified', remarks: 'Institutional Authorization Granted' });
-        toast.success('MANIFEST VERIFIED: Identity Authorized! ✅');
+        await studentAPI.verify(appId, { status: 'verified', remarks: 'Application Approved' });
+        toast.success('Application approved successfully! ✅');
       } else if (action === 'confirm') {
         await admissionAPI.update(appId, { admissionStatus: 'confirmed' });
-        toast.success('SEAT CONFIRMED: Admission Finalized! 🛡️');
+        toast.success('Admission confirmed successfully! 🎓');
       } else if (action === 'reject') {
-        await studentAPI.verify(appId, { status: 'rejected', remarks: 'Admission Petition Denied' });
-        toast.error('PETITION SYNCed: Application Rejected ❌');
+        await studentAPI.verify(appId, { status: 'rejected', remarks: 'Application Rejected' });
+        toast.error('Application rejected ❌');
       }
       fetchApplications();
     } catch (err) {
       console.error('Status sync failure:', err);
-      toast.error('Registry Sync Protocol Interrupted');
+      toast.error('Failed to update status');
     }
   };
 
   const handleView = (app) => {
-    setSelectedApp(app);
-    setShowModal(true);
+    navigate(`/application-view/${app.admissionNumber || app._id}`);
   };
 
   const handleEdit = (app) => {
-    navigate(`/edit-admission/${app._id}`);
+    navigate(`/edit-admission/${app.admissionNumber || app._id}`);
   };
 
   const handleDelete = (appId) => {
@@ -82,7 +79,7 @@ const Applications = () => {
           fetchApplications();
         } catch (err) {
           console.error('Failed to delete application:', err);
-          toast.error('System Failure: Deletion Manifest Denied');
+          toast.error('Failed to delete application');
         } finally {
           setLoading(false);
         }
@@ -117,8 +114,8 @@ const Applications = () => {
           <MdAppRegistration size={120} />
         </div>
         <div className="relative z-10">
-          <h2 className="text-4xl font-black mb-2 tracking-tight">Application Pipeline</h2>
-          <p className="text-indigo-200 text-lg font-medium">Coordinate and authorize new student identities within the institutional registry</p>
+          <h2 className="text-4xl font-black mb-2 tracking-tight">Applications</h2>
+          <p className="text-indigo-200 text-lg font-medium">Manage and review student admission applications</p>
         </div>
       </div>
 
@@ -129,7 +126,7 @@ const Applications = () => {
             <div className="p-3 bg-blue-50 rounded-xl text-blue-600">
               <MdAppRegistration size={24} />
             </div>
-            <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded-lg">REGISTRY</span>
+            <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded-lg">TOTAL</span>
           </div>
           <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider">Total Applications</h3>
           <p className="text-3xl font-black text-slate-800 mt-1">{applications.length}</p>
@@ -140,9 +137,9 @@ const Applications = () => {
             <div className="p-3 bg-orange-50 rounded-xl text-orange-600">
               <FaSpinner size={24} className="animate-spin-slow" />
             </div>
-            <span className="text-xs font-bold text-orange-600 bg-orange-50 px-2 py-1 rounded-lg">ACTION REQ</span>
+            <span className="text-xs font-bold text-orange-600 bg-orange-50 px-2 py-1 rounded-lg">PENDING</span>
           </div>
-          <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider">Pending Adjudication</h3>
+          <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider">Pending Review</h3>
           <p className="text-3xl font-black text-slate-800 mt-1">{applications.filter(app => app.applicationStatus === 'pending').length}</p>
         </div>
 
@@ -151,9 +148,9 @@ const Applications = () => {
             <div className="p-3 bg-emerald-50 rounded-xl text-emerald-600">
               <MdCheckCircle size={24} />
             </div>
-            <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-lg">AUTHORIZED</span>
+            <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-lg">APPROVED</span>
           </div>
-          <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider">Approved Identities</h3>
+          <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider">Approved Applications</h3>
           <p className="text-3xl font-black text-slate-800 mt-1">{applications.filter(app => app.applicationStatus === 'approved').length}</p>
         </div>
       </div>
@@ -179,10 +176,10 @@ const Applications = () => {
               onChange={(e) => setStatusFilter(e.target.value)}
               className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 bg-white font-bold text-slate-600 appearance-none cursor-pointer"
             >
-              <option value="all">All Status Manifests</option>
-              <option value="pending">Pending Review</option>
-              <option value="approved">Institutional Approved</option>
-              <option value="rejected">Rejected Petitions</option>
+              <option value="all">All Statuses</option>
+              <option value="pending">Pending</option>
+              <option value="approved">Approved</option>
+              <option value="rejected">Rejected</option>
             </select>
           </div>
         </div>
@@ -191,27 +188,27 @@ const Applications = () => {
       {/* Applications List */}
       <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-slate-100">
         <div className="p-6 border-b border-slate-100 bg-slate-50/30 flex justify-between items-center">
-          <h3 className="text-xl font-black text-slate-800">Application Manifest ({applications.length})</h3>
-          <span className="px-4 py-1.5 bg-indigo-50 text-indigo-700 rounded-full text-[10px] font-black uppercase tracking-widest border border-indigo-100">Institutional Registry</span>
+          <h3 className="text-xl font-black text-slate-800">Applications List ({applications.length})</h3>
+          <span className="px-4 py-1.5 bg-indigo-50 text-indigo-700 rounded-full text-[10px] font-black uppercase tracking-widest border border-indigo-100">Records</span>
         </div>
         
         <div className="overflow-x-auto">
           {loading ? (
             <div className="flex flex-col items-center justify-center py-24 gap-4">
               <FaSpinner className="animate-spin text-indigo-600" size={48} />
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Accessing Registry Matrix...</p>
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Loading Applications...</p>
             </div>
           ) : (
             <table className="w-full">
               <thead className="bg-slate-50/80">
                 <tr>
-                  <th className="px-6 py-4 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Registry ID</th>
-                  <th className="px-6 py-4 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Student Information</th>
-                  <th className="px-6 py-4 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Guardian Control</th>
-                  <th className="px-6 py-4 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Academic Matrix</th>
-                  <th className="px-6 py-4 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Status Hub</th>
-                  <th className="px-6 py-4 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Submission Date</th>
-                  <th className="px-6 py-4 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Actions Terminal</th>
+                  <th className="px-6 py-4 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">App ID</th>
+                  <th className="px-6 py-4 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Student Info</th>
+                  <th className="px-6 py-4 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Guardian Info</th>
+                  <th className="px-6 py-4 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Class</th>
+                  <th className="px-6 py-4 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Status</th>
+                  <th className="px-6 py-4 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Date</th>
+                  <th className="px-6 py-4 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -250,64 +247,94 @@ const Applications = () => {
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex space-x-2">
-                        <button 
-                          onClick={() => handleView(app)}
-                          className="p-2 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors border border-blue-50"
-                          title="View Identity Manifest"
-                        >
-                          <MdVisibility size={18} />
-                        </button>
+                        <div className="relative group">
+                          <button 
+                            onClick={() => handleView(app)}
+                            className="p-2 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors border border-blue-50 cursor-pointer"
+                          >
+                            <MdVisibility size={18} />
+                          </button>
+                          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block w-max px-2 py-1 bg-gray-800 text-white text-xs font-medium rounded shadow-lg z-50">
+                            View Details
+                            <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gray-800"></div>
+                          </div>
+                        </div>
 
-                        {/* Institutional Admission Controls - LOCKED if Rejected */}
+                        {/* School Admission Controls - LOCKED if Rejected */}
                         {app.applicationStatus !== 'rejected' && (
                           <>
-                            <button 
-                              onClick={() => handleEdit(app)}
-                              className="p-2 text-indigo-600 hover:bg-indigo-100 rounded-lg transition-colors border border-indigo-50"
-                              title="Edit Registry Entry"
-                            >
-                              <MdEdit size={18} />
-                            </button>
+                            <div className="relative group">
+                              <button 
+                                onClick={() => handleEdit(app)}
+                                className="p-2 text-indigo-600 hover:bg-indigo-100 rounded-lg transition-colors border border-indigo-50 cursor-pointer"
+                              >
+                                <MdEdit size={18} />
+                              </button>
+                              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block w-max px-2 py-1 bg-gray-800 text-white text-xs font-medium rounded shadow-lg z-50">
+                                Edit
+                                <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gray-800"></div>
+                              </div>
+                            </div>
                             
                             {app.applicationStatus === 'pending' && (
-                              <button 
-                                onClick={() => handleAdmissionAction(app._id, 'approve')}
-                                className="p-2 text-emerald-600 hover:bg-emerald-100 rounded-lg transition-colors border border-emerald-50"
-                                title="Authorize Manifest (Verify)"
-                              >
-                                <MdCheckCircle size={18} />
-                              </button>
+                              <div className="relative group">
+                                <button 
+                                  onClick={() => handleAdmissionAction(app._id, 'approve')}
+                                  className="p-2 text-emerald-600 hover:bg-emerald-100 rounded-lg transition-colors border border-emerald-50 cursor-pointer"
+                                >
+                                  <MdCheckCircle size={18} />
+                                </button>
+                                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block w-max px-2 py-1 bg-gray-800 text-white text-xs font-medium rounded shadow-lg z-50">
+                                  Approve
+                                  <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gray-800"></div>
+                                </div>
+                              </div>
                             )}
 
                             {app.applicationStatus === 'approved' && app.admissionStatus !== 'confirmed' && (
-                              <button 
-                                onClick={() => handleAdmissionAction(app._id, 'confirm')}
-                                className="p-2 text-purple-600 hover:bg-purple-100 rounded-lg transition-colors border border-purple-50"
-                                title="Confirm Institutional Seat"
-                              >
-                                <MdCheckCircle className="rotate-90" size={18} /> 
-                              </button>
+                              <div className="relative group">
+                                <button 
+                                  onClick={() => handleAdmissionAction(app._id, 'confirm')}
+                                  className="p-2 text-purple-600 hover:bg-purple-100 rounded-lg transition-colors border border-purple-50 cursor-pointer"
+                                >
+                                  <MdCheckCircle className="rotate-90" size={18} /> 
+                                </button>
+                                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block w-max px-2 py-1 bg-gray-800 text-white text-xs font-medium rounded shadow-lg z-50">
+                                  Confirm Admission
+                                  <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gray-800"></div>
+                                </div>
+                              </div>
                             )}
 
                             {(app.applicationStatus === 'pending' || app.applicationStatus === 'approved') && (
-                              <button 
-                                onClick={() => handleAdmissionAction(app._id, 'reject')}
-                                className="p-2 text-red-500 hover:bg-red-100 rounded-lg transition-colors border border-red-50"
-                                title="Deny Application"
-                              >
-                                <MdCancel size={18} />
-                              </button>
+                              <div className="relative group">
+                                <button 
+                                  onClick={() => handleAdmissionAction(app._id, 'reject')}
+                                  className="p-2 text-red-500 hover:bg-red-100 rounded-lg transition-colors border border-red-50 cursor-pointer"
+                                >
+                                  <MdCancel size={18} />
+                                </button>
+                                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block w-max px-2 py-1 bg-gray-800 text-white text-xs font-medium rounded shadow-lg z-50">
+                                  Reject
+                                  <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gray-800"></div>
+                                </div>
+                              </div>
                             )}
                           </>
                         )}
 
-                        <button 
-                          onClick={() => handleDelete(app._id)}
-                          className="p-2 text-rose-600 hover:bg-rose-100 rounded-lg transition-colors border border-rose-50"
-                          title="Delete Application"
-                        >
-                          <MdDelete size={18} />
-                        </button>
+                        <div className="relative group">
+                          <button 
+                            onClick={() => handleDelete(app._id)}
+                            className="p-2 text-rose-600 hover:bg-rose-100 rounded-lg transition-colors border border-rose-50 cursor-pointer"
+                          >
+                            <MdDelete size={18} />
+                          </button>
+                          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block w-max px-2 py-1 bg-gray-800 text-white text-xs font-medium rounded shadow-lg z-50">
+                            Delete
+                            <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gray-800"></div>
+                          </div>
+                        </div>
                       </div>
                     </td>
                   </tr>
@@ -316,7 +343,7 @@ const Applications = () => {
                     <td colSpan="7" className="px-6 py-20 text-center">
                       <div className="flex flex-col items-center gap-2 opacity-40">
                         <MdAppRegistration size={50} className="text-slate-300" />
-                        <p className="text-xs font-black text-slate-400 uppercase tracking-widest">No matching applications in registry</p>
+                        <p className="text-xs font-black text-slate-400 uppercase tracking-widest">No matching applications found</p>
                       </div>
                     </td>
                   </tr>
@@ -330,76 +357,24 @@ const Applications = () => {
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-blue-500">
-          <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Total Registry Count</h4>
+          <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Total Applications</h4>
           <p className="text-3xl font-black text-blue-600 tabular-nums">{applications.length}</p>
         </div>
         <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-orange-500">
-          <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Pending Adjudication</h4>
+          <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Pending Review</h4>
           <p className="text-3xl font-black text-orange-600 tabular-nums">
             {applications.filter(app => app.applicationStatus === 'pending').length}
           </p>
         </div>
         <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-emerald-500">
-          <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Authorized Admissions</h4>
+          <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Approved Applications</h4>
           <p className="text-3xl font-black text-emerald-600 tabular-nums">
             {applications.filter(app => app.applicationStatus === 'approved').length}
           </p>
         </div>
       </div>
 
-      {/* Modal for viewing application details */}
-      {showModal && selectedApp && (
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-8 max-w-md w-full shadow-2xl border border-blue-50 relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-blue-50 rounded-full -mr-16 -mt-16 opacity-50" />
-            
-            <h3 className="text-xl font-black text-blue-900 mb-6 flex items-center gap-2">
-              <MdVisibility className="text-blue-600" /> Identity Manifest
-            </h3>
 
-            <div className="space-y-4 relative z-10">
-              <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
-                <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest block mb-1">Institutional nomenclature</span>
-                <span className="text-sm font-bold text-slate-800">{`${selectedApp.firstName || ''} ${selectedApp.lastName || ''}`.trim() || 'UNNAMED'}</span>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
-                  <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest block mb-1">Contact Hotline</span>
-                  <span className="text-xs font-bold text-slate-700">{selectedApp.mobile}</span>
-                </div>
-                <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
-                  <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest block mb-1">Academic Matrix</span>
-                  <span className="text-xs font-bold text-slate-700">{selectedApp.class?.className || 'N/A'}</span>
-                </div>
-              </div>
-
-              <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
-                <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest block mb-1">Authentication Email</span>
-                <span className="text-xs font-bold text-slate-700">{selectedApp.email}</span>
-              </div>
-
-              <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
-                <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest block mb-1">Current Status</span>
-                <span className={`inline-block mt-1 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${
-                  selectedApp.applicationStatus === 'approved' ? 'bg-emerald-100 text-emerald-800' : 
-                  selectedApp.applicationStatus === 'pending' ? 'bg-orange-100 text-orange-800' :
-                  'bg-red-100 text-red-800'
-                }`}>
-                  {selectedApp.applicationStatus}
-                </span>
-              </div>
-            </div>
-
-            <button
-              onClick={() => setShowModal(false)}
-              className="w-full mt-8 py-3 bg-blue-600 text-white rounded-xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-blue-700 transition-all shadow-lg shadow-blue-200"
-            >
-              Close Manifest
-            </button>
-          </div>
-        </div>
-      )}
 
     </div>
   );

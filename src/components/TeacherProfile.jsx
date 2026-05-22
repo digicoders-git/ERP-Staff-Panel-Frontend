@@ -115,10 +115,10 @@ const TeacherProfile = () => {
 
             {/* Main Content Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                {/* Institutional & Academic Details */}
+                {/* School & Academic Details */}
                 <div className="lg:col-span-2 space-y-8">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        {/* Institutional Card */}
+                        {/* School Card */}
                         <div className="bg-white p-10 rounded-[3rem] shadow-sm border border-slate-100 hover:shadow-xl transition-all group">
                             <div className="flex items-center gap-4 mb-8">
                                 <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-6 transition-all">

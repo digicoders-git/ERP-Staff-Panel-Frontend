@@ -222,7 +222,7 @@ export default function TransportReport() {
                <MdSearch className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-rose-500 transition-colors" size={24} />
                <input
                  type="text"
-                 placeholder="Filter student manifest..."
+                 placeholder="Filter student record..."
                  value={searchTerm}
                  onChange={(e) => setSearchTerm(e.target.value)}
                  className="w-full pl-16 pr-6 py-4 bg-white border border-slate-200 rounded-2xl focus:ring-2 focus:ring-rose-500 font-bold text-slate-800 transition-all outline-none"
@@ -244,7 +244,7 @@ export default function TransportReport() {
                       <tr key={a._id} className="hover:bg-rose-50/20 transition-all group">
                         <td className="px-10 py-8 text-left">
                            <div className="text-sm font-black text-slate-800 group-hover:text-rose-600 transition-colors">{a.studentName}</div>
-                           <div className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">{a.userType || 'Student'} Registry</div>
+                           <div className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">{a.userType || 'Student'} Records</div>
                         </td>
                         <td className="px-6 py-8">
                            <div className="text-sm font-bold text-slate-600 font-black">{a.routeName}</div>
@@ -278,7 +278,7 @@ export default function TransportReport() {
             </div>
             <div>
               <h1 className="text-4xl font-black tracking-tight mb-2 uppercase tracking-tighter">Logistics Intelligence</h1>
-              <p className="text-blue-200/80 text-lg font-medium">Aggregated manifest report of institutional transit operations and personnel mapping</p>
+              <p className="text-blue-200/80 text-lg font-medium">Aggregated record report of school transit operations and personnel mapping</p>
             </div>
           </div>
           <button 
@@ -295,7 +295,7 @@ export default function TransportReport() {
       <div className="flex flex-wrap gap-4">
         {[
           { id: 'summary', label: 'Overall Summary', icon: FaChartBar, color: 'blue' },
-          { id: 'vehicles', label: 'Fleet Manifest', icon: FaBus, color: 'emerald' },
+          { id: 'vehicles', label: 'Fleet Record', icon: FaBus, color: 'emerald' },
           { id: 'routes', label: 'Transit Channels', icon: FaRoute, color: 'purple' },
           { id: 'students', label: 'Student Loading', icon: FaUsers, color: 'rose' }
         ].map((cat) => (
@@ -319,7 +319,7 @@ export default function TransportReport() {
         {loading ? (
           <div className="flex flex-col items-center justify-center py-32 gap-6 bg-white/50 rounded-[2.5rem] border border-dashed border-slate-200">
              <FaSpinner className="animate-spin text-blue-600 text-5xl" />
-             <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Synthesizing Logistics Analytics Registry...</p>
+             <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Synthesizing Logistics Analytics Records...</p>
           </div>
         ) : renderReport()}
       </div>

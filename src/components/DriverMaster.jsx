@@ -27,7 +27,7 @@ export default function DriverMaster() {
       }));
       setDrivers(mappedDrivers);
     } catch (err) {
-      toast.error('Personnel registry synchronization failure');
+      toast.error('Personnel records synchronization failure');
     } finally {
       setLoading(false);
     }
@@ -49,8 +49,8 @@ export default function DriverMaster() {
               <MdPerson size={40} className="text-white" />
             </div>
             <div>
-              <h1 className="text-4xl font-black mb-2 tracking-tight">Personnel Registry</h1>
-              <p className="text-emerald-200 font-medium text-lg">Detailed manifests of institutional drivers, qualification metrics, and operational status</p>
+              <h1 className="text-4xl font-black mb-2 tracking-tight">Personnel Records</h1>
+              <p className="text-emerald-200 font-medium text-lg">Detailed records of school drivers, qualification metrics, and operational status</p>
             </div>
           </div>
         </div>
@@ -62,11 +62,11 @@ export default function DriverMaster() {
         </div>
       )}
 
-      {/* Personnel Registry Table */}
+      {/* Personnel Records Table */}
       <div className="bg-white rounded-[2.5rem] shadow-xl border border-slate-100 overflow-hidden">
         <div className="p-10 border-b border-slate-50 flex flex-col md:flex-row justify-between items-center gap-8 bg-slate-50/30">
           <div>
-            <h3 className="text-2xl font-black text-slate-800 tracking-tight">Operator Registry Manifest</h3>
+            <h3 className="text-2xl font-black text-slate-800 tracking-tight">Operator Records Record</h3>
             <p className="text-slate-400 text-sm font-medium mt-1 uppercase tracking-widest">Active Operators: {drivers.length} Personnel</p>
           </div>
           
@@ -134,7 +134,7 @@ export default function DriverMaster() {
                 <tr>
                   <td colSpan="4" className="px-10 py-32 text-center text-slate-300">
                      <MdPerson size={80} className="mx-auto mb-6 opacity-20" />
-                     <p className="text-[11px] font-black uppercase tracking-[0.2em]">Personnel Registry Purged</p>
+                     <p className="text-[11px] font-black uppercase tracking-[0.2em]">Personnel Records Purged</p>
                   </td>
                 </tr>
               )}

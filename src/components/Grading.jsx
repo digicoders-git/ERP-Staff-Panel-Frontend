@@ -73,7 +73,7 @@ const Grading = () => {
   const handleDelete = async (id) => {
     const result = await Swal.fire({
       title: 'Decommission Tier?',
-      text: "This action will recalibrate institutional scholastic calculations.",
+      text: "This action will recalibrate school scholastic calculations.",
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#1e293b',
@@ -85,7 +85,7 @@ const Grading = () => {
       try {
         setLoading(true);
         await examAPI.deleteGrading(id);
-        toast.success('TIER PURGED: Criteria manifest updated.');
+        toast.success('TIER PURGED: Criteria record updated.');
         fetchGrading();
       } catch (err) {
         toast.error('Decommission protocol interrupted');
@@ -123,7 +123,7 @@ const Grading = () => {
            </div>
            <div>
               <h3 className="text-2xl font-black text-slate-800 tracking-tighter italic">Assessment Protocol</h3>
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mt-1.5 leading-none">Global Standards & GPA Manifest v4.2</p>
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mt-1.5 leading-none">Global Standards & GPA Record v4.2</p>
            </div>
         </div>
         
@@ -146,7 +146,7 @@ const Grading = () => {
           <div className="relative z-10 flex justify-between items-center mb-10 pb-6 border-b border-slate-100">
             <div>
               <h4 className="text-2xl font-black text-slate-800 tracking-tighter italic">
-                {editingGradeId ? 'Recalibrate Criteria' : 'Manifest New Performance Tier'}
+                {editingGradeId ? 'Recalibrate Criteria' : 'Record New Performance Tier'}
               </h4>
               <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mt-2 leading-none italic opacity-60">Authorized Scholastic Entry Portal</p>
             </div>
@@ -208,7 +208,7 @@ const Grading = () => {
                  value={formData.description}
                  onChange={(e) => setFormData({...formData, description: e.target.value})}
                  className="w-full px-8 py-6 bg-slate-50 border-2 border-transparent rounded-[2rem] outline-none focus:bg-white focus:border-indigo-600 font-bold text-slate-700 transition-all shadow-inner resize-none"
-                 placeholder="Provide institutional clarification for this tier..."
+                 placeholder="Provide school clarification for this tier..."
                />
             </div>
 
@@ -224,7 +224,7 @@ const Grading = () => {
                   type="submit"
                   className="flex-[2] bg-slate-900 hover:bg-indigo-600 text-white py-6 rounded-[2rem] font-black text-[10px] uppercase tracking-[0.3em] transition-all shadow-2xl shadow-slate-200 active:scale-95"
                >
-                  {editingGradeId ? 'Sync Criteria' : 'Manifest Assessment Tier'}
+                  {editingGradeId ? 'Sync Criteria' : 'Record Assessment Tier'}
                </button>
             </div>
           </form>
@@ -272,7 +272,7 @@ const Grading = () => {
                           </div>
                           <span className="text-sm font-black text-slate-800">{grade.maxPercentage}%</span>
                        </div>
-                       <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest opacity-60">Normalized Manifest Range</span>
+                       <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest opacity-60">Normalized Record Range</span>
                     </div>
                   </td>
                   <td className="px-12 py-8 text-center">
@@ -322,7 +322,7 @@ const Grading = () => {
                </div>
                <div>
                   <h4 className="text-2xl font-black italic tracking-tighter">Scholastic Normalization Protocol</h4>
-                  <p className="text-indigo-200/60 font-medium mt-1">GPA and Tier indices are automatically applied to the Scholasic Registry upon manifest finalization.</p>
+                  <p className="text-indigo-200/60 font-medium mt-1">GPA and Tier indices are automatically applied to the Scholasic Records upon record finalization.</p>
                </div>
             </div>
             <button className="px-8 py-4 bg-indigo-500 text-white rounded-2xl font-black text-[10px] uppercase tracking_widest hover:bg-indigo-400 transition-all shadow-xl shadow-indigo-500/20 active:scale-95">

@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5002';
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://erp-backend-0ab5.onrender.com';
 
 const api = axios.create({
   baseURL: BASE_URL,

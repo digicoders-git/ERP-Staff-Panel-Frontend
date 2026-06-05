@@ -10,6 +10,7 @@ import TransportDashboard from './TransportDashboard';
 import Enrollment from './Enrollment';
 import Classes from './Classes';
 import Fees from './Fees';
+import FeeAdminManagement from './FeeAdminManagement';
 import Documents from './Documents';
 import Reports from './Reports';
 import Notices from './Notices';
@@ -285,6 +286,7 @@ const Dashboard = ({ setIsLoggedIn }) => {
 
 
   const feeReportsItems = [
+    { id: 'fee-admin-management', name: 'Fee Admin', icon: MdSupervisorAccount, path: '/fee-admin-management' },
     { id: 'fee-reports', name: 'Fee Reports', icon: MdBarChart, path: '/fee-reports' }
   ];
 
@@ -307,7 +309,7 @@ const Dashboard = ({ setIsLoggedIn }) => {
 
 
   const userRole = localStorage.getItem('userRole');
-  const isAdminOrStaff = ['branchAdmin', 'staffAdmin', 'teacherAdmin', 'superAdmin', 'clientAdmin'].includes(userRole);
+  const isAdminOrStaff = ['branchAdmin', 'staffAdmin', 'teacherAdmin', 'superAdmin', 'clientAdmin', 'staff'].includes(userRole);
   const isLibrarian = userRole === 'libraryAdmin';
 
   const libraryItems = [
@@ -315,7 +317,7 @@ const Dashboard = ({ setIsLoggedIn }) => {
     { id: 'library-books', name: 'Books', icon: MdBook, path: '/library-books' },
     { id: 'library-members', name: 'Members', icon: MdPeople, path: '/library-members' },
     { id: 'book-transactions', name: 'Transactions', icon: MdCheckCircle, path: '/book-transactions' },
-    ...(isAdminOrStaff || isLibrarian ? [{ id: 'librarian-management', name: 'Add Librarian', icon: MdSupervisorAccount, path: '/librarian-management' }] : [])
+    ...(isAdminOrStaff || isLibrarian ? [{ id: 'librarian-management', name: 'Library Admin', icon: MdSupervisorAccount, path: '/librarian-management' }] : [])
   ];
 
 
@@ -394,6 +396,7 @@ const Dashboard = ({ setIsLoggedIn }) => {
                 { id: 'exam', name: 'Exams', icon: MdSchedule, items: examItems, state: examDropdownOpen, setState: setExamDropdownOpen, type: 'exam' },
                 { id: 'student-management', name: 'Student Management', icon: MdPeople, items: studentItems, state: staffAttendanceDropdownOpen, setState: setStaffAttendanceDropdownOpen, type: 'student' },
                 { id: 'staff-management', name: 'Faculty & Staff', icon: MdPeople, items: [...teacherItems, ...staffAttendanceItems], state: teacherDropdownOpen, setState: setTeacherDropdownOpen, type: 'staff-management' },
+                { id: 'fee-management', name: 'Fee Management', icon: MdPayment, items: feeReportsItems, state: feeReportsDropdownOpen, setState: setFeeReportsDropdownOpen, type: 'fee-management' },
 
 
                 { id: 'library', name: 'Library', icon: MdBook, items: libraryItems, state: libraryDropdownOpen, setState: setLibraryDropdownOpen, type: 'library' }
@@ -658,6 +661,7 @@ const Dashboard = ({ setIsLoggedIn }) => {
               <Route path="/leave-management" element={<LeaveManagement />} />
 
               <Route path="/fee-reports" element={<FeeReports />} />
+              <Route path="/fee-admin-management" element={<FeeAdminManagement />} />
 
               <Route path="/e-learning" element={<ELearning />} />
               <Route path="/quiz-manager" element={<QuizManager />} />
